@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ahaneiffel.com/sitemap.xml
