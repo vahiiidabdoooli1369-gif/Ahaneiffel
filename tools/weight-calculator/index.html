@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>محاسبه وزن آهن و فولاد آنلاین | ماشین حساب وزن آهن | آهن ایفل</title>
+<meta name="description" content="ماشین حساب آنلاین آهن ایفل برای محاسبه وزن تئوری میلگرد و ورق فولادی. محاسبه سریع وزن بر اساس قطر، طول، ضخامت و ابعاد.">
+<meta name="author" content="آهن ایفل">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<link rel="canonical" href="https://ahaneiffel.com/tools/weight-calculator/">
+<link rel="stylesheet" href="/style.css">
+<style>
+.tool-wrap{padding:55px 0}.tool-hero{background:linear-gradient(135deg,#071f36,#0d4b78);color:#fff;padding:45px;border-radius:22px;margin-bottom:28px}.tool-hero h1{font-size:clamp(28px,4vw,46px);margin:8px 0}.tool-hero p{color:#e5edf4;max-width:800px}.calc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}.calc-card{background:#fff;border:1px solid #dce5ed;border-radius:18px;padding:28px;box-shadow:0 10px 30px #0b3a6710}.calc-card h2{color:#0b3a67;margin-top:0}.field{margin:13px 0}.field label{display:block;font-weight:800;margin-bottom:6px}.field input{width:100%;padding:12px;border:1px solid #cbd8e3;border-radius:9px;font-size:16px;box-sizing:border-box}.calc-btn{width:100%;border:0;background:#0b3a67;color:#fff;padding:13px;border-radius:9px;font-size:17px;font-weight:900;cursor:pointer}.result{margin-top:16px;background:#eef5fa;border-radius:12px;padding:15px;font-size:18px;font-weight:900;color:#0b3a67}.formula{font-size:14px;color:#65788a;background:#f7f9fb;padding:12px;border-radius:10px}.info{margin-top:28px;background:#f5f8fb;padding:28px;border-radius:18px}.brand-tag{display:inline-flex;align-items:center;gap:6px;background:#fff;color:#0b3a67;border:1px solid #d7e2ec;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:900}.links{display:flex;gap:10px;flex-wrap:wrap}.links a{background:#fff;border:1px solid #dce5ed;border-radius:9px;padding:8px 13px;color:#0b3a67;font-weight:800}@media(max-width:750px){.calc-grid{grid-template-columns:1fr}.tool-hero{padding:28px}}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"ماشین حساب وزن آهن","url":"https://ahaneiffel.com/tools/weight-calculator/","author":{"@type":"Organization","name":"آهن ایفل","url":"https://ahaneiffel.com/"},"publisher":{"@type":"Organization","name":"آهن ایفل","telephone":"+989125143831"}}
+</script>
+</head>
+<body>
+<header class="site-header"><div class="topbar"><div class="container"><span>ماشین حساب وزن آهن و فولاد</span><a href="tel:+989125143831">📞 09125143831</a></div></div><div class="container nav-wrap"><a class="brand" href="/">آهن <b>ایفل</b></a><nav><a href="/products/profile/">پروفیل</a><a href="/products/rebar/">میلگرد</a><a href="/products/sheet/">ورق</a><a href="/">خانه</a></nav><a class="call-btn" href="tel:+989125143831">تماس با کارشناس</a></div></header>
+<main><section class="tool-wrap"><div class="container"><div class="tool-hero"><span class="brand-tag">✓ آهن ایفل</span><h1>ماشین حساب وزن آهن و فولاد</h1><p>وزن تئوری میلگرد و ورق فولادی را سریع محاسبه کنید. نتیجه تقریبی است و وزن واقعی می‌تواند با توجه به استاندارد، تلرانس و کارخانه متفاوت باشد.</p></div>
+<div class="calc-grid">
+<div class="calc-card"><h2>⚙️ محاسبه وزن میلگرد</h2><div class="field"><label for="dia">قطر میلگرد (میلی‌متر)</label><input id="dia" type="number" min="1" step="0.1" placeholder="مثلاً 16"></div><div class="field"><label for="len">طول کل (متر)</label><input id="len" type="number" min="0.1" step="0.1" placeholder="مثلاً 120"></div><button class="calc-btn" onclick="rebar()">محاسبه وزن</button><div id="r1" class="result">نتیجه اینجا نمایش داده می‌شود</div><p class="formula">فرمول وزن تئوری: قطر² ÷ 162 × طول (متر) = وزن تقریبی (کیلوگرم)</p></div>
+<div class="calc-card"><h2>📐 محاسبه وزن ورق فولادی</h2><div class="field"><label for="sl">طول ورق (متر)</label><input id="sl" type="number" min="0.01" step="0.01" placeholder="مثلاً 6"></div><div class="field"><label for="sw">عرض ورق (متر)</label><input id="sw" type="number" min="0.01" step="0.01" placeholder="مثلاً 1.5"></div><div class="field"><label for="st">ضخامت (میلی‌متر)</label><input id="st" type="number" min="0.1" step="0.1" placeholder="مثلاً 10"></div><button class="calc-btn" onclick="sheet()">محاسبه وزن</button><div id="r2" class="result">نتیجه اینجا نمایش داده می‌شود</div><p class="formula">فرمول با چگالی تقریبی فولاد 7.85: طول × عرض × ضخامت × 7.85 = وزن تقریبی (کیلوگرم)</p></div>
+</div>
+<div class="info"><h2>راهنمای استفاده</h2><p>برای میلگرد، قطر و مجموع طول شاخه‌ها را وارد کنید. برای ورق، طول و عرض را بر حسب متر و ضخامت را بر حسب میلی‌متر وارد کنید. این ابزار وزن تئوری را محاسبه می‌کند و برای خرید نهایی باید وزن باسکول یا مشخصات کارخانه بررسی شود.</p><div class="links"><a href="/products/rebar/">قیمت میلگرد</a><a href="/products/profile/">قیمت پروفیل</a><a href="/products/sheet/">قیمت ورق</a><a href="/products/beam/">قیمت تیرآهن</a></div></div>
+<div class="cta" style="margin-top:28px"><div class="container"><div><span>استعلام قیمت و وزن بار</span><h2>با کارشناس آهن ایفل تماس بگیرید</h2><p>📍 بازار آهن شادآباد، بنگاه منشور</p></div><a href="tel:+989125143831">📞 09125143831</a></div></div>
+</div></section></main>
+<footer><div class="container footer-grid"><div><div class="brand">آهن <b>ایفل</b></div><p>فروش و استعلام قیمت روز آهن‌آلات و محصولات فولادی.</p></div><div><b>ابزارها</b><a href="/tools/weight-calculator/">محاسبه وزن آهن</a></div><div><b>تماس</b><a href="tel:+989125143831">📞 09125143831</a><span>بازار آهن شادآباد، بنگاه منشور</span></div></div><div class="copyright">© آهن ایفل | تمامی حقوق محفوظ است.</div></footer>
+<a class="mobile-call" href="tel:+989125143831">📞 تماس با آهن ایفل | 09125143831</a>
+<script>
+function rebar(){const d=Number(document.getElementById('dia').value),l=Number(document.getElementById('len').value);if(d>0&&l>0)document.getElementById('r1').textContent=(d*d/162*l).toFixed(2)+' کیلوگرم';else document.getElementById('r1').textContent='قطر و طول را وارد کنید.'}
+function sheet(){const l=Number(document.getElementById('sl').value),w=Number(document.getElementById('sw').value),t=Number(document.getElementById('st').value);if(l>0&&w>0&&t>0)document.getElementById('r2').textContent=(l*w*t*7.85).toFixed(2)+' کیلوگرم';else document.getElementById('r2').textContent='طول، عرض و ضخامت را وارد کنید.'}
+</script>
+</body></html>
