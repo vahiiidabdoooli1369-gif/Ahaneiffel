@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>محاسبه هزینه نهایی خرید آهن | قیمت، وزن و حمل | آهن ایفل</title>
+<meta name="description" content="ماشین حساب هزینه نهایی خرید آهن ایفل؛ قیمت هر کیلو، وزن بار، کرایه حمل، بارگیری و هزینه‌های جانبی را وارد کنید تا مبلغ تقریبی سفارش محاسبه شود.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<link rel="canonical" href="https://ahaneiffel.com/tools/steel-purchase-cost-calculator/">
+<link rel="stylesheet" href="../../style.css">
+<style>
+.tool{padding:45px 0}.hero-box{background:linear-gradient(135deg,#071f36,#0b4b78);color:#fff;border-radius:22px;padding:34px;margin-bottom:24px}.hero-box h1{margin:8px 0;font-size:clamp(27px,4vw,44px)}.hero-box p{color:#e6eef5}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.card{background:#fff;border:1px solid #dbe5ed;border-radius:18px;padding:25px;box-shadow:0 8px 25px #0b3a6710}.field{margin:12px 0}.field label{display:block;font-weight:800;margin-bottom:6px}.field input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd8e3;border-radius:9px;font-size:16px}.btn{width:100%;border:0;border-radius:9px;padding:13px;background:#0b3a67;color:#fff;font-size:17px;font-weight:900;cursor:pointer}.result{margin-top:18px;background:#eef5fa;border-radius:12px;padding:17px;color:#0b3a67;font-size:20px;font-weight:900}.result small{display:block;font-size:13px;font-weight:500;margin-top:8px}.note{margin-top:22px}.links{display:flex;gap:10px;flex-wrap:wrap}.links a{padding:9px 13px;background:#fff;border:1px solid #dbe5ed;border-radius:9px;font-weight:800;color:#0b3a67}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"محاسبه هزینه نهایی خرید آهن","url":"https://ahaneiffel.com/tools/steel-purchase-cost-calculator/","applicationCategory":"BusinessApplication","operatingSystem":"Web","publisher":{"@type":"Organization","name":"آهن ایفل","url":"https://ahaneiffel.com/"}}</script>
+</head>
+<body>
+<header class="site-header"><div class="topbar"><div class="container"><span>محاسبه هزینه نهایی خرید آهن</span><a href="tel:+989125143831">📞 09125143831</a></div></div><div class="container nav-wrap"><a class="brand" href="../../">آهن <b>ایفل</b></a><nav><a href="../../products/">محصولات</a><a href="../../prices/">قیمت روز</a><a href="../../guides/">راهنماها</a><a href="../../services/">خدمات</a></nav><a class="call-btn" href="tel:+989125143831">استعلام قیمت</a></div></header>
+<main class="tool"><div class="container">
+<div class="hero-box"><span class="brand-tag">✓ آهن ایفل</span><h1>محاسبه هزینه نهایی خرید آهن</h1><p>فقط قیمت هر کیلو را نبینید؛ وزن بار، حمل و هزینه‌های جانبی می‌توانند مبلغ نهایی سفارش را تغییر دهند. اعداد را وارد کنید تا یک برآورد سریع داشته باشید.</p></div>
+<div class="grid">
+<section class="card"><h2>ورودی سفارش</h2>
+<div class="field"><label for="price">قیمت هر کیلوگرم (تومان)</label><input id="price" type="number" min="0" step="100" placeholder="مثلاً 50000"></div>
+<div class="field"><label for="weight">وزن کل بار (کیلوگرم)</label><input id="weight" type="number" min="0" step="1" placeholder="مثلاً 5000"></div>
+<div class="field"><label for="transport">کرایه حمل (تومان)</label><input id="transport" type="number" min="0" step="10000" placeholder="مثلاً 8000000"></div>
+<div class="field"><label for="loading">بارگیری و هزینه جانبی (تومان)</label><input id="loading" type="number" min="0" step="10000" placeholder="اختیاری"></div>
+<button class="btn" onclick="calculate()">محاسبه هزینه نهایی</button>
+<div id="result" class="result">نتیجه اینجا نمایش داده می‌شود</div>
+</section>
+<section class="card"><h2>فرمول محاسبه</h2><p>ارزش خودِ کالا از ضرب قیمت هر کیلوگرم در وزن بار به دست می‌آید. سپس کرایه حمل و هزینه‌های جانبی به آن اضافه می‌شوند.</p><div class="result" style="font-size:16px">ارزش کالا = قیمت هر کیلو × وزن بار<br>هزینه نهایی = ارزش کالا + حمل + هزینه‌های جانبی</div><div class="note"><strong>نکته:</strong> این ابزار قیمت بازار را تعیین نمی‌کند. قیمت، موجودی، وزن واقعی، کارخانه و کرایه باید هنگام سفارش از فروشنده تأیید شوند.</div></section>
+</div>
+<section class="card" style="margin-top:22px"><h2>قبل از نهایی کردن سفارش چه چیزهایی را کنترل کنیم؟</h2><ul><li>سایز، ضخامت یا قطر و استاندارد محصول.</li><li>وزن تئوری در برابر وزن واقعی بار.</li><li>کارخانه یا برند مورد تأیید پروژه.</li><li>مقصد، نوع خودرو و شرایط تخلیه.</li><li>مبلغ نهایی فاکتور و شرایط پرداخت.</li></ul><div class="links"><a href="../../tools/weight-calculator/">محاسبه وزن آهن</a><a href="../../prices/">قیمت روز آهن</a><a href="../../services/steel-transport-cost/">راهنمای هزینه حمل</a><a href="../../services/steel-invoice-checklist/">چک‌لیست فاکتور</a><a href="../../products/">محصولات آهن</a></div></section>
+<section class="cta" style="margin-top:22px"><div class="container"><div><span>استعلام سفارش واقعی</span><h2>وزن، سایز و مقصد را اعلام کنید</h2><p>📍 بازار آهن شادآباد، بنگاه منشور</p></div><a href="tel:+989125143831">📞 09125143831</a></div></section>
+</div></main>
+<footer><div class="container footer-grid"><div><div class="brand">آهن <b>ایفل</b></div><p>مرجع خرید و استعلام قیمت روز آهن‌آلات.</p></div><div><b>ابزارها</b><a href="./">محاسبه هزینه خرید</a><a href="../../tools/weight-calculator/">محاسبه وزن</a></div><div><b>تماس</b><a href="tel:+989125143831">09125143831</a><span>بازار آهن شادآباد، بنگاه منشور</span></div></div><div class="copyright">© آهن ایفل | تمامی حقوق محفوظ است.</div></footer>
+<script>function n(id){return Number(document.getElementById(id).value)||0}function money(x){return Math.round(x).toLocaleString('fa-IR')+' تومان'}function calculate(){const p=n('price'),w=n('weight'),t=n('transport'),l=n('loading');if(p<=0||w<=0){document.getElementById('result').innerHTML='قیمت هر کیلو و وزن بار را وارد کنید.';return}const goods=p*w,total=goods+t+l;document.getElementById('result').innerHTML='هزینه نهایی تقریبی: '+money(total)+'<small>ارزش کالا: '+money(goods)+' | حمل و جانبی: '+money(t+l)+'</small>'}</script>
+</body>
+</html>
