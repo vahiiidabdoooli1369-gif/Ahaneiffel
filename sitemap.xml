@@ -1,33 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://ahaneiffel.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
-<url><loc>https://ahaneiffel.com/products/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-<url><loc>https://ahaneiffel.com/prices/</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
-<url><loc>https://ahaneiffel.com/buy-iron/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-<url><loc>https://ahaneiffel.com/knowledge/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/guides/steel-buying-guide/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-<url><loc>https://ahaneiffel.com/guides/steel-price-guide/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-<url><loc>https://ahaneiffel.com/guides/steel-weight-reference/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/guides/iron-price-calculation/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/guides/steel-standards/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/tools/steel-buying-assistant/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/tools/steel-quote/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/local/tehran/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/local/tehran/shadabad/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-<url><loc>https://ahaneiffel.com/local/tehran/regions/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/local/tehran/neighborhoods/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/products/profile/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/products/beam/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/products/angle/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/products/channel/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/products/sheet/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/14/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/16/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/18/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/20/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/22/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/25/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/28/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-<url><loc>https://ahaneiffel.com/products/rebar/32/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<sitemap><loc>https://ahaneiffel.com/sitemap-products.xml</loc></sitemap>
+<sitemap><loc>https://ahaneiffel.com/sitemap-guides.xml</loc></sitemap>
+<sitemap><loc>https://ahaneiffel.com/sitemap-local.xml</loc></sitemap>
+<sitemap><loc>https://ahaneiffel.com/sitemap-reference.xml</loc></sitemap>
+<sitemap><loc>https://ahaneiffel.com/sitemap-tools.xml</loc></sitemap>
+</sitemapindex>
