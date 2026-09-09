@@ -1,7 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /404.html
 
 Sitemap: https://ahaneiffel.com/sitemap.xml
-Sitemap: https://ahaneiffel.com/sitemap-tools.xml
-Sitemap: https://ahaneiffel.com/sitemap-reference.xml
-Sitemap: https://ahaneiffel.com/sitemap-local.xml
