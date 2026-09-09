@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>برنامه‌ریزی حمل آهن آلات | محاسبه اولیه بار و اطلاعات ارسال | آهن ایفل</title>
+<meta name="description" content="ابزار آماده‌سازی اطلاعات حمل آهن آلات؛ نوع محصول، مقدار، مقصد، زمان تحویل و شرایط تخلیه را ثبت کنید و متن آماده استعلام حمل و سفارش بسازید.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<link rel="canonical" href="https://ahaneiffel.com/tools/steel-delivery-planner/">
+<link rel="stylesheet" href="../../style.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"برنامه‌ریزی حمل آهن آلات","url":"https://ahaneiffel.com/tools/steel-delivery-planner/","applicationCategory":"BusinessApplication","operatingSystem":"Web"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"آهن ایفل","item":"https://ahaneiffel.com/"},{"@type":"ListItem","position":2,"name":"ابزارها","item":"https://ahaneiffel.com/reference/steel-tools/"},{"@type":"ListItem","position":3,"name":"برنامه‌ریزی حمل آهن آلات","item":"https://ahaneiffel.com/tools/steel-delivery-planner/"}]}</script>
+<style>
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-weight:800;color:#173b5d}.field input,.field select,.field textarea{padding:12px;border:1px solid #d5dfe8;border-radius:10px;font:inherit}.result{margin-top:20px;background:#f5f8fc;border:1px solid #dce5ed;border-radius:14px;padding:18px;white-space:pre-wrap;line-height:2}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:800;cursor:pointer}.primary-btn{background:#0b3a67;color:#fff}.secondary-btn{background:#e8eef4;color:#0b3a67}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{border:1px solid #dce5ed;border-radius:14px;padding:18px;background:#fff}.card h3{color:#0b3a67}@media(max-width:700px){.form,.cards{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container nav-wrap"><a class="brand" href="../../">آهن <b>ایفل</b></a><nav aria-label="منوی اصلی"><a href="../../prices/">قیمت</a><a href="../../products/">محصولات</a><a href="../steel-quote/">استعلام</a><a href="../project-order/">سفارش پروژه</a></nav><a class="call-btn" href="tel:+989125143831">09125143831</a></div></header>
+<main class="container article-page">
+<nav class="breadcrumbs"><a href="../../">خانه</a><span class="sep">›</span><a href="../../reference/steel-tools/">ابزارها</a><span class="sep">›</span><span>برنامه‌ریزی حمل</span></nav>
+<section class="hero"><a class="brand-tag" href="../../">آهن ایفل</a><h1>برنامه‌ریزی حمل آهن آلات</h1><p>اطلاعات بار و مقصد را یکجا آماده کنید تا هنگام استعلام، هزینه و شرایط حمل دقیق‌تر بررسی شود. این ابزار قیمت حمل یا نوع خودرو را به‌صورت ساختگی اعلام نمی‌کند.</p></section>
+<section class="section"><div class="section-head"><span>اطلاعات ارسال</span><h2>مشخصات بار را وارد کنید</h2></div>
+<div class="form">
+<div class="field"><label for="product">نوع محصول</label><select id="product"><option>میلگرد</option><option>تیرآهن</option><option>پروفیل و قوطی</option><option>نبشی</option><option>ناودانی</option><option>ورق سیاه</option><option>ورق شیروانی</option><option>ورق پانچ</option><option>لوله داربستی</option><option>سایر</option></select></div>
+<div class="field"><label for="amount">مقدار</label><input id="amount" placeholder="مثلاً 12"></div>
+<div class="field"><label for="unit">واحد</label><select id="unit"><option>تن</option><option>کیلوگرم</option><option>شاخه</option><option>برگ</option><option>عدد</option><option>متر</option></select></div>
+<div class="field"><label for="destination">مقصد تحویل</label><input id="destination" placeholder="شهر / منطقه / آدرس تقریبی"></div>
+<div class="field"><label for="date">زمان موردنیاز</label><input id="date" placeholder="مثلاً فردا صبح یا 20 شهریور"></div>
+<div class="field"><label for="unload">شرایط تخلیه</label><select id="unload"><option>نیاز به هماهنگی تخلیه دارد</option><option>محل تخلیه آماده است</option><option>اطلاعات نامشخص</option></select></div>
+<div class="field full"><label for="spec">سایز / ضخامت / برند / مشخصات</label><input id="spec" placeholder="مثلاً میلگرد 16، ذوب آهن اصفهان"></div>
+<div class="field full"><label for="notes">توضیحات حمل</label><textarea id="notes" rows="4" placeholder="محدودیت ورود خودرو، ساعت تخلیه، جرثقیل و هر نکته مهم"></textarea></div>
+</div>
+<div class="actions"><button class="primary-btn" onclick="makeText()">ساخت متن استعلام حمل</button><button class="secondary-btn" onclick="copyText()">کپی متن</button></div><div id="result" class="result" aria-live="polite">بعد از تکمیل اطلاعات، روی «ساخت متن استعلام حمل» بزنید.</div>
+<div class="actions"><a class="primary" id="wa" href="https://wa.me/989125143831" target="_blank" rel="noopener">ارسال در واتساپ</a><a class="secondary" href="tel:+989125143831">تماس با کارشناس</a></div>
+</section>
+<section class="section light"><div class="section-head"><span>کنترل حمل</span><h2>چه اطلاعاتی روی هزینه و اجرای حمل اثر دارد؟</h2></div><div class="cards"><article class="card"><h3>وزن و ابعاد بار</h3><p>تناژ، تعداد شاخه یا برگ، طول بار و نحوه چیدمان باید مشخص باشد.</p></article><article class="card"><h3>مقصد و مسیر</h3><p>شهر، منطقه، محدودیت ورود خودرو و شرایط مسیر می‌تواند روی برنامه حمل اثر بگذارد.</p></article><article class="card"><h3>تخلیه</h3><p>وجود جرثقیل، فضای تخلیه و ساعت مجاز ورود را از ابتدا اعلام کنید.</p></article></div></section>
+<section class="section"><div class="section-head"><span>ابزارهای مرتبط</span><h2>قبل از حمل، سفارش را کامل کنید</h2></div><div class="cards"><article class="card"><h3><a href="../steel-weight-calculator/">محاسبه وزن</a></h3><p>وزن تقریبی را برای آماده‌سازی سفارش بررسی کنید.</p></article><article class="card"><h3><a href="../project-order/">سفارش پروژه</a></h3><p>چند قلم کالا را در یک سفارش ثبت کنید.</p></article><article class="card"><h3><a href="../steel-quote/">استعلام هوشمند</a></h3><p>مشخصات کالا و مقصد را برای قیمت و موجودی ارسال کنید.</p></article></div></section>
+</main>
+<script>
+function val(id){return document.getElementById(id).value.trim()}
+function makeText(){const t=`درخواست بررسی حمل آهن آلات - آهن ایفل\nمحصول: ${val('product')}\nمقدار: ${val('amount')} ${val('unit')}\nسایز/مشخصات: ${val('spec')}\nمقصد: ${val('destination')}\nزمان موردنیاز: ${val('date')}\nشرایط تخلیه: ${val('unload')}\nتوضیحات: ${val('notes')}\n\nلطفاً قیمت کالا، موجودی و هزینه/شرایط حمل را بر اساس اطلاعات واقعی سفارش اعلام کنید.`;document.getElementById('result').textContent=t;document.getElementById('wa').href='https://wa.me/989125143831?text='+encodeURIComponent(t)}
+async function copyText(){const t=document.getElementById('result').textContent;if(!t||t.includes('بعد از تکمیل'))return;try{await navigator.clipboard.writeText(t);alert('متن کپی شد.')}catch(e){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();document.execCommand('copy');x.remove();alert('متن کپی شد.')}}
+</script>
+</body>
+</html>
