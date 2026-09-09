@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>انتخاب هوشمند سایز میلگرد | مقایسه، وزن و استعلام خرید | آهن ایفل</title>
+<meta name="description" content="ابزار انتخاب هوشمند میلگرد آهن ایفل؛ انتخاب سایز بر اساس کاربرد پروژه، مقایسه میلگرد، محاسبه وزن تقریبی و ارسال مشخصات برای استعلام قیمت و سفارش.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://ahaneiffel.com/tools/rebar-selector/">
+<link rel="stylesheet" href="../../style.css">
+<style>
+body{background:#f5f8fb}.wrap{max-width:1080px;margin:auto;padding:24px 16px}.hero,.card{background:#fff;border:1px solid #dfe7ef;border-radius:18px;padding:24px;margin-bottom:18px;box-shadow:0 8px 28px rgba(20,45,70,.06)}h1{margin-top:0;color:#12395c}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.field label{display:block;font-weight:700;margin-bottom:7px}.field select,.field input{width:100%;padding:12px;border:1px solid #cbd7e2;border-radius:10px;font:inherit}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{display:inline-block;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;background:#123f68;color:#fff;border:0;cursor:pointer}.btn.alt{background:#f0b429;color:#172b3d}.btn.light{background:#edf3f8;color:#123f68}.result{display:none;background:#eef7ff;border-right:5px solid #123f68;padding:18px;border-radius:12px;margin-top:18px}.result h2{margin-top:0}.links{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.links a{padding:13px;background:#f4f7fa;border-radius:10px;text-decoration:none;color:#123f68;font-weight:700}.note{font-size:.92rem;color:#536575}.faq details{padding:12px 0;border-bottom:1px solid #e3e9ee}.faq summary{cursor:pointer;font-weight:700}@media(max-width:700px){.grid,.links{grid-template-columns:1fr}.hero,.card{padding:18px}}
+</style>
+<script type="application/ld+json">{
+"@context":"https://schema.org","@type":"WebApplication","name":"انتخاب هوشمند سایز میلگرد آهن ایفل","url":"https://ahaneiffel.com/tools/rebar-selector/","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"ابزار انتخاب اولیه سایز میلگرد، مقایسه، وزن تقریبی و ارسال مشخصات سفارش.","provider":{"@type":"Organization","name":"آهن ایفل","url":"https://ahaneiffel.com/"}
+}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"آهن ایفل","item":"https://ahaneiffel.com/"},{"@type":"ListItem","position":2,"name":"ابزارها","item":"https://ahaneiffel.com/tools/"},{"@type":"ListItem","position":3,"name":"انتخاب هوشمند میلگرد","item":"https://ahaneiffel.com/tools/rebar-selector/"}]}</script>
+</head>
+<body>
+<header class="wrap"><a href="../../">آهن ایفل</a> | <a href="../../products/rebar/">میلگرد</a> | <a href="../../prices/">قیمت‌ها</a></header>
+<main class="wrap">
+<section class="hero">
+<h1>انتخاب هوشمند سایز میلگرد</h1>
+<p>اگر نمی‌دانید برای پروژه چه سایزی از میلگرد را بررسی کنید، این ابزار بر اساس کاربرد اولیه پروژه و اولویت شما یک نقطه شروع پیشنهاد می‌دهد؛ سپس می‌توانید وزن، مقایسه و استعلام را ادامه دهید.</p>
+<p class="note">این ابزار جایگزین نقشه سازه، محاسبات مهندس محاسب یا مشخصات فنی پروژه نیست.</p>
+</section>
+<section class="card">
+<h2>مشخصات اولیه پروژه</h2>
+<div class="grid">
+<div class="field"><label for="use">کاربرد</label><select id="use"><option value="concrete">اسکلت و سازه بتنی</option><option value="stirrup">خاموت و آرماتور عرضی</option><option value="slab">دال و شبکه آرماتور</option><option value="foundation">فونداسیون</option><option value="general">خرید عمومی / نیاز به بررسی</option></select></div>
+<div class="field"><label for="priority">اولویت</label><select id="priority"><option value="standard">سایز استاندارد پروژه</option><option value="weight">کنترل وزن و مقدار</option><option value="compare">مقایسه چند سایز</option></select></div>
+<div class="field"><label for="length">طول تقریبی هر شاخه (متر)</label><input id="length" type="number" min="1" step="0.1" value="12"></div>
+<div class="field"><label for="qty">تعداد تقریبی شاخه</label><input id="qty" type="number" min="1" step="1" value="1"></div>
+</div>
+<div class="actions"><button class="btn" onclick="suggest()">پیشنهاد سایز</button><button class="btn light" onclick="resetForm()">شروع دوباره</button></div>
+<div id="result" class="result"></div>
+</section>
+<section class="card">
+<h2>فرمول کنترل وزن تقریبی</h2>
+<p>برای میلگرد، وزن تقریبی هر متر با فرمول <strong>قطر² ÷ 162</strong> محاسبه می‌شود. وزن نهایی می‌تواند با استاندارد، تلرانس و مشخصات تولیدکننده تفاوت داشته باشد.</p>
+<div class="links">
+<a href="../../products/rebar/8/">میلگرد ۸</a><a href="../../products/rebar/10/">میلگرد ۱۰</a><a href="../../products/rebar/12/">میلگرد ۱۲</a><a href="../../products/rebar/14/">میلگرد ۱۴</a><a href="../../products/rebar/16/">میلگرد ۱۶</a><a href="../../products/rebar/">همه میلگردها</a>
+</div>
+</section>
+<section class="card">
+<h2>بعد از انتخاب چه کنیم؟</h2>
+<div class="links">
+<a href="../steel-weight-calculator/">محاسبه وزن آهن</a><a href="../steel-comparison/">مقایسه آهن‌آلات</a><a href="../steel-quote/">استعلام هوشمند</a><a href="../project-order/">ثبت سفارش پروژه</a><a href="../../price-center/">مرکز قیمت</a><a href="../../steel-buying-center/">مرکز خرید آهن</a>
+</div>
+</section>
+<section class="card faq">
+<h2>سوالات متداول انتخاب میلگرد</h2>
+<details><summary>آیا ابزار می‌تواند سایز نهایی میلگرد را تعیین کند؟</summary><p>خیر. پیشنهاد ابزار صرفاً برای شروع بررسی خرید است و سایز نهایی باید از نقشه سازه و نظر مهندس محاسب پروژه مشخص شود.</p></details>
+<details><summary>برای خاموت معمولاً چه سایزهایی بررسی می‌شوند؟</summary><p>بسته به طراحی و پروژه، سایزهای کوچک‌تر مانند ۸ و ۱۰ ممکن است در بررسی اولیه مطرح شوند؛ اما انتخاب نهایی تابع نقشه و استاندارد پروژه است.</p></details>
+<details><summary>چطور قیمت میلگرد را استعلام کنم؟</summary><p>پس از انتخاب سایز، وارد صفحه محصول شوید یا مشخصات را از طریق استعلام هوشمند برای آهن ایفل ارسال کنید.</p></details>
+<details><summary>آیا وزن هر شاخه دقیقاً یکسان است؟</summary><p>خیر. وزن واقعی به قطر، طول، استاندارد و تلرانس تولید بستگی دارد؛ محاسبه این صفحه تقریبی است.</p></details>
+</section>
+<section class="card"><h2>آهن ایفل؛ از انتخاب تا سفارش</h2><p>برای خرید میلگرد، فقط عدد سایز مهم نیست؛ مقدار، گرید، برند/کارخانه، محل تخلیه و زمان موردنیاز هم روی تصمیم خرید و هزینه نهایی اثر دارند.</p><div class="actions"><a class="btn alt" href="https://wa.me/989125143831">استعلام در واتساپ</a><a class="btn" href="tel:09125143831">تماس با کارشناس</a></div></section>
+</main>
+<script>
+function suggest(){
+ const u=document.getElementById('use').value,p=document.getElementById('priority').value,L=Number(document.getElementById('length').value)||12,Q=Number(document.getElementById('qty').value)||1;
+ let sizes=[];
+ if(u==='stirrup') sizes=[8,10]; else if(u==='slab') sizes=[8,10,12]; else if(u==='foundation') sizes=[12,14,16]; else if(u==='concrete') sizes=[12,14,16,18]; else sizes=[10,12,14,16];
+ if(p==='weight') sizes=sizes.slice(0,3); if(p==='compare') sizes=sizes.slice(0,4);
+ const main=sizes[Math.floor(sizes.length/2)]; const kgm=(main*main)/162; const total=kgm*L*Q;
+ document.getElementById('result').style.display='block';
+ document.getElementById('result').innerHTML='<h2>نتیجه بررسی اولیه</h2><p>سایزهای پیشنهادی برای بررسی: <strong>'+sizes.join('، ')+'</strong></p><p>نقطه شروع پیشنهادی: <strong>میلگرد '+main+'</strong></p><p>وزن تقریبی '+main+' برای '+L+' متر و '+Q+' شاخه: <strong>'+total.toFixed(2)+' کیلوگرم</strong></p><p class="note">این نتیجه پیشنهاد خرید نیست و برای انتخاب نهایی باید مشخصات سازه و نقشه پروژه بررسی شود.</p><div class="actions"><a class="btn" href="../../products/rebar/'+main+'/">مشاهده میلگرد '+main+'</a><a class="btn light" href="../steel-comparison/">مقایسه سایزها</a><a class="btn alt" href="../steel-quote/">استعلام این مشخصات</a></div>';
+}
+function resetForm(){document.getElementById('result').style.display='none';document.getElementById('length').value=12;document.getElementById('qty').value=1;}
+</script>
+</body></html>
