@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /404.html
 
-Sitemap: https://ahaneiffel.com/sitemap.xml
+Sitemap: https://ahaneiffel.top/sitemap.xml
