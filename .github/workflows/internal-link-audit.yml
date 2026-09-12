@@ -12,8 +12,14 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout latest main
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Show audited commit
+        run: git rev-parse HEAD
 
       - name: Audit internal links, canonicals and orphan pages
         run: python3 scripts/audit_internal_links.py
