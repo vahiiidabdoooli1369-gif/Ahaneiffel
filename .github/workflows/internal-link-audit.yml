@@ -11,6 +11,7 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout latest main
         uses: actions/checkout@v4
