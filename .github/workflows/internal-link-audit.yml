@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout latest main
+      - name: Checkout audited commit
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
 
       - name: Show audited commit
@@ -24,4 +24,4 @@ jobs:
 
       - name: Audit internal links, canonicals and orphan pages
         run: python3 scripts/audit_internal_links.py
-        # Re-run audit on the latest main after legacy bridge and hub fixes.
+        # Audit the exact commit that triggered this workflow; do not race a later push to main.
