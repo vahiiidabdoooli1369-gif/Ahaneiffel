@@ -1,0 +1,19 @@
+name: Internal SEO Link Audit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Audit internal links, canonicals and orphan pages
+        run: python3 scripts/audit_internal_links.py
