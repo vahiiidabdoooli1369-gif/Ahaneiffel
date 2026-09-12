@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>محاسبه تعداد و پرت برش پروفیل | ماشین حساب برش قوطی آهن | آهن ایفل</title>
+<meta name="description" content="محاسبه تعداد شاخه پروفیل، طول برش، پرت و طول خرید موردنیاز برای قوطی و پروفیل با ابزار رایگان آهن ایفل. مناسب برآورد اولیه خرید پروفیل پروژه.">
+<link rel="canonical" href="https://ahaneiffel.top/tools/profile-cutting-calculator/">
+<link rel="stylesheet" href="../../style.css">
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org","@type":"WebApplication","name":"ماشین حساب برش پروفیل آهن ایفل","url":"https://ahaneiffel.top/tools/profile-cutting-calculator/","applicationCategory":"BusinessApplication","operatingSystem":"All","description":"محاسبه تعداد شاخه، طول خرید و پرت برش پروفیل.","offers":{"@type":"Offer","price":"0","priceCurrency":"IRR"},"publisher":{"@type":"Organization","name":"آهن ایفل","url":"https://ahaneiffel.top/"}
+}
+</script>
+<style>
+.wrap{max-width:900px;margin:30px auto;padding:20px}.box{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 20px #0001}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}label{display:block;font-weight:700;margin-bottom:6px}input{width:100%;padding:12px;border:1px solid #ccd3dd;border-radius:9px;box-sizing:border-box}button{border:0;border-radius:9px;padding:13px 20px;cursor:pointer;font-weight:800;margin-top:16px}.result{margin-top:20px;padding:18px;border-radius:12px;background:#eef5ff;line-height:2}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px}.card{background:#fff;padding:12px;border-radius:10px;border:1px solid #dde3eb}.muted{color:#667085;font-size:.92rem}table{width:100%;border-collapse:collapse;margin-top:15px}td,th{border-bottom:1px solid #ddd;padding:9px;text-align:right}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="box">
+<p><strong>📞 استعلام و سفارش: 09125143831</strong> | واتساپ: 09367227775</p>
+<h1>محاسبه تعداد و پرت برش پروفیل</h1>
+<p>اگر برای پروژه چند طول مختلف پروفیل لازم دارید، این ابزار به‌صورت تقریبی تعداد شاخه‌های استاندارد ۶ متری، طول خرید، مجموع طول موردنیاز و پرت برش را محاسبه می‌کند.</p>
+<div class="grid">
+<div><label for="stock">طول هر شاخه (متر)</label><input id="stock" type="number" value="6" min="0.1" step="0.1"></div>
+<div><label for="need">طول موردنیاز هر قطعه (متر)</label><input id="need" type="number" value="2" min="0.01" step="0.01"></div>
+<div><label for="qty">تعداد قطعات</label><input id="qty" type="number" value="10" min="1" step="1"></div>
+<div><label for="kerf">پرت تیغه/برش هر برش (سانتی‌متر)</label><input id="kerf" type="number" value="0.3" min="0" step="0.1"></div>
+</div>
+<button onclick="calc()">محاسبه برش</button>
+<div id="out" class="result" aria-live="polite">مقادیر را وارد کنید و روی «محاسبه برش» بزنید.</div>
+</div>
+<div class="box" style="margin-top:20px">
+<h2>چطور از نتیجه استفاده کنیم؟</h2>
+<p>این محاسبه برای <strong>برآورد اولیه خرید پروفیل</strong> است. در اجرای واقعی، محل برش، تلرانس، گونیا بودن قطعات، خطای اندازه‌گیری و امکان استفاده از پرت‌های باقی‌مانده باید بررسی شود. برای سفارش نهایی وزن، ضخامت، کارخانه و موجودی را از فروشنده استعلام کنید.</p>
+<h2>راهنمای خرید پروفیل</h2>
+<ul>
+<li>ابتدا ابعاد مقطع مانند 20×20، 30×30، 40×40 یا 40×80 و ضخامت را مشخص کنید.</li>
+<li>طول استاندارد شاخه و تعداد قطعات را جداگانه در لیست برش پروژه ثبت کنید.</li>
+<li>فقط قیمت شاخه را مقایسه نکنید؛ وزن، ضخامت، پرت و هزینه حمل نیز روی هزینه واقعی اثر دارند.</li>
+<li>برای سفارش، مشخصات برش را همراه با تعداد شاخه و طول‌های موردنیاز برای کارشناس ارسال کنید.</li>
+</ul>
+<p><a href="../../products/profile/">مشاهده انواع پروفیل</a> | <a href="../steel-weight-calculator/">محاسبه وزن آهن</a> | <a href="../steel-quote-comparison/">مقایسه دو پیش‌فاکتور آهن</a> | <a href="../../guides/iron-price-guide/">راهنمای قیمت روز آهن</a></p>
+<h2>سؤالات متداول</h2>
+<h3>آیا طول شاخه همیشه ۶ متر است؟</h3><p>خیر؛ مقدار رایج می‌تواند ۶ متر باشد، اما باید طول واقعی قابل عرضه را هنگام سفارش استعلام کنید.</p>
+<h3>آیا این ابزار وزن پروفیل را هم محاسبه می‌کند؟</h3><p>خیر، هدف این ابزار تعداد شاخه و پرت برش است. برای وزن از ماشین حساب وزن آهن استفاده کنید.</p>
+<h3>آیا نتیجه برای سفارش نهایی قطعی است؟</h3><p>خیر. نتیجه یک برآورد اولیه است و برنامه برش واقعی می‌تواند با توجه به ترتیب برش و استفاده از پرت تغییر کند.</p>
+</div>
+</main>
+<script>
+function n(id){return parseFloat(document.getElementById(id).value)||0}
+function calc(){
+ const stock=n('stock'), need=n('need'), qty=Math.max(0,Math.floor(n('qty'))), kerf=n('kerf')/100;
+ const out=document.getElementById('out');
+ if(!stock||!need||!qty){out.innerHTML='لطفاً همه مقادیر را صحیح وارد کنید.';return}
+ if(need>stock){out.innerHTML='طول هر قطعه نمی‌تواند از طول شاخه بیشتر باشد.';return}
+ const piecesPerBar=Math.max(1,Math.floor((stock+kerf)/(need+kerf)));
+ const bars=Math.ceil(qty/piecesPerBar);
+ const bought=bars*stock;
+ const required=qty*need;
+ const cuttingKerf=qty*kerf;
+ const waste=Math.max(0,bought-required-cuttingKerf);
+ const wastePct=bought?((waste/bought)*100):0;
+ const last=Math.max(0,stock-(Math.min(piecesPerBar,Math.ceil(qty/piecesPerBar))*need)-Math.max(0,Math.min(piecesPerBar,Math.ceil(qty/piecesPerBar))-1)*kerf);
+ out.innerHTML=`<strong>نتیجه برآورد</strong><div class="cards"><div class="card">تعداد شاخه پیشنهادی<br><strong>${bars.toLocaleString('fa-IR')} شاخه</strong></div><div class="card">قطعه از هر شاخه<br><strong>${piecesPerBar.toLocaleString('fa-IR')}</strong></div><div class="card">طول خرید<br><strong>${bought.toFixed(2)} متر</strong></div><div class="card">طول خالص قطعات<br><strong>${required.toFixed(2)} متر</strong></div><div class="card">پرت تقریبی<br><strong>${waste.toFixed(2)} متر</strong></div><div class="card">درصد پرت<br><strong>${wastePct.toFixed(1)}٪</strong></div></div><p class="muted">برای سفارش نهایی، برنامه برش واقعی و موجودی شاخه را با کارشناس آهن ایفل بررسی کنید.</p>`;
+}
+</script>
+</body>
+</html>
