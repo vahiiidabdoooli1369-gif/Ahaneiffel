@@ -10,19 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Remove unqualified Product JSON-LD
+      - name: Remove unqualified Product JSON-LD and normalize canonical host
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import json,re
           changed=[]
+          pat=re.compile(r'<script type=["\']application/ld\+json["\']>(.*?)</script>', re.S|re.I)
           for p in Path('.').rglob('*.html'):
-              if p.as_posix() == 'products/angle/index.html':
+              if p.as_posix() in ('index.html','products/angle/index.html'):
                   continue
               s=p.read_text(encoding='utf-8')
               old=s
-              pat=re.compile(r'<script type=["\']application/ld\+json["\']>(.*?)</script>', re.S|re.I)
               def transform(m):
                   raw=m.group(1)
                   try: data=json.loads(raw)
@@ -51,6 +51,7 @@ jobs:
                           return '<script type="application/ld+json">'+json.dumps(data,ensure_ascii=False,separators=(',',':'))+'</script>'
                   return m.group(0)
               s=pat.sub(transform,s)
+              s=s.replace('https://www.ahaneiffel.top','https://ahaneiffel.top')
               if s!=old:
                   p.write_text(s,encoding='utf-8'); changed.append(p.as_posix())
           print('CHANGED',len(changed))
@@ -60,8 +61,8 @@ jobs:
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.email '41898282+users.noreply.github.com'
           git add -- '*.html'
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'fix invalid Product structured data [schema-fix]'
+          git commit -m 'normalize SEO structured data and canonical host [schema-fix]'
           git push
