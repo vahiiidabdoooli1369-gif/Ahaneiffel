@@ -100,12 +100,15 @@ def main():
 
     for page in pages:
         text = page.read_text(encoding="utf-8", errors="replace")
+        indexable = is_indexable(text)
         canon = canonical_value(text)
         if canon:
             parsed = urlparse(canon)
             if parsed.hostname in SITE_HOSTS:
                 cpath = parsed.path or "/"
-                duplicate_canonicals[cpath].append(page)
+                # Canonical collisions are actionable only among indexable pages.
+                if indexable:
+                    duplicate_canonicals[cpath].append(page)
                 if parsed.hostname == "www.ahaneiffel.top":
                     www_links.append((public_url(page), canon))
 
