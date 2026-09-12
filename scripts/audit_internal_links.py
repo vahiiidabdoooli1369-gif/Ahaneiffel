@@ -12,7 +12,9 @@ from urllib.parse import urlparse, unquote
 ROOT = Path(__file__).resolve().parents[1]
 SITE_HOSTS = {"ahaneiffel.top", "www.ahaneiffel.top"}
 SKIP_DIRS = {".git", ".github", "node_modules"}
-HREF_RE = re.compile(r"<(?:a|link)\b[^>]*\bhref\s*=\s*([\"'])(.*?)\1", re.I | re.S)
+# Audit navigational/content links only. Stylesheets, scripts and other assets
+# are not SEO internal links and should not be treated as broken pages.
+HREF_RE = re.compile(r"<a\b[^>]*\bhref\s*=\s*([\"'])(.*?)\1", re.I | re.S)
 CANON_RE = re.compile(r'<link\b[^>]*rel\s*=\s*["\'][^"\']*canonical[^"\']*["\'][^>]*href\s*=\s*["\']([^"\']+)', re.I | re.S)
 META_ROBOTS_RE = re.compile(r'<meta\b[^>]*name\s*=\s*["\']robots["\'][^>]*content\s*=\s*["\']([^"\']+)', re.I | re.S)
 
@@ -35,6 +37,10 @@ def public_url(path: Path) -> str:
 
 def resolve_target(raw: str, source: Path):
     raw = html.unescape(raw).strip()
+    # Ignore client-side template expressions; they are resolved by JavaScript
+    # at runtime and cannot be validated as static repository paths.
+    if any(token in raw for token in ("${", "'+", '"+', "[x]", "[y]")):
+        return None
     if not raw or raw.startswith(("#", "mailto:", "tel:", "javascript:", "data:")):
         return None
     parsed = urlparse(raw)
@@ -53,8 +59,6 @@ def resolve_target(raw: str, source: Path):
             try:
                 target_url = "/" + candidate.relative_to(ROOT.resolve()).as_posix()
             except ValueError:
-                # Relative assets that resolve outside the repository are not
-                # internal site pages and should not crash the audit.
                 return None
     target_url = target_url.split("#", 1)[0] or "/"
     if not target_url.startswith("/"):
