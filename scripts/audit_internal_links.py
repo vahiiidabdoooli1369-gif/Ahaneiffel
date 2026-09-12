@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Audit static HTML internal links, canonicals and orphan indexable pages.
-
-Designed for the Ahaneiffel GitHub Pages repository. The script reads the
-checked-out repository, resolves directory-style URLs to index.html, ignores
-external/mail/tel/javascript/hash links, and reports broken internal targets,
-www-host links, duplicate canonical URLs, and indexable orphan pages.
-"""
+"""Audit static HTML internal links, canonicals and orphan indexable pages."""
 from __future__ import annotations
 
 import html
@@ -19,14 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE_HOSTS = {"ahaneiffel.top", "www.ahaneiffel.top"}
 SKIP_DIRS = {".git", ".github", "node_modules"}
 HREF_RE = re.compile(r"<(?:a|link)\b[^>]*\bhref\s*=\s*([\"'])(.*?)\1", re.I | re.S)
-CANON_RE = re.compile(
-    r'<link\b[^>]*rel\s*=\s*["\'][^"\']*canonical[^"\']*["\'][^>]*href\s*=\s*["\']([^"\']+)',
-    re.I | re.S,
-)
-META_ROBOTS_RE = re.compile(
-    r'<meta\b[^>]*name\s*=\s*["\']robots["\'][^>]*content\s*=\s*["\']([^"\']+)',
-    re.I | re.S,
-)
+CANON_RE = re.compile(r'<link\b[^>]*rel\s*=\s*["\'][^"\']*canonical[^"\']*["\'][^>]*href\s*=\s*["\']([^"\']+)', re.I | re.S)
+META_ROBOTS_RE = re.compile(r'<meta\b[^>]*name\s*=\s*["\']robots["\'][^>]*content\s*=\s*["\']([^"\']+)', re.I | re.S)
 
 
 def html_files():
@@ -61,7 +49,13 @@ def resolve_target(raw: str, source: Path):
         if target_url.startswith("/"):
             pass
         else:
-            target_url = "/" + str((source.parent / target_url).resolve().relative_to(ROOT.resolve())).replace("\\", "/")
+            candidate = (source.parent / target_url).resolve()
+            try:
+                target_url = "/" + candidate.relative_to(ROOT.resolve()).as_posix()
+            except ValueError:
+                # Relative assets that resolve outside the repository are not
+                # internal site pages and should not crash the audit.
+                return None
     target_url = target_url.split("#", 1)[0] or "/"
     if not target_url.startswith("/"):
         target_url = "/" + target_url
@@ -98,7 +92,6 @@ def is_indexable(text: str):
 
 def main():
     pages = list(html_files())
-    url_to_file = {public_url(p): p for p in pages}
     inbound = Counter()
     broken = []
     www_links = []
@@ -150,8 +143,6 @@ def main():
     for u in orphan[:200]:
         print(f"ORPHAN | {u}")
 
-    # CI should fail only for broken internal targets. Canonical/orphan findings
-    # are advisory because some intentional landing pages may have no HTML links.
     if broken:
         return 1
     return 0
