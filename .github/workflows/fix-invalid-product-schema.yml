@@ -1,0 +1,67 @@
+name: fix-invalid-product-schema
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: "!contains(github.event.head_commit.message, '[schema-fix]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove unqualified Product JSON-LD
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,re
+          changed=[]
+          for p in Path('.').rglob('*.html'):
+              if p.as_posix() == 'products/angle/index.html':
+                  continue
+              s=p.read_text(encoding='utf-8')
+              old=s
+              pat=re.compile(r'<script type=["\']application/ld\+json["\']>(.*?)</script>', re.S|re.I)
+              def transform(m):
+                  raw=m.group(1)
+                  try: data=json.loads(raw)
+                  except Exception: return m.group(0)
+                  def qualified(x):
+                      return isinstance(x,dict) and any(k in x for k in ('offers','review','aggregateRating'))
+                  if isinstance(data,dict):
+                      typ=data.get('@type')
+                      if typ=='Product':
+                          if qualified(data): return m.group(0)
+                          out={'@context':'https://schema.org','@type':'WebPage'}
+                          for k in ('name','description','url'):
+                              if k in data: out[k]=data[k]
+                          return '<script type="application/ld+json">'+json.dumps(out,ensure_ascii=False,separators=(',',':'))+'</script>'
+                      if typ=='WebPage' and isinstance(data.get('about'),dict) and data['about'].get('@type')=='Product' and not qualified(data['about']):
+                          data['about']['@type']='Thing'
+                          for k in ('sku','brand','category'): data['about'].pop(k,None)
+                          return '<script type="application/ld+json">'+json.dumps(data,ensure_ascii=False,separators=(',',':'))+'</script>'
+                      if isinstance(data.get('@graph'),list):
+                          graph=[]
+                          for node in data['@graph']:
+                              if isinstance(node,dict) and node.get('@type')=='Product' and not qualified(node):
+                                  continue
+                              graph.append(node)
+                          data['@graph']=graph
+                          return '<script type="application/ld+json">'+json.dumps(data,ensure_ascii=False,separators=(',',':'))+'</script>'
+                  return m.group(0)
+              s=pat.sub(transform,s)
+              if s!=old:
+                  p.write_text(s,encoding='utf-8'); changed.append(p.as_posix())
+          print('CHANGED',len(changed))
+          print('\n'.join(changed))
+          PY
+      - name: Commit schema fixes
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- '*.html'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'fix invalid Product structured data [schema-fix]'
+          git push
