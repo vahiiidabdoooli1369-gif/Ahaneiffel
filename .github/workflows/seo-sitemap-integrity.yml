@@ -1,0 +1,47 @@
+name: SEO Sitemap Integrity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'sitemap*.xml'
+      - '.github/workflows/seo-sitemap-integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate XML and canonical sitemap hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+
+          files = sorted(Path('.').glob('sitemap*.xml'))
+          if not files:
+              raise SystemExit('No sitemap files found')
+
+          seen = set()
+          for path in files:
+              ET.parse(path)
+              text = path.read_text(encoding='utf-8')
+              urls = re.findall(r'<loc>(.*?)</loc>', text)
+              for url in urls:
+                  if not url.startswith('https://ahaneiffel.top/'):
+                      raise SystemExit(f'Non-canonical sitemap URL in {path}: {url}')
+                  if url in seen:
+                      raise SystemExit(f'Duplicate sitemap URL: {url}')
+                  seen.add(url)
+
+          print(f'Validated {len(files)} sitemap files and {len(seen)} unique URLs.')
+          PY
