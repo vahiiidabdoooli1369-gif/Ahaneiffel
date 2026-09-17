@@ -1,0 +1,68 @@
+name: SEO Indexability Audit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Audit canonical hosts, robots and sitemap URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad=0
+
+          echo '--- Non-canonical www/http references ---'
+          if grep -RInE 'https?://www\.ahaneiffel\.top|http://ahaneiffel\.top' --include='*.html' --include='*.xml' --include='*.txt' .; then
+            bad=1
+          else
+            echo 'OK: no www/http canonical references found.'
+          fi
+
+          echo '--- Sitemap host consistency ---'
+          if grep -RInE 'https?://www\.ahaneiffel\.top|http://ahaneiffel\.top' sitemap*.xml; then
+            bad=1
+          else
+            echo 'OK: sitemap hosts are canonical.'
+          fi
+
+          echo '--- Canonical URL count ---'
+          canonical_count=$(grep -Rho 'rel="canonical"' --include='*.html' . | wc -l | tr -d ' ')
+          echo "canonical tags: $canonical_count"
+
+          echo '--- noindex pages accidentally present in XML sitemaps ---'
+          while IFS= read -r url; do
+            path=".${url#https://ahaneiffel.top}"
+            [ "$path" = "." ] && path="./index.html"
+            [ -d "$path" ] && path="$path/index.html"
+            if [ -f "$path" ] && grep -qi 'noindex' "$path"; then
+              echo "ERROR: sitemap URL points to noindex page: $url"
+              bad=1
+            fi
+          done < <(grep -Rho '<loc>https://ahaneiffel\.top[^<]*</loc>' sitemap*.xml | sed -E 's#</?loc>##g' | sort -u)
+
+          echo '--- duplicate sitemap URLs ---'
+          duplicates=$(grep -Rho '<loc>https://ahaneiffel\.top[^<]*</loc>' sitemap*.xml | sort | uniq -d || true)
+          if [ -n "$duplicates" ]; then
+            echo "$duplicates"
+            bad=1
+          else
+            echo 'OK: no duplicate sitemap URLs.'
+          fi
+
+          if [ "$bad" -ne 0 ]; then
+            echo 'SEO indexability audit failed.'
+            exit 1
+          fi
+          echo 'SEO indexability audit passed.'
