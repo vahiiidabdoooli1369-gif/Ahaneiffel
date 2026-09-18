@@ -1,0 +1,59 @@
+name: Normalize Persian spacing
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove zero-width non-joiners from text content
+        shell: python
+        run: |
+          from pathlib import Path
+
+          root = Path('.')
+          extensions = {
+              '.html', '.htm', '.md', '.txt', '.xml', '.json', '.css', '.js', '.mjs',
+              '.svg', '.yml', '.yaml', '.csv', '.ts', '.tsx', '.jsx'
+          }
+          changed = []
+
+          for path in root.rglob('*'):
+              if not path.is_file() or '.git' in path.parts or path.suffix.lower() not in extensions:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except (UnicodeDecodeError, OSError):
+                  continue
+              normalized = text.replace('\u200c', ' ')
+              if normalized != text:
+                  path.write_text(normalized, encoding='utf-8', newline='')
+                  changed.append(str(path))
+
+          print(f'Normalized files: {len(changed)}')
+          for item in changed:
+              print(item)
+
+      - name: Commit normalized files
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No zero-width non-joiners found."
+            exit 0
+          fi
+          git commit -m "SEO: normalize Persian spacing without half-spaces"
+          git push origin main
