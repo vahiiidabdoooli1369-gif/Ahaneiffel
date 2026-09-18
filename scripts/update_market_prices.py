@@ -9,6 +9,8 @@ import requests
 
 SOURCE_URL = "https://ahaneiffel.com/page/927/قیمت-روز-آهن-آلات-میلگرد-تیرآهن-نبشی-پروفیل/"
 OUT = Path("data/market-prices.json")
+MIN_PRICE = 1000
+PRICE_OFFSET = -200
 DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
 def clean(value):
@@ -34,15 +36,17 @@ for table in tables:
     table = table.fillna("")
     for _, row in table.iterrows():
         values = [clean(v) for v in row.tolist()]
-        price = next((price_value(v) for v in reversed(values) if price_value(v) and price_value(v) >= 1000), None)
+        price = next((price_value(v) for v in reversed(values) if price_value(v) and price_value(v) >= MIN_PRICE), None)
         if price is not None:
-            rows.append({"raw": values, "price": price})
+            rows.append({"raw": values, "source_price": price, "price": max(MIN_PRICE, price + PRICE_OFFSET)})
 if not rows:
-    raise RuntimeError("No price rows extracted from Ahaneiffel.com price page")
+    raise RuntimeError("No price rows extracted from authorized Ahaneiffel.com price page")
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text(json.dumps({
     "source": SOURCE_URL,
     "source_type": "Ahaneiffel.com price page",
+    "price_adjustment_toman_per_unit": PRICE_OFFSET,
+    "price_adjustment_note": "قیمت نهایی باید پیش از سفارش توسط کارشناس تایید شود.",
     "updated_at_utc": datetime.now(timezone.utc).isoformat(),
     "rows": rows
 }, ensure_ascii=False, indent=2), encoding="utf-8")
