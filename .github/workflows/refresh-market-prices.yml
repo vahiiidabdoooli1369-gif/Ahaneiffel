@@ -3,7 +3,7 @@ name: Refresh market prices
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 4-16 * * 6-4"
+    - cron: "*/30 4-16 * * 6,0,1,2,3"
 
 permissions:
   contents: write
