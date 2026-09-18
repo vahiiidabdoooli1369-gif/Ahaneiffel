@@ -1,5 +1,6 @@
 (function () {
   const feedUrl = "/data/market-prices.json";
+const STALE_MS = 2 * 60 * 60 * 1000;
   const normalize = s => String(s || "").replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[\u0660-\u0669]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/,/g, "").replace(/\s+/g, " ").trim();
   const tokens = s => normalize(s).toLowerCase().match(/[a-zآ-ی]+|\d+(?:\.\d+)?/g) || [];
   const score = (a, b) => {
@@ -41,7 +42,7 @@
           priceCell.title = "قیمت دریافت شده از منبع قیمت آهن ایفل";
         }
         const status = row.querySelector(".flat, .up, .down");
-        if (status) status.textContent = "به روز";
+        if (status) status.textContent = isFresh ? "به روز" : "نیازمند بررسی";
       });
     });
   }
