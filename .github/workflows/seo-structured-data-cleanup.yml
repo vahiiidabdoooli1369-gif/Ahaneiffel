@@ -1,4 +1,4 @@
-name: SEO Structured Data Cleanup
+name: SEO Structured Data Audit
 
 on:
   push:
@@ -19,36 +19,42 @@ jobs:
           ref: main
           fetch-depth: 1
 
-      - name: Remove obsolete FAQPage structured data
+      - name: Audit FAQPage structured data
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
-          changed = []
+          found = []
           for p in Path('.').rglob('*.html'):
               if any(part in {'.git', 'node_modules'} for part in p.parts):
                   continue
               s = p.read_text(encoding='utf-8')
-              pattern = r'<script\s+type=["\']application/ld\+json["\']>\s*\{[^<]*?["\']@type["\']\s*:\s*["\']FAQPage["\'][\s\S]*?</script>'
-              s2 = re.sub(pattern, '', s, flags=re.IGNORECASE)
-              if s2 != s:
-                  p.write_text(s2, encoding='utf-8')
-                  changed.append(str(p))
+              if re.search(r'"@type"\s*:\s*"FAQPage"', s, flags=re.IGNORECASE):
+                  found.append(str(p))
 
-          print(f'Removed obsolete FAQPage JSON-LD from {len(changed)} HTML files')
-          for p in changed:
+          print(f'FAQPage JSON-LD found in {len(found)} HTML files')
+          for p in found:
               print(p)
           PY
 
-      - name: Commit cleanup
+      - name: Validate structured data files
         run: |
-          if git diff --quiet -- '*.html'; then
-            echo "No FAQPage cleanup needed"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add '*.html'
-          git commit -m "SEO: remove obsolete FAQPage structured data [seo-cleanup]"
-          git push origin main
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          errors = []
+          for p in Path('.').rglob('*.html'):
+              if any(part in {'.git', 'node_modules'} for part in p.parts):
+                  continue
+              s = p.read_text(encoding='utf-8')
+              for m in re.finditer(r'<script\s+type=["\']application/ld\+json["\']>([\s\S]*?)</script>', s, flags=re.IGNORECASE):
+                  block = m.group(1).strip()
+                  if not block:
+                      errors.append(f'{p}: empty JSON-LD block')
+          if errors:
+              print("\n".join(errors))
+              raise SystemExit(1)
+          print("Structured data blocks passed the basic non-empty audit.")
+          PY
