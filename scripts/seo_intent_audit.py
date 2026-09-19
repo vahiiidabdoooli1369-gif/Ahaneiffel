@@ -48,8 +48,8 @@ for path in sorted(Path('.').rglob('index.html')):
     if len(h1s) != 1:
         errors.append(f'{path}: expected 1 H1, found {len(h1s)}')
 
-    if '\u200c' in text:
-        errors.append(f'{path}: contains ZWNJ')
+    # Persian ZWNJ (U+200C) is a valid typographic character and is not an SEO error.
+    # Keep it allowed so legitimate Persian spelling does not fail CI.
 
     if (
         '<meta name="robots" content="noindex' not in text.lower()
