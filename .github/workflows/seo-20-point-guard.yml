@@ -1,0 +1,97 @@
+name: SEO 20-Point Guard
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Run 20-point SEO guard
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import html, re, sys, json, xml.etree.ElementTree as ET
+
+          ROOT = Path('.')
+          pages = [p for p in ROOT.rglob('*.html') if '.git' not in p.parts and 'node_modules' not in p.parts]
+          errors=[]; warnings=[]
+
+          def robots(text):
+              m=re.search(r'<meta[^>]+name=["\']robots["\'][^>]+content=["\']([^"\']+)', text, re.I)
+              return m.group(1).lower() if m else ''
+          def canon(text):
+              m=re.search(r'<link[^>]+rel=["\']canonical["\'][^>]+href=["\']([^"\']+)', text, re.I)
+              return html.unescape(m.group(1)).strip() if m else None
+
+          for p in pages:
+              s=p.read_text(encoding='utf-8', errors='ignore')
+              r=robots(s); c=canon(s)
+              if '<meta charset=' not in s.lower(): errors.append(f'{p}: missing charset')
+              if '<meta name="viewport"' not in s.lower(): errors.append(f'{p}: missing viewport')
+              if not re.search(r'<html[^>]+lang=["\']fa["\']',s,re.I): warnings.append(f'{p}: lang is not fa')
+              if not re.search(r'<title>\s*[^<]+\s*</title>',s,re.I): errors.append(f'{p}: missing/empty title')
+              if not re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'][^"\']+["\']',s,re.I): errors.append(f'{p}: missing meta description')
+              if not c: errors.append(f'{p}: missing canonical')
+              elif not c.startswith('https://ahaneiffel.top/'): errors.append(f'{p}: non-canonical host {c}')
+              if 'http://ahaneiffel.top' in s or 'https://www.ahaneiffel.top' in s: errors.append(f'{p}: legacy host reference')
+
+              if 'noindex' not in r:
+                  h1=len(re.findall(r'<h1\b',s,re.I))
+                  if h1 != 1: warnings.append(f'{p}: H1 count={h1}')
+              for block in re.findall(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',s,re.I|re.S):
+                  try: json.loads(html.unescape(block))
+                  except Exception: errors.append(f'{p}: invalid JSON-LD')
+
+              if '<meta http-equiv="refresh"' in s.lower() and 'noindex' not in r:
+                  warnings.append(f'{p}: indexable page uses meta refresh')
+
+              for raw in re.findall(r'<a\b[^>]+href=["\']([^"\']+)["\']',s,re.I):
+                  if raw.startswith(('mailto:','tel:','#','javascript:','data:','http://','https://')): continue
+                  if raw.startswith('/'): target=ROOT/raw.lstrip('/')
+                  else: target=(p.parent/raw).resolve()
+                  if target.is_dir(): target=target/'index.html'
+                  if target.suffix=='' and (target/'index.html').is_file(): target=target/'index.html'
+                  if not target.exists(): warnings.append(f'{p}: unresolved internal link {raw}')
+
+          smaps=list(ROOT.glob('sitemap*.xml'))
+          if not (ROOT/'sitemap.xml').exists(): errors.append('sitemap.xml missing')
+          for sm in smaps:
+              try: ET.parse(sm)
+              except Exception: errors.append(f'{sm}: invalid XML')
+          locs=[]
+          for sm in smaps:
+              try:
+                  root=ET.parse(sm).getroot()
+                  for e in root.iter():
+                      if e.tag.endswith('loc') and e.text: locs.append(e.text.strip())
+              except Exception: pass
+          if len(locs)!=len(set(locs)): errors.append('duplicate sitemap URLs detected')
+          if any('www.ahaneiffel.top' in u or u.startswith('http://ahaneiffel.top') for u in locs): errors.append('non-canonical sitemap URL detected')
+
+          for p in pages:
+              s=p.read_text(encoding='utf-8', errors='ignore')
+              if re.search(r'<img\b(?![^>]*\balt=)',s,re.I): warnings.append(f'{p}: image without alt candidate')
+              if len(s) > 900000: warnings.append(f'{p}: very large HTML file')
+              if 'noindex' not in robots(s) and not re.search(r'<main\b',s,re.I): warnings.append(f'{p}: indexable page without main')
+
+          print(f'SEO 20-point guard: 20 checks across {len(pages)} HTML files')
+          print(f'Warnings: {len(warnings)} | Errors: {len(errors)}')
+          for w in warnings[:120]: print('WARNING:',w)
+          for e in errors[:120]: print('ERROR:',e)
+          if errors: sys.exit(1)
+          print('SEO 20-point guard passed.')
+          PY
