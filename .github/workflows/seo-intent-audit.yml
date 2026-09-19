@@ -1,6 +1,8 @@
 name: SEO Intent Audit
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
