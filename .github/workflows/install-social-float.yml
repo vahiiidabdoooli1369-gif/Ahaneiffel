@@ -1,0 +1,33 @@
+name: Install site-wide social floating buttons
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject social widget into every HTML page
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          tag='<script src="/assets/social-float.js" defer></script>'
+          for p in Path('.').rglob('*.html'):
+              if '.git' in p.parts:
+                  continue
+              s=p.read_text(encoding='utf-8')
+              if '/assets/social-float.js' in s:
+                  continue
+              if '</head>' in s:
+                  p.write_text(s.replace('</head>', tag+'\n</head>', 1), encoding='utf-8')
+          PY
+      - name: Commit injected widget
+        run: |
+          git config user.name "Ahaneiffel Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add '*.html'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Add site-wide social contact buttons [skip ci]"
+          git push
