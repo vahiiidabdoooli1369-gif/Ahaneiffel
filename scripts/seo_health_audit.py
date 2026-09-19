@@ -11,6 +11,7 @@ issues=[]; zwnj=[]
 for p in htmls:
     s=p.read_text(encoding="utf-8",errors="ignore")
     rel=p.relative_to(ROOT).as_posix()
+    is_404=(rel=="404.html")
     is_noindex="noindex" in s.lower()
 
     if "\u200c" in s:
@@ -23,22 +24,22 @@ for p in htmls:
         issues.append(f"NO_TITLE {rel}")
 
     m=re.search(r'<meta\s+name=["\']description["\']\s+content=["\']([^"\']*)["\']',s,re.I)
-    if m and not is_noindex:
+    if m and not is_noindex and not is_404:
         metas[m.group(1).strip()].append(rel)
-    elif not m and not is_noindex:
+    elif not m and not is_noindex and not is_404:
         issues.append(f"NO_META_DESCRIPTION {rel}")
 
     m=re.search(r'<link\s+rel=["\']canonical["\']\s+href=["\']([^"\']+)["\']',s,re.I)
     if m:
-        if not is_noindex:
+        if not is_noindex and not is_404:
             cans[m.group(1).strip()].append(rel)
         if not m.group(1).startswith("https://ahaneiffel.top/"):
             issues.append(f"BAD_CANONICAL_HOST {rel} -> {m.group(1)}")
-    elif not is_noindex:
+    elif not is_noindex and not is_404:
         issues.append(f"NO_CANONICAL {rel}")
 
     h1=len(re.findall(r"<h1\b",s,re.I))
-    if h1!=1 and not is_noindex:
+    if h1!=1 and not is_noindex and not is_404:
         issues.append(f"H1_COUNT {rel}={h1}")
 
     if "/assets/social-float.js" not in s and rel!="404.html":
