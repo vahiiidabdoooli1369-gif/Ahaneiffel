@@ -153,3 +153,23 @@
 ## اصل معماری محتوا
 
 هر موضوع تجاری باید یک صفحه هدف اصلی داشته باشد و صفحات پشتیبان فقط با هدف متفاوت به آن لینک دهند. از ساخت صفحات هم معنی و تکراری برای یک عبارت جستجو خودداری شود.
+
+
+## مسیرهای جدید تصمیم خرید
+
+- فرم مشخصات سفارش: https://ahaneiffel.top/guides/steel-order-form/
+- مقایسه چند استعلام: https://ahaneiffel.top/guides/steel-quote-comparison/
+- مذاکره قیمت آهن: https://ahaneiffel.top/guides/steel-price-negotiation/
+- انتخاب کارخانه میلگرد: https://ahaneiffel.top/guides/rebar-factory-selection/
+- انتخاب کارخانه تیرآهن: https://ahaneiffel.top/guides/beam-factory-selection/
+- انتخاب ضخامت پروفیل: https://ahaneiffel.top/guides/profile-thickness-selection/
+- ورق رول یا شیت: https://ahaneiffel.top/guides/sheet-coil-vs-cut/
+- هزینه حمل آهن: https://ahaneiffel.top/guides/steel-transport-cost/
+- کنترل موجودی: https://ahaneiffel.top/guides/steel-stock-check/
+- وزن واقعی و تئوری: https://ahaneiffel.top/knowledge/steel/steel-weight-real-vs-theoretical/
+- اجزای قیمت نهایی: https://ahaneiffel.top/knowledge/steel/steel-price-components/
+- کنترل اسناد تحویل: https://ahaneiffel.top/knowledge/steel/steel-delivery-document-check/
+
+## قاعده انتخاب منبع
+
+برای سوال های تصمیم خرید، ابتدا صفحه محصول مرتبط و سپس راهنمای تخصصی همان نیت را بررسی کنید. برای قیمت، موجودی و هزینه حمل از استعلام روز استفاده کنید. صفحات دارای نیت مشابه را به عنوان جایگزین مستقیم همدیگر معرفی نکنید مگر اینکه تفاوت نیت آنها روشن باشد.
