@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>برنامه‌ریز سفارش آهن آلات | محاسبه تناژ، هزینه و کنترل سفارش | آهن ایفل</title>
+<meta name="description" content="ابزار رایگان برنامه‌ریزی سفارش آهن آلات؛ مقدار، وزن، قیمت واحد، حمل و پرت را وارد کنید تا تناژ و هزینه تقریبی سفارش را یکجا بررسی کنید.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<link rel="canonical" href="https://ahaneiffel.top/tools/steel-order-planner/">
+<link rel="stylesheet" href="../../style.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"برنامه‌ریز سفارش آهن آلات آهن ایفل","url":"https://ahaneiffel.top/tools/steel-order-planner/","applicationCategory":"BusinessApplication","operatingSystem":"Any","description":"محاسبه مقدار، تناژ و هزینه تقریبی سفارش آهن آلات با درنظرگرفتن پرت و حمل."}</script>
+<script src="/assets/social-float.js" defer></script>
+<style>.planner{max-width:920px;margin:30px auto}.planner-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}.planner label{display:block;font-weight:700;margin-bottom:6px}.planner input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccd4dc;border-radius:10px}.planner button{margin-top:18px;padding:13px 20px;border:0;border-radius:10px;cursor:pointer;font-weight:700}.result{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.result div{padding:16px;border-radius:12px;background:#f3f6f8}.result strong,.result span{display:block}.result strong{font-size:13px}.result span{font-size:20px;font-weight:800;margin-top:6px}.checklist{margin-top:24px}.checklist li{margin:8px 0}</style>
+</head>
+<body>
+<header class="site-header"><div class="container"><a class="brand" href="../../">آهن <b>ایفل</b></a><nav><a href="../../products/">محصولات</a><a href="../../prices/">قیمت روز</a><a href="../../guides/">راهنماها</a><a href="../">ابزارها</a></nav><a class="call-btn" href="tel:+989125143831">استعلام قیمت</a></div></header>
+<main class="container article-page">
+<nav class="breadcrumbs"><a href="../../">خانه</a> › <a href="../">ابزارها</a> › برنامه‌ریز سفارش آهن آلات</nav>
+<section class="hero"><div class="container"><span class="eyebrow">ابزار تصمیم‌گیری خرید</span><h1>برنامه‌ریز سفارش آهن آلات</h1><p>مقدار خرید، وزن واحد، قیمت، درصد پرت و هزینه حمل را وارد کنید تا یک برآورد سریع از تناژ و هزینه کل داشته باشید. نتیجه تقریبی است و قیمت نهایی باید هنگام سفارش استعلام شود.</p></div></section>
+<section class="planner section">
+<div class="planner-grid">
+<div><label for="qty">مقدار پایه</label><input id="qty" type="number" min="0" step="0.01" value="100"></div>
+<div><label for="unitWeight">وزن واحد (کیلوگرم)</label><input id="unitWeight" type="number" min="0" step="0.001" value="1"></div>
+<div><label for="unitPrice">قیمت واحد (تومان)</label><input id="unitPrice" type="number" min="0" step="1" value="100000"></div>
+<div><label for="waste">پرت و برش (%)</label><input id="waste" type="number" min="0" step="0.1" value="2"></div>
+<div><label for="freight">هزینه حمل (تومان)</label><input id="freight" type="number" min="0" step="1" value="0"></div>
+</div>
+<button type="button" onclick="calculate()">محاسبه سفارش</button>
+<div class="result" aria-live="polite">
+<div><strong>وزن پایه</strong><span id="baseKg">۰</span> کیلو</div>
+<div><strong>وزن با پرت</strong><span id="totalKg">۰</span> کیلو</div>
+<div><strong>تناژ نهایی</strong><span id="tons">۰</span> تن</div>
+<div><strong>هزینه کالا</strong><span id="goods">۰</span> تومان</div>
+<div><strong>هزینه کل با حمل</strong><span id="totalCost">۰</span> تومان</div>
+</div>
+<ul class="checklist"><li>برای مقایسه دو پیشنهاد، واحد قیمت و مبنای وزن را یکسان کنید.</li><li>وزن تئوری را با وزن واقعی بار و شرایط فروش یکسان فرض نکنید.</li><li>پرت برش را فقط در صورت نیاز پروژه وارد کنید؛ مقدار واقعی به نقشه برش و نوع مقطع بستگی دارد.</li></ul>
+</section>
+<section class="section light"><div class="container"><h2>مسیر پیشنهادی بعد از محاسبه</h2><div class="link-grid"><a href="../steel-weight-calculator/">محاسبه وزن فولاد</a><a href="../steel-purchase-cost-calculator/">محاسبه هزینه خرید</a><a href="../steel-quote-comparison/">مقایسه پیشنهادهای قیمت</a><a href="../../prices/">مشاهده قیمت روز</a><a href="../../buy-iron/">ثبت درخواست خرید</a></div></div></section>
+</main>
+<footer><div class="container">آهن ایفل | ابزار برنامه‌ریزی سفارش آهن آلات | 09125143831</div></footer>
+<script>
+const fa=n=>Number(n).toLocaleString('fa-IR',{maximumFractionDigits:2});
+function val(id){return Math.max(0,Number(document.getElementById(id).value)||0)}
+function calculate(){const qty=val('qty'),uw=val('unitWeight'),price=val('unitPrice'),w=val('waste')/100,freight=val('freight');const base=qty*uw,total=base*(1+w),tons=total/1000,goods=qty*price*(1+w),cost=goods+freight;document.getElementById('baseKg').textContent=fa(base);document.getElementById('totalKg').textContent=fa(total);document.getElementById('tons').textContent=fa(tons);document.getElementById('goods').textContent=fa(goods);document.getElementById('totalCost').textContent=fa(cost)}
+calculate();
+</script>
+</body></html>
