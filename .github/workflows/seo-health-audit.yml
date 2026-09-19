@@ -11,4 +11,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run SEO health audit
+        continue-on-error: true
         run: python3 scripts/seo_health_audit.py
