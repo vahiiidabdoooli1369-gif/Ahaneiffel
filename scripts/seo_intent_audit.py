@@ -11,7 +11,7 @@ for path in sorted(Path('.').rglob('index.html')):
     if any(part in {'.git', 'node_modules'} for part in path.parts):
         continue
     text = path.read_text(encoding='utf-8', errors='ignore')
-    title = re.search(r'<title>(.*?)</title>', text, re.I | re.S)
+    robots = re.search(r'<meta[^>]+name=["\\\']robots["\\\'][^>]+content=["\\\']([^"\\\']+)', text, re.I)\n    is_indexable = not robots or 'noindex' not in robots.group(1).lower()\n\n    if not is_indexable:\n        continue\n\n    title = re.search(r'<title>(.*?)</title>', text, re.I | re.S)
     canonical = re.search(r'<link[^>]+rel=["\']canonical["\'][^>]+href=["\']([^"\']+)', text, re.I)
     h1s = re.findall(r'<h1\b[^>]*>(.*?)</h1>', text, re.I | re.S)
     if not title or not title.group(1).strip():
