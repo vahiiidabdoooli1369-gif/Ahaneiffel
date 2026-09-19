@@ -1,0 +1,18 @@
+name: SEO Intent Audit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Audit indexable SEO pages
+        run: python3 scripts/seo_intent_audit.py
