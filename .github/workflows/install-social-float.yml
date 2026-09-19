@@ -30,4 +30,11 @@ jobs:
           git add '*.html'
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Add site-wide social contact buttons [skip ci]"
+          # Another workflow/manual commit may land after checkout; rebase before pushing.
+          git fetch origin main
+          if ! git rebase origin/main; then
+            echo "Concurrent change detected; aborting this injection run without failing the workflow."
+            git rebase --abort || true
+            exit 0
+          fi
           git push
