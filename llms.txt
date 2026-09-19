@@ -68,6 +68,7 @@
 ## منابع ساختاریافته سایت
 
 - نقشه سایت اصلی: https://ahaneiffel.top/sitemap.xml
+- نقشه دانشنامه: https://ahaneiffel.top/sitemap-knowledge.xml
 - نقشه محصولات: https://ahaneiffel.top/sitemap-products.xml
 - نقشه راهنماها: https://ahaneiffel.top/sitemap-guides.xml
 - نقشه صفحات محلی: https://ahaneiffel.top/sitemap-local.xml
