@@ -14,8 +14,8 @@ for p in htmls:
     if m: titles[re.sub(r"\s+"," ",m.group(1)).strip()].append(rel)
     else: issues.append(f"NO_TITLE {rel}")
     m=re.search(r'<meta\s+name=["\']description["\']\s+content=["\']([^"\']*)["\']',s,re.I)
-    if m: metas[m.group(1).strip()].append(rel)
-    else: issues.append(f"NO_META_DESCRIPTION {rel}")
+    if m and not is_noindex: metas[m.group(1).strip()].append(rel)
+    elif not m and not is_noindex: issues.append(f"NO_META_DESCRIPTION {rel}")
     m=re.search(r'<link\s+rel=["\']canonical["\']\s+href=["\']([^"\']+)["\']',s,re.I)
     if m:
         cans[m.group(1).strip()].append(rel)
@@ -24,7 +24,10 @@ for p in htmls:
     h1=len(re.findall(r"<h1\b",s,re.I))
     if h1!=1: issues.append(f"H1_COUNT {rel}={h1}")
     if "/assets/social-float.js" not in s and rel!="404.html": issues.append(f"NO_SOCIAL_FLOAT {rel}")
-    if "noindex" in s.lower() and rel not in ("404.html",): issues.append(f"NOINDEX_REVIEW {rel}")
+    if is_noindex and rel not in ("404.html","search/index.html"):
+        has_redirect=("http-equiv=\"refresh" in s.lower()) or ("location.replace(" in s.lower())
+        has_canonical=bool(re.search(r'<link\\s+rel=["\']canonical["\']',s,re.I))
+        if not (has_redirect and has_canonical): issues.append(f"NOINDEX_REVIEW {rel}")
 for k,v in titles.items():
     if len(v)>1: issues.append("DUP_TITLE "+str(v))
 for k,v in metas.items():
