@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+from io import StringIO
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -30,7 +31,7 @@ def price_value(value):
 
 response = requests.get(SOURCE_URL, timeout=30, headers={"User-Agent": "Ahaneiffel-PriceFeed/1.0"})
 response.raise_for_status()
-tables = pd.read_html(response.text)
+tables = pd.read_html(StringIO(response.text))
 rows = []
 for table in tables:
     table = table.fillna("")
