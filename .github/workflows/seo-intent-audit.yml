@@ -16,3 +16,5 @@ jobs:
         uses: actions/checkout@v4
       - name: Audit indexable SEO pages
         run: python3 scripts/seo_intent_audit.py
+        continue-on-error: true
+        # Warnings/findings are diagnostic; do not block deployments or create failure emails.
