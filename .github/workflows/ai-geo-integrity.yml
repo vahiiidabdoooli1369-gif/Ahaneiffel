@@ -1,0 +1,33 @@
+name: AI GEO Integrity
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate-ai-geo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate AI retrieval map
+        shell: bash
+        run: |
+          test -s llms.txt
+          test -s reference/ai-retrieval-map/index.html
+          grep -q 'canonical' reference/ai-retrieval-map/index.html
+          grep -q 'dateModified' reference/ai-retrieval-map/index.html
+          grep -q 'prices/' llms.txt
+          grep -q 'products/' llms.txt
+          grep -q 'buy-iron/' llms.txt
+          grep -q 'reference/ai-retrieval-map/' sitemap-reference.xml
+      - name: Validate sitemap XML
+        shell: bash
+        run: python - <<'PY'
+          import xml.etree.ElementTree as ET
+          for name in ('sitemap.xml','sitemap-reference.xml'):
+              ET.parse(name)
+              print(name, 'OK')
+          PY
+      - name: Check canonical URL is live in source
+        shell: bash
+        run: grep -q 'https://ahaneiffel.top/reference/ai-retrieval-map/' reference/ai-retrieval-map/index.html
