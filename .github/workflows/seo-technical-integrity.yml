@@ -1,0 +1,126 @@
+name: SEO Technical Integrity
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  seo-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run 20-point SEO integrity audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re, sys
+          from urllib.parse import urlparse
+
+          root = Path('.')
+          html_files = sorted(root.rglob('*.html'))
+          html_files = [p for p in html_files if '.git' not in p.parts and not p.as_posix().startswith('.github/')]
+          errors=[]
+
+          def text(p):
+              return p.read_text(encoding='utf-8', errors='ignore')
+
+          def attr(src, tag, name):
+              m=re.search(r'<'+tag+r'\b[^>]*\b'+re.escape(name)+r'=["\']([^"\']+)', src, re.I)
+              return m.group(1).strip() if m else ''
+
+          def metas(src, name):
+              return re.findall(r'<meta\b[^>]*\bname=["\']'+re.escape(name)+r'["\'][^>]*>', src, re.I)
+
+          # 1-6: document fundamentals
+          for p in html_files:
+              s=text(p)
+              if not re.search(r'<html\b[^>]*\blang=["\']fa["\']', s, re.I): errors.append(f'1 lang/FA missing: {p}')
+              if not re.search(r'<html\b[^>]*\bdir=["\']rtl["\']', s, re.I): errors.append(f'2 dir/RTL missing: {p}')
+              if not re.search(r'<title>[^<]{8,}</title>', s, re.I): errors.append(f'3 title missing/too short: {p}')
+              if len(metas(s,'description')) != 1: errors.append(f'4 description count != 1: {p}')
+              if not attr(s,'link','canonical') and p.name != '404.html': errors.append(f'5 canonical missing: {p}')
+              if p.name != '404.html' and not re.search(r'<h1\b[^>]*>\s*[^<]{3,}', s, re.I): errors.append(f'6 H1 missing: {p}')
+
+          # 7: canonical duplicates inside a page
+          for p in html_files:
+              s=text(p)
+              c=re.findall(r'<link\b[^>]*\brel=["\']canonical["\'][^>]*>', s, re.I)
+              if len(c)>1: errors.append(f'7 multiple canonicals: {p}')
+
+          # 8-9: robots consistency
+          for p in html_files:
+              s=text(p)
+              robots=' '.join(metas(s,'robots'))
+              if 'noindex' in robots.lower() and p.name != '404.html':
+                  # noindex is allowed only when explicitly intentional; flag for review rather than fail
+                  print(f'NOTICE noindex: {p}')
+
+          # 10: malformed absolute canonicals
+          for p in html_files:
+              s=text(p)
+              c=attr(s,'link','canonical')
+              if c and not c.startswith('https://ahaneiffel.top/'):
+                  errors.append(f'10 canonical outside primary domain: {p} -> {c}')
+
+          # 11: duplicate H1
+          for p in html_files:
+              h1=re.findall(r'<h1\b[^>]*>', text(p), re.I)
+              if len(h1)>1: errors.append(f'11 multiple H1 tags: {p}')
+
+          # 12-13: obvious placeholder/dummy text
+          for p in html_files:
+              s=text(p).lower()
+              for bad in ('lorem ipsum','todo','coming soon'):
+                  if bad in s: errors.append(f'12 placeholder text "{bad}": {p}')
+
+          # 14: internal links must not point to empty href
+          for p in html_files:
+              s=text(p)
+              if re.search(r'<a\b[^>]*\bhref=["\']\s*["\']', s, re.I): errors.append(f'14 empty link: {p}')
+
+          # 15: local relative internal links should not contain spaces
+          for p in html_files:
+              s=text(p)
+              for href in re.findall(r'href=["\']([^"\']+)["\']', s, re.I):
+                  if href.startswith(('/', 'http://', 'https://', '#', 'mailto:', 'tel:')): continue
+                  if ' ' in href: errors.append(f'15 space in relative href: {p} -> {href}')
+
+          # 16: sitemap index must exist and reference the main site
+          sm=root/'sitemap.xml'
+          if not sm.exists(): errors.append('16 sitemap.xml missing')
+          else:
+              ss=text(sm)
+              if '<sitemapindex' not in ss or 'https://ahaneiffel.top/' not in ss: errors.append('16 sitemap index malformed')
+
+          # 17: robots must advertise sitemap
+          rb=root/'robots.txt'
+          if not rb.exists() or 'Sitemap: https://ahaneiffel.top/sitemap.xml' not in text(rb): errors.append('17 robots.txt sitemap declaration missing')
+
+          # 18: accidental encoded URL fragments in source
+          for p in html_files:
+              s=text(p)
+              if '%2525' in s.lower() or '%25d' in s.lower() or '%25e' in s.lower():
+                  errors.append(f'18 suspicious double-encoded URL in HTML: {p}')
+
+          # 19: no links to the deleted redundant AI note
+          for p in html_files:
+              if 'robots-note.html' in text(p): errors.append(f'19 stale robots-note link: {p}')
+
+          # 20: AI retrieval map remains indexable and canonicalized
+          ai=root/'reference/ai-retrieval-map/index.html'
+          if not ai.exists(): errors.append('20 AI retrieval map missing')
+          else:
+              a=text(ai)
+              if 'content="noindex' in a.lower(): errors.append('20 AI retrieval map is noindex')
+              if 'https://ahaneiffel.top/reference/ai-retrieval-map/' not in a: errors.append('20 AI retrieval map canonical missing')
+
+          if errors:
+              print('\n'.join('ERROR '+e for e in errors))
+              sys.exit(1)
+          print(f'PASS: 20-point SEO integrity audit completed across {len(html_files)} HTML files.')
+          PY
