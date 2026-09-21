@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  cleanup:
+  audit:
     if: ${{ !contains(github.event.head_commit.message, '[seo-cleanup]') }}
     runs-on: ubuntu-latest
     steps:
@@ -19,42 +19,161 @@ jobs:
           ref: main
           fetch-depth: 1
 
-      - name: Audit FAQPage structured data
+      - name: Run 20-point SEO integrity audit
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
+          from urllib.parse import urlparse
+          import json, re, sys, xml.etree.ElementTree as ET
 
-          found = []
-          for p in Path('.').rglob('*.html'):
-              if any(part in {'.git', 'node_modules'} for part in p.parts):
-                  continue
-              s = p.read_text(encoding='utf-8')
-              if re.search(r'"@type"\s*:\s*"FAQPage"', s, flags=re.IGNORECASE):
-                  found.append(str(p))
-
-          print(f'FAQPage JSON-LD found in {len(found)} HTML files')
-          for p in found:
-              print(p)
-          PY
-
-      - name: Validate structured data files
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
+          ROOT = Path('.')
           errors = []
-          for p in Path('.').rglob('*.html'):
-              if any(part in {'.git', 'node_modules'} for part in p.parts):
-                  continue
+          warnings = []
+          html_files = [p for p in ROOT.rglob('*.html') if '.git' not in p.parts and 'node_modules' not in p.parts]
+
+          def fail(msg):
+              errors.append(msg)
+
+          # 1. HTML files are present.
+          if not html_files:
+              fail('No HTML files found')
+
+          for p in html_files:
               s = p.read_text(encoding='utf-8')
-              for m in re.finditer(r'<script\s+type=["\']application/ld\+json["\']>([\s\S]*?)</script>', s, flags=re.IGNORECASE):
+              rel = str(p)
+
+              # 2. UTF-8/doctype.
+              if not s.lstrip().lower().startswith('<!doctype html>'):
+                  fail(f'{rel}: missing HTML5 doctype')
+
+              # 3. Language direction.
+              if not re.search(r'<html[^>]+lang=["\']fa["\'][^>]+dir=["\']rtl["\']', s, re.I):
+                  warnings.append(f'{rel}: html lang/dir not detected as fa/rtl')
+
+              # 4. Exactly one canonical.
+              canon = re.findall(r'<link[^>]+rel=["\']canonical["\'][^>]*>', s, re.I)
+              if len(canon) != 1:
+                  fail(f'{rel}: expected exactly 1 canonical, found {len(canon)}')
+
+              # 5. Canonical is absolute HTTPS.
+              for tag in canon:
+                  m = re.search(r'href=["\']([^"\']+)', tag, re.I)
+                  if not m or not m.group(1).startswith('https://ahaneiffel.top/'):
+                      fail(f'{rel}: canonical is not an ahaneiffel.top HTTPS URL')
+
+              # 6. One title.
+              if len(re.findall(r'<title\b', s, re.I)) != 1:
+                  fail(f'{rel}: expected exactly 1 title')
+
+              # 7. Meta description exists.
+              if not re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=', s, re.I):
+                  fail(f'{rel}: missing meta description')
+
+              # 8. One H1.
+              h1_count = len(re.findall(r'<h1\b', s, re.I))
+              if h1_count != 1:
+                  fail(f'{rel}: expected exactly 1 H1, found {h1_count}')
+
+              # 9. Robots should not accidentally noindex important HTML.
+              robots = re.findall(r'<meta[^>]+name=["\']robots["\'][^>]+content=["\']([^"\']+)', s, re.I)
+              if robots and any('noindex' in x.lower() for x in robots):
+                  warnings.append(f'{rel}: noindex present')
+
+              # 10. No malformed double-encoded internal URLs.
+              if '%25' in s:
+                  fail(f'{rel}: contains %25 double-encoded URL sequence')
+
+              # 11. No obvious http internal canonical/links.
+              if re.search(r'https?://ahaneiffel\.top', s, re.I) and 'http://ahaneiffel.top' in s:
+                  fail(f'{rel}: contains insecure http://ahaneiffel.top URL')
+
+              # 12. JSON-LD blocks must parse as JSON.
+              for m in re.finditer(r'<script\s+type=["\']application/ld\+json["\']>([\s\S]*?)</script>', s, re.I):
                   block = m.group(1).strip()
                   if not block:
-                      errors.append(f'{p}: empty JSON-LD block')
+                      fail(f'{rel}: empty JSON-LD block')
+                      continue
+                  try:
+                      json.loads(block)
+                  except Exception as e:
+                      fail(f'{rel}: invalid JSON-LD: {e}')
+
+              # 13. FAQPage is flagged for review rather than silently created.
+              if re.search(r'"@type"\s*:\s*"FAQPage"', s, re.I):
+                  warnings.append(f'{rel}: FAQPage JSON-LD present; verify visible FAQ content matches')
+
+              # 14. Open Graph URL, when present, should be HTTPS site URL.
+              og_urls = re.findall(r'<meta[^>]+property=["\']og:url["\'][^>]+content=["\']([^"\']+)', s, re.I)
+              for u in og_urls:
+                  if not u.startswith('https://ahaneiffel.top/'):
+                      fail(f'{rel}: invalid og:url {u}')
+
+              # 15. Internal links should avoid malformed percent encoding.
+              for u in re.findall(r'(?:href|src)=["\']([^"\']+)', s, re.I):
+                  if u.startswith('/') and '%25' in u:
+                      fail(f'{rel}: malformed internal URL {u}')
+
+          # 16. Sitemap XML files parse.
+          sitemap_files = list(ROOT.glob('sitemap*.xml'))
+          for p in sitemap_files:
+              try:
+                  ET.parse(p)
+              except Exception as e:
+                  fail(f'{p}: invalid XML: {e}')
+
+          # 17. Sitemap URLs are HTTPS and use the canonical host.
+          for p in sitemap_files:
+              try:
+                  root = ET.parse(p).getroot()
+              except Exception:
+                  continue
+              for loc in root.findall('.//{*}loc'):
+                  u = (loc.text or '').strip()
+                  if u and (not u.startswith('https://ahaneiffel.top/') or '%25' in u):
+                      fail(f'{p}: invalid sitemap URL {u}')
+
+          # 18. Root robots.txt points to the current sitemap.
+          robots_file = ROOT / 'robots.txt'
+          if robots_file.exists():
+              rs = robots_file.read_text(encoding='utf-8')
+              if 'Sitemap: https://ahaneiffel.top/sitemap.xml' not in rs:
+                  fail('robots.txt: canonical sitemap directive missing')
+          else:
+              fail('robots.txt: missing')
+
+          # 19. llms.txt, if maintained, must point to real site resources.
+          llms = ROOT / 'llms.txt'
+          if llms.exists():
+              ls = llms.read_text(encoding='utf-8')
+              for u in re.findall(r'https://ahaneiffel\.top/[^\s)\]>]+', ls):
+                  path = urlparse(u).path.lstrip('/') or 'index.html'
+                  if path.endswith('/'):
+                      path += 'index.html'
+                  if not (ROOT / path).exists():
+                      warnings.append(f'llms.txt: referenced path not found in repo: {u}')
+
+          # 20. Detect duplicate title strings among indexable HTML pages.
+          titles = {}
+          for p in html_files:
+              s = p.read_text(encoding='utf-8')
+              r = re.search(r'<meta[^>]+name=["\']robots["\'][^>]+content=["\']([^"\']+)', s, re.I)
+              if r and 'noindex' in r.group(1).lower():
+                  continue
+              t = re.search(r'<title>(.*?)</title>', s, re.I | re.S)
+              if t:
+                  title = re.sub(r'\s+', ' ', t.group(1)).strip()
+                  titles.setdefault(title, []).append(str(p))
+          for title, paths in titles.items():
+              if len(paths) > 1:
+                  fail('Duplicate title on indexable pages: ' + ' | '.join(paths) + f' :: {title}')
+
+          print(f'20-point audit: {len(html_files)} HTML files checked')
+          if warnings:
+              print(f'Warnings: {len(warnings)}')
+              for w in warnings[:100]: print('WARN:', w)
           if errors:
-              print("\n".join(errors))
-              raise SystemExit(1)
-          print("Structured data blocks passed the basic non-empty audit.")
+              print(f'Errors: {len(errors)}')
+              for e in errors[:200]: print('ERROR:', e)
+              sys.exit(1)
+          print('PASS: no blocking SEO integrity errors detected.')
           PY
