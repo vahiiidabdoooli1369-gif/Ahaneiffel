@@ -27,7 +27,7 @@
     meta.textContent = "آخرین دریافت قیمت: " + (Number.isFinite(updatedAt)
       ? new Date(updatedAt).toLocaleString("fa-IR")
       : "زمان نامشخص");
-    if (!isFresh) meta.textContent += " — قیمت‌ها نیازمند بررسی هستند";
+    if (!isFresh) meta.textContent += " — قیمت ها نیازمند بررسی هستند";
     const anchor = document.querySelector(".price-section, .section, .hero");
     if (anchor) anchor.prepend(meta);
 
@@ -48,7 +48,7 @@
           priceCell.classList.add("live-price");
           priceCell.title = isFresh
             ? "قیمت دریافت شده از منبع قیمت آهن ایفل"
-            : "آخرین قیمت دریافت شده؛ زمان به‌روزرسانی نیازمند بررسی است";
+            : "آخرین قیمت دریافت شده؛ زمان به روزرسانی نیازمند بررسی است";
         }
         const status = row.querySelector(".flat, .up, .down");
         if (status) status.textContent = isFresh ? "به روز" : "نیازمند بررسی";
