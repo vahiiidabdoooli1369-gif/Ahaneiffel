@@ -9,7 +9,8 @@
   };
   const format = n => new Intl.NumberFormat("fa-IR").format(Math.round(Number(n)));
   async function run() {
-    const tables = document.querySelectorAll(".price-table");
+    // Keep this script safe on pages without a price table.
+    const tables = document.querySelectorAll(".price-table, .price-table-card table");
     if (!tables.length) return;
     let data;
     try {
@@ -28,7 +29,7 @@
       ? new Date(updatedAt).toLocaleString("fa-IR")
       : "زمان نامشخص");
     if (!isFresh) meta.textContent += " — قیمت ها نیازمند بررسی هستند";
-    const anchor = document.querySelector(".price-section, .section, .hero");
+    const anchor = document.querySelector(".price-section, .price-table-card, .section, .hero");
     if (anchor) anchor.prepend(meta);
 
     tables.forEach(table => {
@@ -42,15 +43,18 @@
           if (s > bestScore) { bestScore = s; best = item; }
         }
         if (!best || bestScore < 4) return;
-        const priceCell = row.querySelector(".quote");
+        // Prefer an explicit .quote cell; otherwise use the conventional third cell
+        // used by the site's existing price cards. This keeps legacy tables intact.
+        const priceCell = row.querySelector(".quote") || cells[2];
         if (priceCell) {
           priceCell.textContent = format(best.price) + " تومان";
           priceCell.classList.add("live-price");
+          priceCell.setAttribute("data-price-source", "ahaneiffel-market-feed");
           priceCell.title = isFresh
             ? "قیمت دریافت شده از منبع قیمت آهن ایفل"
             : "آخرین قیمت دریافت شده؛ زمان به روزرسانی نیازمند بررسی است";
         }
-        const status = row.querySelector(".flat, .up, .down");
+        const status = row.querySelector(".flat, .up, .down") || cells[3];
         if (status) status.textContent = isFresh ? "به روز" : "نیازمند بررسی";
       });
     });
