@@ -11,15 +11,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate AI retrieval map
         shell: bash
+        set -euo pipefail
         run: |
           test -s llms.txt
           test -s reference/ai-retrieval-map/index.html
-          grep -q 'canonical' reference/ai-retrieval-map/index.html
-          grep -q 'dateModified' reference/ai-retrieval-map/index.html
-          grep -q 'prices/' llms.txt
-          grep -q 'products/' llms.txt
-          grep -q 'buy-iron/' llms.txt
-          grep -q 'reference/ai-retrieval-map/' sitemap-reference.xml
+          grep -Fq 'rel="canonical"' reference/ai-retrieval-map/index.html
+          grep -Fq 'dateModified' reference/ai-retrieval-map/index.html
+          grep -Fq 'https://ahaneiffel.top/reference/ai-retrieval-map/' reference/ai-retrieval-map/index.html
+          grep -Fq 'prices/' llms.txt
+          grep -Fq 'products/' llms.txt
+          grep -Fq 'buy-iron/' llms.txt
+          grep -Fq '<loc>https://ahaneiffel.top/reference/ai-retrieval-map/</loc>' sitemap-reference.xml
       - name: Validate sitemap XML
         shell: bash
         run: python - <<'PY'
