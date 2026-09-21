@@ -1,6 +1,6 @@
 (function () {
   const feedUrl = "/data/market-prices.json";
-const STALE_MS = 2 * 60 * 60 * 1000;
+  const STALE_MS = 2 * 60 * 60 * 1000;
   const normalize = s => String(s || "").replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[\u0660-\u0669]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/,/g, "").replace(/\s+/g, " ").trim();
   const tokens = s => normalize(s).toLowerCase().match(/[a-zآ-ی]+|\d+(?:\.\d+)?/g) || [];
   const score = (a, b) => {
@@ -18,12 +18,19 @@ const STALE_MS = 2 * 60 * 60 * 1000;
       data = await res.json();
     } catch (_) { return; }
     if (!Array.isArray(data.rows) || !data.rows.length) return;
+
+    const updatedAt = Date.parse(data.updated_at_utc || "");
+    const isFresh = Number.isFinite(updatedAt) && (Date.now() - updatedAt) <= STALE_MS;
     document.querySelectorAll(".live-price-meta").forEach(el => el.remove());
     const meta = document.createElement("p");
     meta.className = "last-update live-price-meta";
-    meta.textContent = "آخرین دریافت قیمت: " + new Date(data.updated_at_utc).toLocaleString("fa-IR");
+    meta.textContent = "آخرین دریافت قیمت: " + (Number.isFinite(updatedAt)
+      ? new Date(updatedAt).toLocaleString("fa-IR")
+      : "زمان نامشخص");
+    if (!isFresh) meta.textContent += " — قیمت‌ها نیازمند بررسی هستند";
     const anchor = document.querySelector(".price-section, .section, .hero");
     if (anchor) anchor.prepend(meta);
+
     tables.forEach(table => {
       table.querySelectorAll("tbody tr").forEach(row => {
         const cells = row.querySelectorAll("td");
@@ -39,7 +46,9 @@ const STALE_MS = 2 * 60 * 60 * 1000;
         if (priceCell) {
           priceCell.textContent = format(best.price) + " تومان";
           priceCell.classList.add("live-price");
-          priceCell.title = "قیمت دریافت شده از منبع قیمت آهن ایفل";
+          priceCell.title = isFresh
+            ? "قیمت دریافت شده از منبع قیمت آهن ایفل"
+            : "آخرین قیمت دریافت شده؛ زمان به‌روزرسانی نیازمند بررسی است";
         }
         const status = row.querySelector(".flat, .up, .down");
         if (status) status.textContent = isFresh ? "به روز" : "نیازمند بررسی";
