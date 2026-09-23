@@ -8,11 +8,13 @@ jobs:
   validate-ai-geo:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Validate AI retrieval map
         shell: bash
-        set -euo pipefail
         run: |
+          set -euo pipefail
           test -s llms.txt
           test -s reference/ai-retrieval-map/index.html
           grep -Fq 'rel="canonical"' reference/ai-retrieval-map/index.html
@@ -22,14 +24,20 @@ jobs:
           grep -Fq 'products/' llms.txt
           grep -Fq 'buy-iron/' llms.txt
           grep -Fq '<loc>https://ahaneiffel.top/reference/ai-retrieval-map/</loc>' sitemap-reference.xml
+
       - name: Validate sitemap XML
         shell: bash
-        run: python - <<'PY'
+        run: |
+          set -euo pipefail
+          python - <<'PY'
           import xml.etree.ElementTree as ET
-          for name in ('sitemap.xml','sitemap-reference.xml'):
+          for name in ("sitemap.xml", "sitemap-reference.xml"):
               ET.parse(name)
-              print(name, 'OK')
+              print(name, "OK")
           PY
+
       - name: Check canonical URL is live in source
         shell: bash
-        run: grep -q 'https://ahaneiffel.top/reference/ai-retrieval-map/' reference/ai-retrieval-map/index.html
+        run: |
+          set -euo pipefail
+          grep -Fq 'https://ahaneiffel.top/reference/ai-retrieval-map/' reference/ai-retrieval-map/index.html
