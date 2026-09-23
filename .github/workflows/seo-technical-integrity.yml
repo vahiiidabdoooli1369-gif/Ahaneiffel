@@ -1,5 +1,6 @@
 name: SEO Technical Integrity
 # Post-repair verification trigger: audit the repaired repository state.
+# Final verification pass after canonical and noindex handling fixes.
 
 on:
   push:
