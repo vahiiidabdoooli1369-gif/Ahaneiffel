@@ -1,0 +1,27 @@
+name: SEO Auto Repair
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run deterministic SEO repair
+        run: python3 scripts/seo_repair.py
+      - name: Commit repaired SEO files
+        run: |
+          if git diff --quiet; then echo "No SEO repair changes required."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "[seo-auto-repair] Fix canonical metadata and internal SEO links"
+          git push origin HEAD:main
