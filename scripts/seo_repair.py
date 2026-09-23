@@ -62,13 +62,16 @@ changed=[]
 for p in ROOT.rglob("*.html"):
     if ".git" in p.parts or p.as_posix().startswith(".github/"): continue
     s=p.read_text(encoding="utf-8",errors="ignore"); old=s
+    tags=re.findall(CANON_RE,s,re.I)
+    if len(tags)>1:
+        preferred=tags[0]
+        s=re.sub(CANON_RE,"",s,flags=re.I)
+        s=re.sub(r'</head>',preferred+'</head>',s,count=1,flags=re.I)
+    elif len(tags)==0 and p.name!="404.html" and not noindex(s):
+        s=re.sub(r'</head>',f'<link rel="canonical" href="{page_url(p)}"></head>',s,count=1,flags=re.I)
     if p.name!="404.html" and not noindex(s):
         if not re.search(r'<meta\b[^>]*\bname=["\']viewport["\']',s,re.I):
             s=re.sub(r'(<meta\s+charset=["\'][^>]+>\s*)',r'\1<meta name="viewport" content="width=device-width, initial-scale=1">',s,count=1,flags=re.I)
-        tags=re.findall(CANON_RE,s,re.I)
-        preferred=tags[0] if tags else f'<link rel="canonical" href="{page_url(p)}">'
-        s=re.sub(CANON_RE,"",s,flags=re.I)
-        s=re.sub(r'</head>',preferred+'</head>',s,count=1,flags=re.I)
     k=p.as_posix()
     if k in desc and not noindex(s) and not re.search(r'<meta\b[^>]*\bname=["\']description["\']',s,re.I):
         tag=f'<meta name="description" content="{escape(desc[k],quote=True)}">'
