@@ -35,6 +35,10 @@ jobs:
               m=re.search(r'<'+tag+r'\b[^>]*\b'+re.escape(name)+r'=["\']([^"\']+)', src, re.I)
               return m.group(1).strip() if m else ''
 
+          def canonical(src):
+              m=re.search(r'<link\\b[^>]*\\brel=["\\']canonical["\\'][^>]*\\bhref=["\\']([^"\\']+)', src, re.I)
+              return m.group(1).strip() if m else ''
+
           def metas(src, name):
               return re.findall(r'<meta\b[^>]*\bname=["\']'+re.escape(name)+r'["\'][^>]*>', src, re.I)
 
@@ -45,7 +49,7 @@ jobs:
               if not re.search(r'<html\b[^>]*\bdir=["\']rtl["\']', s, re.I): errors.append(f'2 dir/RTL missing: {p}')
               if not re.search(r'<title>[^<]{8,}</title>', s, re.I): errors.append(f'3 title missing/too short: {p}')
               if p.name != '404.html' and 'noindex' not in ' '.join(metas(s,'robots')).lower() and len(metas(s,'description')) != 1: errors.append(f'4 description count != 1: {p}')
-              if p.name != '404.html' and 'noindex' not in ' '.join(metas(s,'robots')).lower() and not attr(s,'link','canonical'): errors.append(f'5 canonical missing: {p}')
+              if p.name != '404.html' and 'noindex' not in ' '.join(metas(s,'robots')).lower() and not canonical(s): errors.append(f'5 canonical missing: {p}')
               if p.name != '404.html' and not re.search(r'<h1\b[^>]*>\s*[^<]{3,}', s, re.I): errors.append(f'6 H1 missing: {p}')
 
           # 7: canonical duplicates inside a page
@@ -65,7 +69,7 @@ jobs:
           # 10: malformed absolute canonicals
           for p in html_files:
               s=text(p)
-              c=attr(s,'link','canonical')
+              c=canonical(s)
               if c and not c.startswith('https://ahaneiffel.top/'):
                   errors.append(f'10 canonical outside primary domain: {p} -> {c}')
 
