@@ -65,7 +65,12 @@ for p in ROOT.rglob("*.html"):
     if p.name!="404.html" and not noindex(s):
         if not re.search(r'<meta\\b[^>]*\\bname=["\']viewport["\']',s,re.I):
             s=re.sub(r'(<meta\\s+charset=["\'][^>]+>\\s*)',r'\\1<meta name="viewport" content="width=device-width, initial-scale=1">',s,count=1,flags=re.I)
-        if not re.search(r'<link\\b[^>]*\\brel=["\']canonical["\']',s,re.I):
+        tags=re.findall(r'<link\\b[^>]*\\brel=["\']canonical["\'][^>]*>',s,re.I)
+        if len(tags)>1:
+            first=tags[0]
+            s=re.sub(r'<link\\b[^>]*\\brel=["\']canonical["\'][^>]*>',lambda m:first,s,flags=re.I)
+            s=s.replace(first,"",s.count(first)-1)
+        elif len(tags)==0:
             s=re.sub(r'</head>',f'<link rel="canonical" href="{url(p)}"></head>',s,count=1,flags=re.I)
     k=p.as_posix()
     if k in desc and not noindex(s) and not re.search(r'<meta\\b[^>]*\\bname=["\']description["\']',s,re.I):
