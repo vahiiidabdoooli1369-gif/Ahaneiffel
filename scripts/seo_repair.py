@@ -102,3 +102,48 @@ for prefix,mp in replacements.items():
             p.write_text(s,encoding="utf-8"); changed.append(p.as_posix())
 
 print("SEO repair changed",len(set(changed)),"files")
+
+
+# Normalize malformed double-parent traversal and repair the confirmed rebar guide target.
+for p in ROOT.rglob("*.html"):
+    if ".git" in p.parts: continue
+    s=p.read_text(encoding="utf-8",errors="ignore"); old=s
+    s=re.sub(r'href=(["\'])\.\.//',r'href=\1/',s)
+    s=s.replace('/guides/rebar-weight-table/','/guides/rebar-weight/')
+    if s!=old:
+        p.write_text(s,encoding="utf-8")
+        changed.append(p.as_posix())
+
+# Add one contextual inbound hub to the previously reported orphan guide pages.
+orphan_slugs = [
+"brand-factory-price-check","steel-purchase-timing","profile-dimensional-control","steel-waste-by-product",
+"steel-project-material-selection","scaffolding-pipe-thickness-choice","profile-cutting-planning","base-plate-ordering",
+"galvanized-vs-painted-sheet","steel-semantic-buying-path","steel-dimension-control","steel-storage-layout",
+"beam-site-inspection","upn-vs-upe-channel","rebar-site-inspection","sheet-3mm-vs-4mm","steel-order-master-checklist",
+"sheet-cutting-vs-full","steel-quality-dispute","steel-inspection-center","steel-manufacturer-selection","angle-equal-unequal",
+"steel-supplier-comparison","steel-weight-scale-vs-table","advanced-steel","formwork-strip-selection","beam-brand-size-price",
+"square-vs-rectangular-profile","steel-stock-reservation","steel-price-alert-interpretation","sheet-brand-size-price",
+"channel-upn-upe","steel-order-change-control","steel-field-checklists","steel-receiving-quantity","sheet-surface-inspection",
+"steel-loading-sequence","steel-unit-conversion","roofing-sheet-coating","steel-storage-site","formwork-strip-size-choice",
+"steel-delivery-risk","steel-alternative-product","profile-40x40-vs-50x50","steel-delivery-evidence","steel-size-weight-price",
+"steel-data-confidence","base-plate-size-thickness","profile-brand-size-price","rebar-12-vs-14","angle-channel-brand-size-price",
+"rebar-brand-size-price"
+]
+hub=ROOT/"guides/index.html"
+if hub.exists() and "<!-- SEO ORPHAN HUB -->" not in hub.read_text(encoding="utf-8",errors="ignore"):
+    s=hub.read_text(encoding="utf-8",errors="ignore")
+    links=[]
+    for slug in orphan_slugs:
+        if (ROOT/"guides"/slug/"index.html").exists():
+            label=slug.replace("-"," ")
+            links.append(f'<li><a href="/guides/{slug}/">{label}</a></li>')
+    block='<!-- SEO ORPHAN HUB --><section aria-labelledby="seo-orphan-hub"><h2 id="seo-orphan-hub">راهنماهای تخصصی بیشتر</h2><ul>'+''.join(links)+'</ul></section>'
+    s=re.sub(r'</main>',block+'</main>',s,count=1,flags=re.I)
+    hub.write_text(s,encoding="utf-8")
+    changed.append("guides/index.html")
+
+p=ROOT/"prices/index.html"
+if p.exists() and "/prices/price-network/" not in p.read_text(encoding="utf-8",errors="ignore") and (ROOT/"prices/price-network/index.html").exists():
+    s=p.read_text(encoding="utf-8",errors="ignore")
+    s=re.sub(r'</main>','<p><a href="/prices/price-network/">شبکه قیمت آهن آلات</a></p></main>',s,count=1,flags=re.I)
+    p.write_text(s,encoding="utf-8"); changed.append("prices/index.html")
