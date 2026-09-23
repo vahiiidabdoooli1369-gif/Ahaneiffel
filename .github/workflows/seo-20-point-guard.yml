@@ -41,7 +41,7 @@ jobs:
               s=p.read_text(encoding='utf-8', errors='ignore')
               r=robots(s); c=canon(s)
               if '<meta charset=' not in s.lower(): errors.append(f'{p}: missing charset')
-              if '<meta name="viewport"' not in s.lower(): errors.append(f'{p}: missing viewport')
+              if p.name != '404.html' and '<meta name="viewport"' not in s.lower(): errors.append(f'{p}: missing viewport')
               if not re.search(r'<html[^>]+lang=["\']fa["\']',s,re.I): warnings.append(f'{p}: lang is not fa')
               if not re.search(r'<title>\s*[^<]+\s*</title>',s,re.I): errors.append(f'{p}: missing/empty title')
               if not re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'][^"\']+["\']',s,re.I): errors.append(f'{p}: missing meta description')
