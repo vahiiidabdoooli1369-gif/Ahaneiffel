@@ -42,8 +42,8 @@ jobs:
               if not re.search(r'<html\b[^>]*\blang=["\']fa["\']', s, re.I): errors.append(f'1 lang/FA missing: {p}')
               if not re.search(r'<html\b[^>]*\bdir=["\']rtl["\']', s, re.I): errors.append(f'2 dir/RTL missing: {p}')
               if not re.search(r'<title>[^<]{8,}</title>', s, re.I): errors.append(f'3 title missing/too short: {p}')
-              if len(metas(s,'description')) != 1: errors.append(f'4 description count != 1: {p}')
-              if not attr(s,'link','canonical') and p.name != '404.html': errors.append(f'5 canonical missing: {p}')
+              if p.name != '404.html' and 'noindex' not in ' '.join(metas(s,'robots')).lower() and len(metas(s,'description')) != 1: errors.append(f'4 description count != 1: {p}')
+              if p.name != '404.html' and 'noindex' not in ' '.join(metas(s,'robots')).lower() and not attr(s,'link','canonical'): errors.append(f'5 canonical missing: {p}')
               if p.name != '404.html' and not re.search(r'<h1\b[^>]*>\s*[^<]{3,}', s, re.I): errors.append(f'6 H1 missing: {p}')
 
           # 7: canonical duplicates inside a page
