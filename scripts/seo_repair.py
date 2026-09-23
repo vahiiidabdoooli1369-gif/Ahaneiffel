@@ -2,22 +2,22 @@ import json,re,os
 from pathlib import Path
 from html import escape
 
-# Prevent an infinite push -> repair -> push loop.
 try:
-    event=json.load(open(os.environ.get("GITHUB_EVENT_PATH",""),encoding="utf-8"))
+    with open(os.environ.get("GITHUB_EVENT_PATH",""),encoding="utf-8") as f:
+        event=json.load(f)
     if "[seo-auto-repair]" in event.get("head_commit",{}).get("message",""):
-        print("Repair commit detected; nothing to do.")
         raise SystemExit(0)
 except (FileNotFoundError,TypeError,json.JSONDecodeError):
     pass
 
 ROOT=Path("."); DOMAIN="https://ahaneiffel.top"
+CANON_RE=r'<link\b[^>]*\brel=["\']canonical["\'][^>]*>'
 
 def noindex(s):
-    m=re.search(r'<meta\\b[^>]*\\bname=["\']robots["\'][^>]*\\bcontent=["\']([^"\']*)',s,re.I)
+    m=re.search(r'<meta\b[^>]*\bname=["\']robots["\'][^>]*\bcontent=["\']([^"\']*)',s,re.I)
     return bool(m and "noindex" in m.group(1).lower())
 
-def url(p):
+def page_url(p):
     r=p.as_posix()
     if r=="index.html": return DOMAIN+"/"
     if r.endswith("/index.html"): return DOMAIN+"/"+r[:-10].rstrip("/")+"/"
@@ -63,34 +63,31 @@ for p in ROOT.rglob("*.html"):
     if ".git" in p.parts or p.as_posix().startswith(".github/"): continue
     s=p.read_text(encoding="utf-8",errors="ignore"); old=s
     if p.name!="404.html" and not noindex(s):
-        if not re.search(r'<meta\\b[^>]*\\bname=["\']viewport["\']',s,re.I):
-            s=re.sub(r'(<meta\\s+charset=["\'][^>]+>\\s*)',r'\\1<meta name="viewport" content="width=device-width, initial-scale=1">',s,count=1,flags=re.I)
-        tags=re.findall(r'<link\\b[^>]*\\brel=["\']canonical["\'][^>]*>',s,re.I)
-        if len(tags)>1:
-            first=tags[0]
-            pattern=r'<link\\b[^>]*\\brel=["\']canonical["\'][^>]*>'
-            s=re.sub(pattern,"",s,flags=re.I)
-            s=re.sub(r'</head>',first+'</head>',s,count=1,flags=re.I)
-        elif len(tags)==0:
-            s=re.sub(r'</head>',f'<link rel="canonical" href="{url(p)}"></head>',s,count=1,flags=re.I)
+        if not re.search(r'<meta\b[^>]*\bname=["\']viewport["\']',s,re.I):
+            s=re.sub(r'(<meta\s+charset=["\'][^>]+>\s*)',r'\1<meta name="viewport" content="width=device-width, initial-scale=1">',s,count=1,flags=re.I)
+        tags=re.findall(CANON_RE,s,re.I)
+        preferred=tags[0] if tags else f'<link rel="canonical" href="{page_url(p)}">'
+        s=re.sub(CANON_RE,"",s,flags=re.I)
+        s=re.sub(r'</head>',preferred+'</head>',s,count=1,flags=re.I)
     k=p.as_posix()
-    if k in desc and not noindex(s) and not re.search(r'<meta\\b[^>]*\\bname=["\']description["\']',s,re.I):
-        s=re.sub(r'(<meta\\s+charset=["\'][^>]+>\\s*)',r'\\1<meta name="description" content="'+escape(desc[k],quote=True)+'">',s,count=1,flags=re.I)
-    if k in h1 and not noindex(s) and not re.search(r'<h1\\b[^>]*>\\s*[^<]+',s,re.I):
-        tag="<h1>"+h1[k]+"</h1>"
-        if re.search(r'<main\\b[^>]*>',s,re.I): s=re.sub(r'(<main\\b[^>]*>)',r'\\1'+tag,s,count=1,flags=re.I)
-        else: s=re.sub(r'(<body\\b[^>]*>)',r'\\1'+tag,s,count=1,flags=re.I)
-    if s!=old: p.write_text(s,encoding="utf-8"); changed.append(k)
+    if k in desc and not noindex(s) and not re.search(r'<meta\b[^>]*\bname=["\']description["\']',s,re.I):
+        tag=f'<meta name="description" content="{escape(desc[k],quote=True)}">'
+        s=re.sub(r'(<meta\s+charset=["\'][^>]+>\s*)',r'\1'+tag,s,count=1,flags=re.I)
+    if k in h1 and not noindex(s) and not re.search(r'<h1\b[^>]*>\s*[^<]+',s,re.I):
+        tag=f'<h1>{h1[k]}</h1>'
+        if re.search(r'<main\b[^>]*>',s,re.I): s=re.sub(r'(<main\b[^>]*>)',r'\1'+tag,s,count=1,flags=re.I)
+        else: s=re.sub(r'(<body\b[^>]*>)',r'\1'+tag,s,count=1,flags=re.I)
+    if s!=old:
+        p.write_text(s,encoding="utf-8"); changed.append(k)
 
-# Fix the 13 previously confirmed broken internal references.
-reps={
+replacements={
+"reference/":{"../knowledge/steel-standards-vs-grades/":"/knowledge/steel-standards-vs-grades/"},
 "knowledge/steel-price-data-methodology/":{"../prices/":"/prices/","../tools/steel-comparison/":"/tools/steel-comparison/"},
 "knowledge/steel-mill-certificate/":{"../buy-iron/":"/buy-iron/","../knowledge/steel/steel-delivery-document-check":"/knowledge/steel/steel-delivery-document-check/"},
 "knowledge/steel-delivery-acceptance/":{"../guides/steel-delivery-checklist/":"/guides/steel-delivery-checklist/","../buy-iron/":"/buy-iron/"},
-"knowledge/steel-weight-tolerance/":{"../tools/steel-weight-calculator/":"/tools/steel-weight-calculator/","../products/":"/products/"},
-"reference/":{"../knowledge/steel-standards-vs-grades/":"/knowledge/steel-standards-vs-grades/"}
+"knowledge/steel-weight-tolerance/":{"../tools/steel-weight-calculator/":"/tools/steel-weight-calculator/","../products/":"/products/"}
 }
-for prefix,mp in reps.items():
+for prefix,mp in replacements.items():
     for p in ROOT.rglob("*.html"):
         if not p.as_posix().startswith(prefix): continue
         s=p.read_text(encoding="utf-8",errors="ignore"); old=s
@@ -98,13 +95,7 @@ for prefix,mp in reps.items():
             t=ROOT/b.lstrip("/")
             if t.is_dir(): t=t/"index.html"
             if t.exists(): s=s.replace(a,b)
-        if s!=old: p.write_text(s,encoding="utf-8"); changed.append(p.as_posix())
-
-for p in [ROOT/"products/rebar/8/index.html",ROOT/"products/rebar/16/index.html",ROOT/"products/rebar/25/index.html"]:
-    if p.exists():
-        s=p.read_text(encoding="utf-8",errors="ignore"); old=s
-        t=ROOT/"guides/rebar-weight-table/index.html"
-        if t.exists(): s=s.replace("/guides/rebar-weight-table/","/guides/rebar-weight-table/")
-        if s!=old: p.write_text(s,encoding="utf-8"); changed.append(p.as_posix())
+        if s!=old:
+            p.write_text(s,encoding="utf-8"); changed.append(p.as_posix())
 
 print("SEO repair changed",len(set(changed)),"files")
