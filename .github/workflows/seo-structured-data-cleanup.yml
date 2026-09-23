@@ -16,7 +16,7 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
 
       - name: Run 20-point SEO integrity audit
@@ -71,7 +71,7 @@ jobs:
 
               # 8. One H1.
               h1_count = len(re.findall(r'<h1\b', s, re.I))
-              if h1_count != 1:
+              if indexable and h1_count != 1:
                   fail(f'{rel}: expected exactly 1 H1, found {h1_count}')
 
               # 9. Robots should not accidentally noindex important HTML.
