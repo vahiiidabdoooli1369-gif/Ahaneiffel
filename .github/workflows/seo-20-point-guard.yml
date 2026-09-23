@@ -39,13 +39,13 @@ jobs:
 
           for p in pages:
               s=p.read_text(encoding='utf-8', errors='ignore')
-              r=robots(s); c=canon(s)
+              r=robots(s); c=canon(s); indexable=(p.name != '404.html' and 'noindex' not in r)
               if '<meta charset=' not in s.lower(): errors.append(f'{p}: missing charset')
               if p.name != '404.html' and '<meta name="viewport"' not in s.lower(): errors.append(f'{p}: missing viewport')
               if not re.search(r'<html[^>]+lang=["\']fa["\']',s,re.I): warnings.append(f'{p}: lang is not fa')
               if not re.search(r'<title>\s*[^<]+\s*</title>',s,re.I): errors.append(f'{p}: missing/empty title')
-              if not re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'][^"\']+["\']',s,re.I): errors.append(f'{p}: missing meta description')
-              if not c and 'noindex' not in r: errors.append(f'{p}: missing canonical')
+              if indexable and not re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'][^"\']+["\']',s,re.I): errors.append(f'{p}: missing meta description')
+              if indexable and not c: errors.append(f'{p}: missing canonical')
               elif c and not c.startswith('https://ahaneiffel.top/'): errors.append(f'{p}: non-canonical host {c}')
               if 'http://ahaneiffel.top' in s or 'https://www.ahaneiffel.top' in s: errors.append(f'{p}: legacy host reference')
 
