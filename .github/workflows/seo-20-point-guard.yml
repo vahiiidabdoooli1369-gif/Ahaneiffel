@@ -46,7 +46,7 @@ jobs:
               if not re.search(r'<title>\s*[^<]+\s*</title>',s,re.I): errors.append(f'{p}: missing/empty title')
               if not re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'][^"\']+["\']',s,re.I): errors.append(f'{p}: missing meta description')
               if not c and 'noindex' not in r: errors.append(f'{p}: missing canonical')
-              elif not c.startswith('https://ahaneiffel.top/'): errors.append(f'{p}: non-canonical host {c}')
+              elif c and not c.startswith('https://ahaneiffel.top/'): errors.append(f'{p}: non-canonical host {c}')
               if 'http://ahaneiffel.top' in s or 'https://www.ahaneiffel.top' in s: errors.append(f'{p}: legacy host reference')
 
               if 'noindex' not in r:
