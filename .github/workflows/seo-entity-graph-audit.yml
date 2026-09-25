@@ -1,0 +1,17 @@
+name: SEO Entity Graph Audit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  entity-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit product-family entity links
+        run: python3 scripts/seo-entity-graph-audit.py
