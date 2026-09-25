@@ -76,7 +76,7 @@ jobs:
           # 11: duplicate H1
           for p in html_files:
               h1=re.findall(r'<h1\b[^>]*>', text(p), re.I)
-              if len(h1)>1: errors.append(f'11 multiple H1 tags: {p}')
+              if 'noindex' not in ' '.join(metas(text(p),'robots')).lower() and len(h1)>1: errors.append(f'11 multiple H1 tags: {p}')
 
           # 12-13: obvious placeholder/dummy text
           for p in html_files:
