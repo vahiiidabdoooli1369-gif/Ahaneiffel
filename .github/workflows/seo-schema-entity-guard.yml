@@ -1,0 +1,14 @@
+name: SEO Schema Entity Guard
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate schema entities
+        run: python3 scripts/seo_schema_entity_guard.py
