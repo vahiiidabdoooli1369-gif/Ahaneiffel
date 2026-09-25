@@ -1,0 +1,14 @@
+name: Product Schema Guard
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Product JSON-LD
+        run: python3 scripts/product_schema_guard.py
