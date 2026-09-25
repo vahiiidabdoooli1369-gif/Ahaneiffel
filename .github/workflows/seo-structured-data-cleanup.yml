@@ -51,7 +51,7 @@ jobs:
                   warnings.append(f'{rel}: html lang/dir not detected as fa/rtl')
 
               # 4. Exactly one canonical.
-              indexable = rel != '404.html' and not any('noindex' in x.lower() for x in re.findall(r'<meta[^>]+name=["\\']robots["\\'][^>]+content=["\\']([^"\\']+)', s, re.I))
+              indexable = rel != '404.html' and not any('noindex' in x.lower() for x in re.findall(r"<meta[^>]+name=[\"']robots[\"'][^>]+content=[\"']([^\"']+)", s, re.I))
               canon = re.findall(r'<link[^>]+rel=["\']canonical["\'][^>]*>', s, re.I)
               if len(canon) != 1:
                   fail(f'{rel}: expected exactly 1 canonical, found {len(canon)}')
