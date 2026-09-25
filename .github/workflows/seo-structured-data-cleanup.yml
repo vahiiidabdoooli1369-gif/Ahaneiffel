@@ -53,7 +53,7 @@ jobs:
               # 4. Exactly one canonical.
               indexable = rel != '404.html' and not any('noindex' in x.lower() for x in re.findall(r"<meta[^>]+name=[\"']robots[\"'][^>]+content=[\"']([^\"']+)", s, re.I))
               canon = re.findall(r'<link[^>]+rel=["\']canonical["\'][^>]*>', s, re.I)
-              if len(canon) != 1:
+              if indexable and len(canon) != 1:
                   fail(f'{rel}: expected exactly 1 canonical, found {len(canon)}')
 
               # 5. Canonical is absolute HTTPS.
