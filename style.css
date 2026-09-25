@@ -14,3 +14,17 @@
 .brand-tag:before,.tag:before{content:none!important;display:none!important}
 .steps i{display:none!important}
 .cta{animation:none!important;background:#087cff!important}
+
+
+/* AE-PREMIUM-UX-2026 — visual polish without changing site structure */
+:root{--ae-radius:18px;--ae-blue:#087cff;--ae-ink:#102d52;--ae-glow:rgba(8,124,255,.16)}
+.card,.product,.knowledge-grid article,.steps>div,.features>div,.price-matrix>div,.featured-card,.tool-grid a,.price-table-card{transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease}
+.card:hover,.knowledge-grid article:hover,.steps>div:hover,.features>div:hover,.price-matrix>div:hover{transform:translateY(-3px);box-shadow:0 18px 42px rgba(35,96,160,.12);border-color:#c1dcf8}
+.article-page,.wide{isolation:isolate}
+.article-page h1{letter-spacing:-.8px}
+.article-page h2{position:relative;padding-right:14px}
+.article-page h2:before{content:"";position:absolute;right:0;top:.35em;width:4px;height:1.35em;border-radius:4px;background:var(--ae-blue)}
+.spec tr{transition:background .2s ease}.spec tbody tr:hover{background:#f6faff}
+.note{box-shadow:0 8px 24px rgba(30,91,150,.05)}
+.link-grid a:hover,.quick-buy-grid a:hover{box-shadow:0 14px 30px rgba(30,91,150,.10)}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
