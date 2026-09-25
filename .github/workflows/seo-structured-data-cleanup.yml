@@ -67,7 +67,7 @@ jobs:
                   fail(f'{rel}: expected exactly 1 title')
 
               # 7. Meta description exists.
-              if not re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=', s, re.I):
+              if indexable and not re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=', s, re.I):
                   fail(f'{rel}: missing meta description')
 
               # 8. One H1.
