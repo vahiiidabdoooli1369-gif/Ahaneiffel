@@ -1,0 +1,16 @@
+name: Product Entity Audit
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Audit product entities and schema
+        run: python3 scripts/seo-product-entity-audit.py
