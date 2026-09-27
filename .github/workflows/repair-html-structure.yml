@@ -1,0 +1,71 @@
+name: Repair HTML document structure
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: "!contains(github.event.head_commit.message, '[html-structure-fix]')"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Move content accidentally placed after closing html
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          changed=[]
+          for p in Path('.').rglob('*.html'):
+              if '.git' in p.parts or 'node_modules' in p.parts or p.name == '404.html':
+                  continue
+              s=p.read_text(encoding='utf-8', errors='replace')
+              pos=s.lower().rfind('</html>')
+              if pos < 0:
+                  continue
+              tail=s[pos+7:].strip()
+              if not tail:
+                  continue
+
+              main_end=s.lower().rfind('</main>', 0, pos)
+              if main_end < 0:
+                  continue
+
+              # A previous automated append left one extra closing angle bracket.
+              if tail.endswith('>>'):
+                  tail=tail[:-1].rstrip()
+
+              before=s[:pos+7]
+              # Remove the misplaced tail, then insert it before </main>.
+              before=before[:main_end] + tail + '\n' + before[main_end:]
+              p.write_text(before, encoding='utf-8')
+              changed.append(p.as_posix())
+
+          print('HTML_STRUCTURE_REPAIRED', len(changed))
+          for x in changed[:300]:
+              print(x)
+          PY
+
+      - name: Commit repairs
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- '*.html'
+          if git diff --cached --quiet; then
+            echo 'No HTML structure repairs needed.'
+            exit 0
+          fi
+          git commit -m 'fix malformed HTML document structure [html-structure-fix]'
+          git push
