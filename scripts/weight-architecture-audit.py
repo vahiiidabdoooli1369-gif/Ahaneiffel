@@ -58,6 +58,24 @@ for family in required:
     for link in required[family]:
         if link not in h: warnings.append(f"{p}: missing weight route {link}")
 
+expected_pages = 53
+weight_path_count = 0
+missing_paths = []
+for p in sorted(PRODUCTS.glob("*/**/index.html")):
+    rel = p.relative_to(PRODUCTS).as_posix()
+    family = rel.split("/",1)[0]
+    if family not in required: continue
+    if rel.count("/") != 2: continue
+    h = html(p)
+    if 'id="ae-product-weight-path-2026"' in h:
+        weight_path_count += 1
+    else:
+        missing_paths.append(str(p))
+if weight_path_count < expected_pages:
+    warnings.append(f"product weight path coverage {weight_path_count}/{expected_pages}; missing {len(missing_paths)}")
+    for p in missing_paths[:100]: warnings.append(f"missing product weight path: {p}")
+
+print(f"product_weight_path_coverage={weight_path_count}/{expected_pages}")
 print(f"errors={len(errors)} warnings={len(warnings)}")
 for x in errors[:200]: print("ERROR",x)
 for x in warnings[:200]: print("WARNING",x)
