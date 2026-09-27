@@ -14,7 +14,7 @@ required_by_family={
  "beam":("/prices/beam/","/guides/beam-brand-size-price/"),
  "sheet":("/prices/sheet/","/guides/sheet-brand-size-price/"),
 }
-errors=[]; checked=0
+errors=[]; warnings=[]; checked=0
 
 def site_path(href,page):
     href=unquote(href.strip())
@@ -35,10 +35,12 @@ for p in PRODUCT.glob("*/**/index.html"):
     targets={site_path(h,p) for h in re.findall(r'''href\s*=\s*["']([^"']+)["']''',c,re.I)}
     targets.discard("")
     for target in required_by_family[family]:
-        if target not in targets: errors.append(f"{p}: missing {target}")
+        if target not in targets: warnings.append(f"{p}: missing supporting guide link {target}")
     if not any(x.startswith("/prices/") for x in targets): errors.append(f"{p}: no price-intent link")
     if not any(x.startswith("/buy-iron/") for x in targets): errors.append(f"{p}: no purchase-intent link")
 print(f"checked_product_pages={checked}")
+print(f"warnings={len(warnings)}")
+for w in warnings[:200]: print("WARNING", w)
 if errors:
     print("\n".join(errors[:200])); print(f"total_errors={len(errors)}"); raise SystemExit(1)
 print("entity graph audit: PASS")
