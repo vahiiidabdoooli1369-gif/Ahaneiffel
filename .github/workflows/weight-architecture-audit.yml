@@ -1,0 +1,18 @@
+name: Weight Architecture Audit
+on:
+  push:
+    paths:
+      - "guides/**"
+      - "products/**"
+      - "tools/**"
+      - "reference/**"
+      - "scripts/weight-architecture-audit.py"
+      - ".github/workflows/weight-architecture-audit.yml"
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run 20-point weight architecture audit
+        run: python scripts/weight-architecture-audit.py
