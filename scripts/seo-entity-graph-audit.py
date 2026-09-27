@@ -38,6 +38,17 @@ for p in PRODUCT.glob("*/**/index.html"):
         if target not in targets: warnings.append(f"{p}: missing supporting guide link {target}")
     if not any(x.startswith("/prices/") for x in targets): errors.append(f"{p}: no price-intent link")
     if not any(x.startswith("/buy-iron/") for x in targets): errors.append(f"{p}: no purchase-intent link")
+    products=re.findall(r'"@type"\\s*:\\s*"Product"([\\s\\S]*?)\\}',c,re.I)
+    if not products:
+        errors.append(f"{p}: no Product entity")
+    else:
+        block=products[0]
+        if '"name"' not in block: errors.append(f"{p}: Product has no name")
+        if '"url"' not in block: errors.append(f"{p}: Product has no url")
+        if '"brand"' not in block: errors.append(f"{p}: Product has no brand")
+        if '"sku"' not in block: warnings.append(f"{p}: Product has no sku")
+        if '"offers"' not in block and '"review"' not in block and '"aggregateRating"' not in block:
+            warnings.append(f"{p}: Product has no offers/review/aggregateRating; price is not forced when no fixed price is published")
 print(f"checked_product_pages={checked}")
 print(f"warnings={len(warnings)}")
 for w in warnings[:200]: print("WARNING", w)
