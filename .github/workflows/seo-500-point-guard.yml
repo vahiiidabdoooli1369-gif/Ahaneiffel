@@ -1,0 +1,19 @@
+name: SEO 500 Point Guard
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run 500+ point audit
+        run: python3 .github/scripts/seo_500_point_guard.py
+      - name: Upload SEO audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-500-point-report
+          path: seo-500-point-report.md
