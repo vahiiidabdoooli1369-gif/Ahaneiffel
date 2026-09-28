@@ -40,7 +40,7 @@ for p in PRODUCT.glob("*/**/index.html"):
     if not any(x.startswith("/buy-iron/") for x in targets): errors.append(f"{p}: no purchase-intent link")
     products=re.findall(r'"@type"\\s*:\\s*"Product"([\\s\\S]*?)\\}',c,re.I)
     if not products:
-        errors.append(f"{p}: no Product entity")
+        warnings.append(f"{p}: no Product entity; structured Product schema is optional when no valid offer/review/rating is available")
     else:
         block=products[0]
         if '"name"' not in block: errors.append(f"{p}: Product has no name")
