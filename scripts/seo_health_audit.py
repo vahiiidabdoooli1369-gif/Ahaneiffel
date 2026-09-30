@@ -10,6 +10,19 @@ htmls=[p for p in ROOT.rglob("*.html") if ".git" not in p.parts]
 titles=defaultdict(list); metas=defaultdict(list); cans=defaultdict(list)
 issues=[]; zwnj=[]
 
+def normalize_url(url):
+    """Normalize trailing slash and directory index.html for safe self-canonical comparison."""
+    try:
+        parsed=urlparse(url)
+        path=re.sub(r"/index\.html$", "/", parsed.path, flags=re.I)
+        path=re.sub(r"/+$", "/", path or "/")
+        return (parsed.scheme.lower(), parsed.netloc.lower(), path)
+    except Exception:
+        return url.rstrip("/").lower()
+
+def same_site(url):
+    return bool(url and url.startswith(SITE))
+
 for p in htmls:
     s=p.read_text(encoding="utf-8",errors="ignore")
     rel=p.relative_to(ROOT).as_posix()
@@ -36,7 +49,7 @@ for p in htmls:
     if canonical:
         if not is_noindex and not is_404:
             cans[canonical].append(rel)
-        if not canonical.startswith(SITE):
+        if not same_site(canonical):
             issues.append(f"BAD_CANONICAL_HOST {rel} -> {canonical}")
     elif not is_noindex and not is_404:
         issues.append(f"NO_CANONICAL {rel}")
@@ -49,11 +62,12 @@ for p in htmls:
         issues.append(f"NO_SOCIAL_FLOAT {rel}")
 
     if is_noindex and rel not in ("404.html","search/index.html"):
-        has_redirect=("http-equiv="refresh" in s.lower()) or ("location.replace(" in s.lower())
-        canonical_is_valid=bool(canonical and canonical.startswith(SITE))
+        has_redirect=("http-equiv=\"refresh\"" in s.lower()) or ("location.replace(" in s.lower())
+        canonical_is_valid=same_site(canonical)
+        source_url=SITE+rel
+        canonical_points_elsewhere=bool(canonical_is_valid and normalize_url(canonical) != normalize_url(source_url))
         # A deliberate consolidation page may be noindex when its canonical points
-        # to a different same-site URL. This is valid without a client-side redirect.
-        canonical_points_elsewhere=bool(canonical_is_valid and canonical.rstrip("/") != (SITE+rel).rstrip("/"))
+        # to a different same-site URL. A self-canonical noindex page remains reviewable.
         if not (has_redirect or canonical_points_elsewhere):
             issues.append(f"NOINDEX_REVIEW {rel}")
 
@@ -71,7 +85,7 @@ for sm in sitemaps:
     if len(locs)!=len(set(locs)):
         issues.append(f"DUP_SITEMAP_LOC {sm.name}")
     for u in locs:
-        if not u.startswith(SITE):
+        if not same_site(u):
             issues.append(f"BAD_SITEMAP_HOST {sm.name} {u}")
 
 print(f"SEO health: {len(htmls)} HTML pages; {len(sitemaps)} sitemap files")
