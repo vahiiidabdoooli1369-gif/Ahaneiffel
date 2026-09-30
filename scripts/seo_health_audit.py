@@ -2,8 +2,10 @@
 import re,sys
 from pathlib import Path
 from collections import defaultdict
+from urllib.parse import urlparse
 
 ROOT=Path(__file__).resolve().parents[1]
+SITE="https://ahaneiffel.top/"
 htmls=[p for p in ROOT.rglob("*.html") if ".git" not in p.parts]
 titles=defaultdict(list); metas=defaultdict(list); cans=defaultdict(list)
 issues=[]; zwnj=[]
@@ -14,7 +16,7 @@ for p in htmls:
     is_404=(rel=="404.html")
     is_noindex="noindex" in s.lower()
 
-    if "\u200c" in s:
+    if "‌" in s:
         zwnj.append(rel)
 
     m=re.search(r"<title>\s*(.*?)\s*</title>",s,re.I|re.S)
@@ -30,11 +32,12 @@ for p in htmls:
         issues.append(f"NO_META_DESCRIPTION {rel}")
 
     m=re.search(r'<link\s+rel=["\']canonical["\']\s+href=["\']([^"\']+)["\']',s,re.I)
-    if m:
+    canonical=m.group(1).strip() if m else None
+    if canonical:
         if not is_noindex and not is_404:
-            cans[m.group(1).strip()].append(rel)
-        if not m.group(1).startswith("https://ahaneiffel.top/"):
-            issues.append(f"BAD_CANONICAL_HOST {rel} -> {m.group(1)}")
+            cans[canonical].append(rel)
+        if not canonical.startswith(SITE):
+            issues.append(f"BAD_CANONICAL_HOST {rel} -> {canonical}")
     elif not is_noindex and not is_404:
         issues.append(f"NO_CANONICAL {rel}")
 
@@ -46,9 +49,12 @@ for p in htmls:
         issues.append(f"NO_SOCIAL_FLOAT {rel}")
 
     if is_noindex and rel not in ("404.html","search/index.html"):
-        has_redirect=("http-equiv=\"refresh" in s.lower()) or ("location.replace(" in s.lower())
-        has_canonical=bool(re.search(r'<link\s+rel=["\']canonical["\']',s,re.I))
-        if not (has_redirect and has_canonical):
+        has_redirect=("http-equiv="refresh" in s.lower()) or ("location.replace(" in s.lower())
+        canonical_is_valid=bool(canonical and canonical.startswith(SITE))
+        # A deliberate consolidation page may be noindex when its canonical points
+        # to a different same-site URL. This is valid without a client-side redirect.
+        canonical_points_elsewhere=bool(canonical_is_valid and canonical.rstrip("/") != (SITE+rel).rstrip("/"))
+        if not (has_redirect or canonical_points_elsewhere):
             issues.append(f"NOINDEX_REVIEW {rel}")
 
 for k,v in titles.items():
@@ -65,7 +71,7 @@ for sm in sitemaps:
     if len(locs)!=len(set(locs)):
         issues.append(f"DUP_SITEMAP_LOC {sm.name}")
     for u in locs:
-        if not u.startswith("https://ahaneiffel.top/"):
+        if not u.startswith(SITE):
             issues.append(f"BAD_SITEMAP_HOST {sm.name} {u}")
 
 print(f"SEO health: {len(htmls)} HTML pages; {len(sitemaps)} sitemap files")
