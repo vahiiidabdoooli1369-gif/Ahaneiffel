@@ -18,7 +18,11 @@ document.head.appendChild(st);
   const wrap=document.createElement('figure');
   wrap.id='ae-angle-image';
   wrap.className='ae-angle-image';
-  wrap.innerHTML='<img src="/assets/angle-ahaneiffel.jpg" alt="نبشی فولادی آهن ایفل" width="1200" height="1200" loading="eager" decoding="async"><figcaption>نبشی فولادی؛ خرید و استعلام از آهن ایفل</figcaption>';
+  wrap.innerHTML='<img id="ae-angle-photo" alt="نبشی فولادی آهن ایفل" width="500" height="500" loading="eager" decoding="async"><figcaption>نبشی فولادی؛ خرید و استعلام از آهن ایفل</figcaption>';
+  Promise.all([1,2,3,4].map(n=>fetch('/assets/angle-b64-'+n+'.txt').then(r=>r.text()))).then(parts=>{
+    const img=document.getElementById('ae-angle-photo');
+    if(img) img.src='data:image/jpeg;base64,'+parts.join('');
+  }).catch(()=>{});
   const main=document.querySelector('main')||document.body;
   const first=main.querySelector('h1');
   if(first && first.parentNode) first.parentNode.insertBefore(wrap, first.nextSibling); else main.prepend(wrap);
