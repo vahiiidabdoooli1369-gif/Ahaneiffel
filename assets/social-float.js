@@ -10,3 +10,19 @@ document.body.appendChild(box);
 const st=document.createElement("style");st.textContent=`.ahaneiffel-social-float{position:fixed;left:10px;top:50%;transform:translateY(-50%);z-index:99999;display:flex;flex-direction:column;gap:9px;direction:ltr}.aef-social{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff;box-shadow:0 5px 18px rgba(0,0,0,.22);transition:transform .2s ease,width .2s ease;border:2px solid rgba(255,255,255,.9);overflow:hidden}.aef-social:hover{transform:scale(1.08)}.aef-icon{width:27px;height:27px;display:flex}.aef-icon svg{width:100%;height:100%}.aef-label{position:absolute;left:58px;background:#0b1522;color:#fff;padding:7px 10px;border-radius:8px;white-space:nowrap;font-size:13px;opacity:0;pointer-events:none;transform:translateX(-5px);transition:.2s}.aef-social:hover .aef-label,.aef-social:focus-visible .aef-label{opacity:1;transform:none}.aef-social.whatsapp{background:#25D366}.aef-social.rubika{background:#7b2cff}.aef-social.bale{background:#168de2}@media(max-width:600px){.ahaneiffel-social-float{left:7px;gap:7px}.aef-social{width:42px;height:42px}.aef-icon{width:23px;height:23px}.aef-label{display:none}}`;
 document.head.appendChild(st);
 })();
+// نمایش تصویر اختصاصی نبشی در همه صفحات مرتبط با نبشی
+(()=>{
+  const p=location.pathname.toLowerCase();
+  const isAnglePage=p.includes('/angle/') || p.includes('/angle-');
+  if(!isAnglePage || document.getElementById('ae-angle-image')) return;
+  const wrap=document.createElement('figure');
+  wrap.id='ae-angle-image';
+  wrap.className='ae-angle-image';
+  wrap.innerHTML='<img src="/assets/angle-ahaneiffel.jpg" alt="نبشی فولادی آهن ایفل" width="1200" height="1200" loading="eager" decoding="async"><figcaption>نبشی فولادی؛ خرید و استعلام از آهن ایفل</figcaption>';
+  const main=document.querySelector('main')||document.body;
+  const first=main.querySelector('h1');
+  if(first && first.parentNode) first.parentNode.insertBefore(wrap, first.nextSibling); else main.prepend(wrap);
+  const st=document.createElement('style');
+  st.textContent='.ae-angle-image{margin:18px auto 24px;max-width:1200px;text-align:center}.ae-angle-image img{display:block;width:100%;height:auto;border-radius:18px;box-shadow:0 10px 35px rgba(0,0,0,.14);object-fit:cover}.ae-angle-image figcaption{margin-top:8px;font-size:13px;color:#5b6673}.ae-angle-image+*{margin-top:0}';
+  document.head.appendChild(st);
+})();
