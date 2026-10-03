@@ -12,8 +12,10 @@ document.head.appendChild(st);
 })();
 // نمایش تصویر اختصاصی نبشی در همه صفحات مرتبط با نبشی
 (()=>{
-  const p=location.pathname.toLowerCase();
-  const isAnglePage=p.includes('/angle/') || p.includes('/angle-');
+  const p=decodeURIComponent(location.pathname).toLowerCase();
+  const h1=(document.querySelector('main h1')||document.querySelector('h1'))?.textContent?.toLowerCase()||'';
+  const title=(document.title||'').toLowerCase();
+  const isAnglePage=p.includes('/angle/') || p.includes('/angle-') || p.includes('نبشی') || h1.includes('نبشی') || title.includes('نبشی');
   if(!isAnglePage || document.getElementById('ae-angle-image')) return;
   const wrap=document.createElement('figure');
   wrap.id='ae-angle-image';
