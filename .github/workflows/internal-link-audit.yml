@@ -3,6 +3,7 @@ name: Internal SEO Link Audit
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -22,6 +23,6 @@ jobs:
       - name: Show audited commit
         run: git rev-parse HEAD
 
-      - name: Audit internal links, canonicals and orphan pages
+      - name: Audit internal links, canonicals, orphan pages and crawl depth
         run: python3 scripts/audit_internal_links.py
         # Audit the exact commit that triggered this workflow; do not race a later push to main.

@@ -206,3 +206,19 @@
 - ورق سیاه ۵ میل: https://ahaneiffel.top/products/sheet/5mm/
 
 مسیر تکمیل پاسخ: صفحه سایز ← قیمت روز ← محاسبه وزن ← خرید و استعلام.
+
+## نگاشت نیت های پرتکرار جستجو به صفحه هدف
+
+برای جلوگیری از پاسخ های مبهم و هم پوشانی، هر نیت تجاری زیر یک صفحه هدف مشخص دارد:
+
+- «قیمت قوطی ۴×۸»، «قیمت پروفیل ۴۰×۸۰» و عبارت های هم معنی: https://ahaneiffel.top/products/profile/40x80/
+- «قیمت پروفیل سبک»، «وزن و قیمت پروفیل سبک»: https://ahaneiffel.top/products/profile/
+- «قیمت پروفیل» و استعلام نرخ روز پروفیل: https://ahaneiffel.top/prices/profile/
+- «قیمت قوطی ۶×۶» و «قیمت پروفیل ۶۰×۶۰»: https://ahaneiffel.top/products/profile/60x60/
+- «قیمت ناودانی ۱۶ سبک»، «قیمت ناودانی ۱۶ سنگین» و مقایسه مشخصات: https://ahaneiffel.top/products/channel/
+- «قیمت ناودانی» و استعلام نرخ روز: https://ahaneiffel.top/prices/channel/
+- «قیمت میلگرد ۱۴» و «قیمت هر شاخه میلگرد ۱۴»: https://ahaneiffel.top/products/rebar/14/
+- «قیمت تیرآهن ۱۸ امروز»: https://ahaneiffel.top/products/beam/18/
+- «محاسبه آنلاین وزن پروفیل» و کنترل وزن مقاطع: https://ahaneiffel.top/tools/steel-weight-calculator/
+
+این نگاشت فقط برای تعیین صفحه مرجع است؛ قیمت، موجودی و زمان تحویل باید از اطلاعات روز و استعلام واقعی گرفته شود و از ایجاد صفحه جایگزین با نیت یکسان خودداری شود.
