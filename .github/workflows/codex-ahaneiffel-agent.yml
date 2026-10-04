@@ -41,37 +41,14 @@ jobs:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           allow-bots: true
           permission-profile: ":workspace"
+          safety-strategy: "drop-sudo"
           prompt-file: .agent/ahaneiffel-agent-prompt.md
           output-file: .agent/codex-last-run.txt
 
       - name: Check for changes
         id: changes
         run: |
-          # Codex's final report is intentionally excluded from the change test.
-          # Detect both tracked and untracked repository changes produced by Codex.
-          if git status --porcelain --untracked-files=all | grep -v '^?? \.agent/codex-last-run\.txt
-
-      - name: Commit changes
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git add -A
-          git commit -m "chore(agent): autonomous SEO maintenance"
-
-      - name: Push branch
-        if: steps.changes.outputs.changed == 'true'
-        run: git push origin "${{ steps.branch.outputs.name }}"
-
-      - name: Open pull request
-        if: steps.changes.outputs.changed == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr create             --base main             --head "${{ steps.branch.outputs.name }}"             --title "chore(agent): autonomous SEO maintenance"             --body-file .agent/codex-last-run.txt
-
-      - name: No-op report
-        if: steps.changes.outputs.changed == 'false'
-        run: echo "Codex found no safe change worth committing."
- | grep -q .; then
+          if git status --porcelain --untracked-files=all | grep -v '^?? \.agent/codex-last-run\.txt$' | grep -q .; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -80,7 +57,7 @@ jobs:
       - name: Commit changes
         if: steps.changes.outputs.changed == 'true'
         run: |
-          git add -A
+          git add -A ':!.agent/codex-last-run.txt'
           git commit -m "chore(agent): autonomous SEO maintenance"
 
       - name: Push branch
@@ -92,7 +69,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr create             --base main             --head "${{ steps.branch.outputs.name }}"             --title "chore(agent): autonomous SEO maintenance"             --body-file .agent/codex-last-run.txt
+          gh pr create \
+            --base main \
+            --head "${{ steps.branch.outputs.name }}" \
+            --title "chore(agent): autonomous SEO maintenance" \
+            --body-file .agent/codex-last-run.txt
 
       - name: No-op report
         if: steps.changes.outputs.changed == 'false'
