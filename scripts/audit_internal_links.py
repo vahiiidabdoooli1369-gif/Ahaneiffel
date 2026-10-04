@@ -25,6 +25,8 @@ def public_url(path):
 
 def resolve_target(raw,source):
     raw=html.unescape(raw).strip()
+    # Ignore JavaScript-generated href templates; they are not literal crawl targets.
+    if re.search(r"\$\{|\+\s*[A-Za-z_$]|[A-Za-z_$][\\w$]*\[[^\\]]+\]", raw): return None
     if not raw or raw.startswith(("#","mailto:","tel:","javascript:","data:")): return None
     parsed=urlparse(raw)
     if parsed.scheme or parsed.netloc:
