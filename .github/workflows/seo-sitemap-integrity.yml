@@ -6,6 +6,10 @@ on:
     paths:
       - 'sitemap*.xml'
       - '.github/workflows/seo-sitemap-integrity.yml'
+  pull_request:
+    paths:
+      - 'sitemap*.xml'
+      - '.github/workflows/seo-sitemap-integrity.yml'
   workflow_dispatch:
 
 permissions:
@@ -18,30 +22,56 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate XML and canonical sitemap hosts
+      - name: Validate sitemap XML, hosts, duplicates and local targets
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          import re
+          from urllib.parse import urlsplit
           import xml.etree.ElementTree as ET
 
+          ROOT = Path('.').resolve()
           files = sorted(Path('.').glob('sitemap*.xml'))
           if not files:
               raise SystemExit('No sitemap files found')
 
           seen = set()
+          all_locs = []
+
+          def local_target(url):
+              parsed = urlsplit(url)
+              path = parsed.path or '/'
+              if parsed.query or parsed.fragment:
+                  raise SystemExit(f'Sitemap URL contains query/fragment: {url}')
+              if path == '/':
+                  return ROOT / 'index.html'
+              clean = path.rstrip('/')
+              return ROOT / clean.lstrip('/') / 'index.html'
+
           for path in files:
-              ET.parse(path)
-              text = path.read_text(encoding='utf-8')
-              urls = re.findall(r'<loc>(.*?)</loc>', text)
-              for url in urls:
-                  if not url.startswith('https://ahaneiffel.top/'):
+              root = ET.parse(path).getroot()
+              for elem in root.iter():
+                  if not elem.tag.endswith('loc') or not elem.text:
+                      continue
+                  url = elem.text.strip()
+                  if not (url == 'https://ahaneiffel.top' or url.startswith('https://ahaneiffel.top/')):
                       raise SystemExit(f'Non-canonical sitemap URL in {path}: {url}')
                   if url in seen:
                       raise SystemExit(f'Duplicate sitemap URL: {url}')
                   seen.add(url)
+                  all_locs.append((path, url))
 
-          print(f'Validated {len(files)} sitemap files and {len(seen)} unique URLs.')
+          missing = []
+          for path, url in all_locs:
+              target = local_target(url)
+              if not target.is_file():
+                  missing.append(f'{path}: {url} -> {target.relative_to(ROOT)}')
+
+          if missing:
+              print('Sitemap URLs without matching local index.html:')
+              print('\n'.join(missing[:100]))
+              raise SystemExit(f'{len(missing)} sitemap targets are missing locally')
+
+          print(f'Validated {len(files)} sitemap files and {len(seen)} unique URLs; all targets exist locally.')
           PY
