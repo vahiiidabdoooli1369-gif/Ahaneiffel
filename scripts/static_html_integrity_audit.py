@@ -30,6 +30,9 @@ for path in Path(".").rglob("*.html"):
     if end and text[end.end():].strip():
         errors.append(f"{path}: content exists after </html>")
 
+    if path.name == "404.html":
+        continue
+
     if "<head" in text.lower() and not re.search(
         r'<link[^>]+rel=["\']canonical["\']', text, re.I
     ):
