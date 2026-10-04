@@ -25,6 +25,28 @@ jobs:
           grep -Fq 'buy-iron/' llms.txt
           grep -Fq '<loc>https://ahaneiffel.top/reference/ai-retrieval-map/</loc>' sitemap-reference.xml
 
+      - name: Validate llms.txt internal page targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          from urllib.parse import urlparse
+          text = Path("llms.txt").read_text(encoding="utf-8")
+          urls = sorted(set(re.findall(r"https://ahaneiffel\.top[^\s)>,]+", text)))
+          assert urls, "No ahaneiffel.top URLs found in llms.txt"
+          for url in urls:
+              path = urlparse(url).path or "/"
+              rel = path.strip("/")
+              target = Path("index.html") if not rel else Path(rel) / "index.html"
+              if not target.is_file():
+                  raise SystemExit(f"Missing llms target: {url} -> {target}")
+          if "https://ahaneiffel.com/" in text or "https://www.ahaneiffel.top/" in text:
+              raise SystemExit("Unexpected alternate-host URL in llms.txt")
+          print(f"AI GEO target audit: {len(urls)} URLs verified")
+          PY
+
       - name: Validate sitemap XML
         shell: bash
         run: |
