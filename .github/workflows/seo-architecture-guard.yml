@@ -2,6 +2,7 @@ name: SEO Architecture Guard
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,5 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - name: Validate site architecture
         run: python3 scripts/seo_architecture_guard.py
