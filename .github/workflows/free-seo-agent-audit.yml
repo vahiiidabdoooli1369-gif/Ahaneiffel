@@ -1,0 +1,159 @@
+name: Ahaneiffel Free SEO Agent - Audit Queue
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: ahaneiffel-free-seo-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Audit live site and repository
+        env:
+          SITE_URL: https://ahaneiffel.top
+        run: |
+          set -euo pipefail
+          mkdir -p .agent/audit
+          python3 - <<'PY'
+          import json, os, re, subprocess, urllib.request
+          from html.parser import HTMLParser
+          from urllib.parse import urljoin, urlparse
+
+          site = os.environ["SITE_URL"].rstrip("/")
+          out = {
+              "site": site,
+              "checks": [],
+              "findings": [],
+              "next_task": None,
+          }
+
+          def fetch(url, timeout=20):
+              req = urllib.request.Request(url, headers={"User-Agent":"Ahaneiffel-Free-SEO-Audit/1.0"})
+              with urllib.request.urlopen(req, timeout=timeout) as r:
+                  return r.status, r.geturl(), r.read(500000).decode("utf-8", "replace")
+
+          class Parser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.title = ""
+                  self.h1 = []
+                  self.canonical = None
+                  self.robots = None
+                  self.jsonlds = []
+                  self.links = []
+                  self.in_title = False
+                  self.in_script = False
+                  self.script_buf = []
+              def handle_starttag(self, tag, attrs):
+                  a = dict(attrs)
+                  if tag == "title": self.in_title = True
+                  if tag == "h1": self.h1.append("")
+                  if tag == "link" and a.get("rel") == "canonical": self.canonical = a.get("href")
+                  if tag == "meta" and a.get("name","").lower() == "robots": self.robots = a.get("content")
+                  if tag == "script" and a.get("type") == "application/ld+json":
+                      self.in_script = True; self.script_buf = []
+                  if tag == "a" and a.get("href"): self.links.append(a["href"])
+              def handle_endtag(self, tag):
+                  if tag == "title": self.in_title = False
+                  if tag == "script" and self.in_script:
+                      self.jsonlds.append("".join(self.script_buf)); self.in_script = False
+              def handle_data(self, data):
+                  if self.in_title: self.title += data.strip()
+                  if self.h1: self.h1[-1] += data.strip()
+                  if self.in_script: self.script_buf.append(data)
+
+          try:
+              status, final_url, html = fetch(site + "/")
+              p = Parser(); p.feed(html)
+              out["checks"].append({"name":"homepage","status":status,"final_url":final_url})
+              if status != 200: out["findings"].append("Homepage is not returning HTTP 200.")
+              if not p.title: out["findings"].append("Homepage has no title.")
+              if len(p.h1) != 1: out["findings"].append(f"Homepage H1 count is {len(p.h1)}; expected exactly 1.")
+              if not p.canonical: out["findings"].append("Homepage has no canonical link.")
+              elif urljoin(site,p.canonical).rstrip("/") != site: out["findings"].append(f"Homepage canonical is {urljoin(site,p.canonical)}.")
+              if p.robots and "noindex" in p.robots.lower(): out["findings"].append("Homepage contains a noindex directive.")
+              bad_json = 0
+              for raw in p.jsonlds:
+                  try: json.loads(raw)
+                  except Exception: bad_json += 1
+              if bad_json: out["findings"].append(f"Homepage contains {bad_json} invalid JSON-LD block(s).")
+          except Exception as e:
+              out["findings"].append("Homepage audit failed: " + str(e))
+
+          for path in ["/robots.txt", "/sitemap.xml"]:
+              try:
+                  status, final_url, body = fetch(site + path)
+                  out["checks"].append({"name":path,"status":status,"final_url":final_url})
+                  if status != 200: out["findings"].append(f"{path} returned HTTP {status}.")
+                  if path == "/robots.txt" and "sitemap:" not in body.lower():
+                      out["findings"].append("robots.txt does not advertise a sitemap.")
+                  if path == "/sitemap.xml" and "<urlset" not in body.lower() and "<sitemapindex" not in body.lower():
+                      out["findings"].append("sitemap.xml does not look like a valid sitemap document.")
+              except Exception as e:
+                  out["findings"].append(f"{path} audit failed: {e}")
+
+          # Repository safety/SEO guardrails.
+          def run(cmd):
+              return subprocess.run(cmd, shell=True, text=True, capture_output=True).stdout.strip()
+
+          workflows = run("find .github/workflows -maxdepth 1 -type f -name '*.yml' -o -name '*.yaml' 2>/dev/null")
+          if "codex-ahaneiffel-agent.yml" in workflows:
+              out["checks"].append({"name":"paid-agent-workflow","status":"present"})
+          if os.path.exists("AGENTS.md"): out["checks"].append({"name":"AGENTS.md","status":"present"})
+          if os.path.exists(".agent/PLANS.md"): out["checks"].append({"name":".agent/PLANS.md","status":"present"})
+
+          # Choose a deterministic queue item; AI execution is intentionally separate.
+          priority = [
+              "Fix crawl/indexability defects before content expansion.",
+              "Fix canonical/robots/sitemap or structured-data defects.",
+              "Improve internal links between product, price, weight and purchase intent pages.",
+              "Improve AI/GEO answer extraction on high-value product pages.",
+              "Improve accessibility/performance without changing business data.",
+          ]
+          out["next_task"] = out["findings"][0] if out["findings"] else priority[0]
+
+          with open(".agent/audit/report.json","w",encoding="utf-8") as f:
+              json.dump(out,f,ensure_ascii=False,indent=2)
+
+          with open(".agent/audit/report.md","w",encoding="utf-8") as f:
+              f.write("# Ahaneiffel Free SEO Agent Audit\n\n")
+              f.write(f"Site: {site}\n\n")
+              f.write("## Findings\n")
+              if out["findings"]:
+                  for x in out["findings"]: f.write(f"- {x}\n")
+              else:
+                  f.write("- No blocking finding detected by this deterministic audit.\n")
+              f.write("\n## Next task for the AI agent\n")
+              f.write(out["next_task"] + "\n")
+              f.write("\n> This workflow does not call OpenAI API and does not modify prices, inventory, customers, orders, or production APIs.\n")
+          PY
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ahaneiffel-free-seo-audit
+          path: .agent/audit/
+
+      - name: Update agent queue issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY="$(cat .agent/audit/report.md)"
+          ISSUE="$(gh issue list --state open --search "Ahaneiffel Free Agent Queue in:title" --json number --jq '.[0].number')"
+          if [ -z "$ISSUE" ]; then
+            gh issue create --title "Ahaneiffel Free Agent Queue" --body "$BODY"
+          else
+            gh issue comment "$ISSUE" --body "$BODY"
+          fi
