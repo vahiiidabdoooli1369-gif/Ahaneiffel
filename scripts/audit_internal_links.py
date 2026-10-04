@@ -1,154 +1,111 @@
 #!/usr/bin/env python3
-"""Audit static HTML internal links, canonicals and orphan indexable pages."""
+"""Audit static HTML internal links, canonicals, orphans and crawl reachability."""
 from __future__ import annotations
-
-import html
-import re
-import sys
-from collections import Counter, defaultdict
+import html,re,sys
+from collections import Counter,defaultdict,deque
 from pathlib import Path
-from urllib.parse import urlparse, unquote
+from urllib.parse import urlparse,unquote
 
-ROOT = Path(__file__).resolve().parents[1]
-SITE_HOSTS = {"ahaneiffel.top", "www.ahaneiffel.top"}
-SKIP_DIRS = {".git", ".github", "node_modules"}
-HREF_RE = re.compile(r"<a\b[^>]*\bhref\s*=\s*([\"'])(.*?)\1", re.I | re.S)
-CANON_RE = re.compile(r'<link\b[^>]*rel\s*=\s*["\'][^"\']*canonical[^"\']*["\'][^>]*href\s*=\s*["\']([^"\']+)', re.I | re.S)
-META_ROBOTS_RE = re.compile(r'<meta\b[^>]*name\s*=\s*["\']robots["\'][^>]*content\s*=\s*["\']([^"\']+)', re.I | re.S)
-
+ROOT=Path(__file__).resolve().parents[1]
+SITE_HOSTS={"ahaneiffel.top","www.ahaneiffel.top"}
+SKIP_DIRS={".git",".github","node_modules"}
+HREF_RE=re.compile(r"<a\b[^>]*\bhref\s*=\s*([\"'])(.*?)\1",re.I|re.S)
+CANON_RE=re.compile(r'<link\b[^>]*rel\s*=\s*[\"\'][^\"\']*canonical[^\"\']*[\"\'][^>]*href\s*=\s*[\"\']([^\"\']+)',re.I|re.S)
+META_ROBOTS_RE=re.compile(r'<meta\b[^>]*name\s*=\s*[\"\']robots[\"\'][^>]*content\s*=\s*[\"\']([^\"\']+)',re.I|re.S)
 
 def html_files():
     for p in ROOT.rglob("*.html"):
-        if any(part in SKIP_DIRS for part in p.parts):
-            continue
-        yield p
+        if not any(part in SKIP_DIRS for part in p.parts): yield p
 
+def public_url(path):
+    rel=path.relative_to(ROOT).as_posix()
+    if rel=="index.html": return "/"
+    if rel.endswith("/index.html"): return "/"+rel[:-10]
+    return "/"+rel
 
-def public_url(path: Path) -> str:
-    rel = path.relative_to(ROOT).as_posix()
-    if rel == "index.html":
-        return "/"
-    if rel.endswith("/index.html"):
-        return "/" + rel[:-10]
-    return "/" + rel
-
-
-def resolve_target(raw: str, source: Path):
-    raw = html.unescape(raw).strip()
-    if any(token in raw for token in ("${", "'+", '"+', "[x]", "[y]")):
-        return None
-    if not raw or raw.startswith(("#", "mailto:", "tel:", "javascript:", "data:")):
-        return None
-    parsed = urlparse(raw)
+def resolve_target(raw,source):
+    raw=html.unescape(raw).strip()
+    if not raw or raw.startswith(("#","mailto:","tel:","javascript:","data:")): return None
+    parsed=urlparse(raw)
     if parsed.scheme or parsed.netloc:
-        if parsed.netloc and parsed.hostname not in SITE_HOSTS:
-            return None
-        if parsed.scheme and parsed.scheme not in {"http", "https"}:
-            return None
-        target_url = unquote(parsed.path or "/")
+        if parsed.netloc and parsed.hostname not in SITE_HOSTS: return None
+        if parsed.scheme and parsed.scheme not in {"http","https"}: return None
+        target=unquote(parsed.path or "/")
     else:
-        target_url = unquote(parsed.path)
-        if target_url.startswith("/"):
-            pass
-        else:
-            candidate = (source.parent / target_url).resolve()
-            try:
-                target_url = "/" + candidate.relative_to(ROOT.resolve()).as_posix()
-            except ValueError:
-                return None
-    target_url = target_url.split("#", 1)[0] or "/"
-    if not target_url.startswith("/"):
-        target_url = "/" + target_url
-    return target_url
+        target=unquote(parsed.path)
+        if not target.startswith("/"):
+            candidate=(source.parent/target).resolve()
+            try: target="/"+candidate.relative_to(ROOT.resolve()).as_posix()
+            except ValueError: return None
+    target=target.split("#",1)[0] or "/"
+    return target if target.startswith("/") else "/"+target
 
-
-def target_file(url_path: str):
-    rel = url_path.lstrip("/")
-    if not rel:
-        return ROOT / "index.html"
-    p = ROOT / rel
-    if p.is_file():
-        return p
-    if p.suffix == "":
-        idx = p / "index.html"
-        if idx.is_file():
-            return idx
-    if p.suffix == ".html":
-        return p if p.is_file() else None
+def target_file(url_path):
+    rel=url_path.lstrip("/")
+    if not rel: return ROOT/"index.html"
+    p=ROOT/rel
+    if p.is_file(): return p
+    if p.suffix=="": 
+        idx=p/"index.html"
+        if idx.is_file(): return idx
+    if p.suffix==".html" and p.is_file(): return p
     return None
 
+def is_indexable(text):
+    m=META_ROBOTS_RE.search(text)
+    return not m or "noindex" not in m.group(1).lower()
 
-def canonical_value(text: str):
-    m = CANON_RE.search(text)
+def canonical_value(text):
+    m=CANON_RE.search(text)
     return html.unescape(m.group(1)).strip() if m else None
 
-
-def is_indexable(text: str):
-    m = META_ROBOTS_RE.search(text)
-    if not m:
-        return True
-    return "noindex" not in m.group(1).lower()
-
-
 def main():
-    pages = list(html_files())
-    inbound = Counter()
-    broken = []
-    www_links = []
-    duplicate_canonicals = defaultdict(list)
-    orphan = []
-
+    pages=list(html_files())
+    page_by_url={public_url(p):p for p in pages}
+    inbound=Counter(); broken=[]; www_links=[]; duplicate_canonicals=defaultdict(list); graph=defaultdict(set)
     for page in pages:
-        text = page.read_text(encoding="utf-8", errors="replace")
-        indexable = is_indexable(text)
-        canon = canonical_value(text)
+        source=public_url(page); text=page.read_text("utf-8",errors="replace")
+        canon=canonical_value(text)
         if canon:
-            parsed = urlparse(canon)
+            parsed=urlparse(canon)
             if parsed.hostname in SITE_HOSTS:
-                cpath = parsed.path or "/"
-                # Canonical collisions are actionable only among indexable pages.
-                if indexable:
-                    duplicate_canonicals[cpath].append(page)
-                if parsed.hostname == "www.ahaneiffel.top":
-                    www_links.append((public_url(page), canon))
-
-        for _, raw in HREF_RE.findall(text):
-            target = resolve_target(raw, page)
-            if target is None:
-                continue
-            parsed = urlparse(raw)
-            if parsed.hostname == "www.ahaneiffel.top":
-                www_links.append((public_url(page), raw))
-            target_page = target_file(target)
-            if target_page is None:
-                broken.append((public_url(page), raw, target))
+                if is_indexable(text): duplicate_canonicals[parsed.path or "/"].append(page)
+                if parsed.hostname=="www.ahaneiffel.top": www_links.append((source,canon))
+        for _,raw in HREF_RE.findall(text):
+            target=resolve_target(raw,page)
+            if target is None: continue
+            parsed=urlparse(raw)
+            if parsed.hostname=="www.ahaneiffel.top": www_links.append((source,raw))
+            target_page=target_file(target)
+            if target_page is None: broken.append((source,raw,target))
             else:
-                inbound[public_url(target_page)] += 1
+                target_url=public_url(target_page); inbound[target_url]+=1
+                if target_url!=source: graph[source].add(target_url)
 
-    for page in pages:
-        u = public_url(page)
-        text = page.read_text(encoding="utf-8", errors="replace")
-        if is_indexable(text) and inbound[u] == 0 and u != "/":
-            orphan.append(u)
+    orphan=[u for u,p in page_by_url.items() if u!="/" and is_indexable(p.read_text("utf-8",errors="replace")) and inbound[u]==0]
+    depth={"/":0}; queue=deque(["/"])
+    while queue:
+        source=queue.popleft()
+        for target in graph.get(source,()):
+            if target not in depth: depth[target]=depth[source]+1; queue.append(target)
+    unreachable=[u for u,p in page_by_url.items() if u!="/" and is_indexable(p.read_text("utf-8",errors="replace")) and u not in depth]
+    deep_pages=sorted(((d,u) for u,d in depth.items() if d>=4),key=lambda x:(-x[0],x[1]))
 
     print(f"HTML pages: {len(pages)}")
     print(f"Broken internal links: {len(broken)}")
-    for src, raw, target in broken[:100]:
-        print(f"BROKEN | {src} | {raw} | resolved={target}")
+    for src,raw,target in broken[:100]: print(f"BROKEN | {src} | {raw} | resolved={target}")
     print(f"www host references: {len(www_links)}")
-    for src, raw in www_links[:100]:
-        print(f"WWW | {src} | {raw}")
-    dupes = {k: v for k, v in duplicate_canonicals.items() if len(v) > 1}
+    for src,raw in www_links[:100]: print(f"WWW | {src} | {raw}")
+    dupes={k:v for k,v in duplicate_canonicals.items() if len(v)>1}
     print(f"Duplicate canonical targets: {len(dupes)}")
-    for target, files in list(dupes.items())[:100]:
-        print("CANONICAL-DUP | " + target + " | " + ", ".join(public_url(p) for p in files))
+    for target,files in list(dupes.items())[:100]: print("CANONICAL-DUP | "+target+" | "+", ".join(public_url(p) for p in files))
     print(f"Indexable orphan pages: {len(orphan)}")
-    for u in orphan[:200]:
-        print(f"ORPHAN | {u}")
-
-    # Broken links are blocking; duplicate canonicals/orphans are reported for SEO follow-up.
+    for u in orphan[:200]: print(f"ORPHAN | {u}")
+    print(f"Indexable pages unreachable from homepage: {len(unreachable)}")
+    for u in unreachable[:200]: print(f"UNREACHABLE | {u}")
+    print(f"Pages at crawl depth >= 4: {len(deep_pages)}")
+    for d,u in deep_pages[:200]: print(f"DEEP | depth={d} | {u}")
     return 1 if broken else 0
 
-
-if __name__ == "__main__":
+if __name__=="__main__":
     sys.exit(main())
