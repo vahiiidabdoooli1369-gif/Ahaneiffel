@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate sitemap XML, hosts, duplicates and local targets
+      - name: Validate sitemap index, URL sets, hosts, duplicates and local targets
         shell: bash
         run: |
           set -euo pipefail
@@ -32,46 +32,54 @@ jobs:
           import xml.etree.ElementTree as ET
 
           ROOT = Path('.').resolve()
+          NS = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
           files = sorted(Path('.').glob('sitemap*.xml'))
           if not files:
               raise SystemExit('No sitemap files found')
 
+          sitemap_files = {p.name for p in files}
           seen = set()
-          all_locs = []
+          url_count = 0
+          child_count = 0
+
+          def canonical(url):
+              return url == 'https://ahaneiffel.top' or url.startswith('https://ahaneiffel.top/')
 
           def local_target(url):
               parsed = urlsplit(url)
-              path = parsed.path or '/'
               if parsed.query or parsed.fragment:
                   raise SystemExit(f'Sitemap URL contains query/fragment: {url}')
+              path = parsed.path or '/'
               if path == '/':
                   return ROOT / 'index.html'
-              clean = path.rstrip('/')
-              return ROOT / clean.lstrip('/') / 'index.html'
+              return ROOT / path.rstrip('/').lstrip('/') / 'index.html'
 
           for path in files:
               root = ET.parse(path).getroot()
-              for elem in root.iter():
-                  if not elem.tag.endswith('loc') or not elem.text:
-                      continue
-                  url = elem.text.strip()
-                  if not (url == 'https://ahaneiffel.top' or url.startswith('https://ahaneiffel.top/')):
-                      raise SystemExit(f'Non-canonical sitemap URL in {path}: {url}')
-                  if url in seen:
-                      raise SystemExit(f'Duplicate sitemap URL: {url}')
-                  seen.add(url)
-                  all_locs.append((path, url))
+              if root.tag.endswith('sitemapindex'):
+                  for node in root.findall('sm:sitemap/sm:loc', NS):
+                      url = (node.text or '').strip()
+                      if not canonical(url):
+                          raise SystemExit(f'Non-canonical sitemap child URL in {path}: {url}')
+                      parsed = urlsplit(url)
+                      target = ROOT / parsed.path.lstrip('/')
+                      if target.name not in sitemap_files or not target.is_file():
+                          raise SystemExit(f'Sitemap index points to missing local sitemap: {url}')
+                      child_count += 1
+              elif root.tag.endswith('urlset'):
+                  for node in root.findall('sm:url/sm:loc', NS):
+                      url = (node.text or '').strip()
+                      if not canonical(url):
+                          raise SystemExit(f'Non-canonical sitemap URL in {path}: {url}')
+                      if url in seen:
+                          raise SystemExit(f'Duplicate sitemap URL: {url}')
+                      seen.add(url)
+                      target = local_target(url)
+                      if not target.is_file():
+                          raise SystemExit(f'Sitemap target missing locally: {url} -> {target.relative_to(ROOT)}')
+                      url_count += 1
+              else:
+                  raise SystemExit(f'Unsupported sitemap XML root in {path}: {root.tag}')
 
-          missing = []
-          for path, url in all_locs:
-              target = local_target(url)
-              if not target.is_file():
-                  missing.append(f'{path}: {url} -> {target.relative_to(ROOT)}')
-
-          if missing:
-              print('Sitemap URLs without matching local index.html:')
-              print('\n'.join(missing[:100]))
-              raise SystemExit(f'{len(missing)} sitemap targets are missing locally')
-
-          print(f'Validated {len(files)} sitemap files and {len(seen)} unique URLs; all targets exist locally.')
+          print(f'Validated {len(files)} sitemap XML files, {child_count} sitemap-index children, and {url_count} unique URL targets.')
           PY
