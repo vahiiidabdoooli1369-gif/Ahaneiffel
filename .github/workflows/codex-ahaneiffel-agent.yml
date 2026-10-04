@@ -1,9 +1,9 @@
 name: Ahaneiffel Autonomous SEO Agent
 
 on:
+  # Scheduled execution is disabled because codex-action uses OpenAI API billing.
+  # Manual dispatch remains available when API quota is configured.
   workflow_dispatch:
-  schedule:
-    - cron: "17 */6 * * *"
 
 permissions:
   contents: write
