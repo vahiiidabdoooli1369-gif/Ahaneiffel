@@ -104,6 +104,46 @@ jobs:
               except Exception as e:
                   out["findings"].append(f"{path} audit failed: {e}")
 
+          # Crawl a bounded sample of sitemap URLs. This is read-only and skips external URLs.
+          urls = []
+          try:
+              _, _, sm = fetch(site + "/sitemap.xml", timeout=20)
+              urls = re.findall(r"<loc>\\s*(.*?)\\s*</loc>", sm, flags=re.I|re.S)
+              urls = [u.strip() for u in urls if u.strip().startswith(site)]
+          except Exception:
+              pass
+          urls = list(dict.fromkeys(urls))[:80]
+          title_map, canonical_map = {}, {}
+          weak = []
+          for u in urls:
+              try:
+                  st, final, body = fetch(u, timeout=12)
+                  q = Parser(); q.feed(body)
+                  title = " ".join(q.title.split())
+                  h1_count = len(q.h1)
+                  can = urljoin(u, q.canonical) if q.canonical else ""
+                  title_key = title.casefold()
+                  if title_key: title_map.setdefault(title_key, []).append(u)
+                  if can: canonical_map.setdefault(can.rstrip("/"), []).append(u)
+                  if st >= 400: weak.append(f"{u} returned HTTP {st}.")
+                  if not title: weak.append(f"{u} has no title.")
+                  if h1_count != 1: weak.append(f"{u} has {h1_count} H1 elements.")
+                  if not q.canonical: weak.append(f"{u} has no canonical.")
+                  if q.robots and "noindex" in q.robots.lower(): weak.append(f"{u} contains noindex.")
+                  for raw in q.jsonlds:
+                      try: json.loads(raw)
+                      except Exception: weak.append(f"{u} contains invalid JSON-LD.")
+                  internal = [x for x in q.links if urljoin(u,x).startswith(site)]
+                  if len(internal) < 2: weak.append(f"{u} has fewer than 2 detected internal links.")
+              except Exception as e:
+                  weak.append(f"{u} could not be audited: {e}")
+          for key, pages in title_map.items():
+              if len(pages) > 1: out["findings"].append("Duplicate title detected on: " + ", ".join(pages[:5]))
+          for key, pages in canonical_map.items():
+              if len(pages) > 1 and len(pages) <= 5: out["findings"].append("Multiple sitemap URLs share canonical " + key + ": " + ", ".join(pages))
+          out["findings"].extend(weak[:40])
+          out["checks"].append({"name":"sitemap-page-crawl","status":"ok","urls_checked":len(urls),"issues_found":len(weak)})
+
           # Repository safety/SEO guardrails.
           def run(cmd):
               return subprocess.run(cmd, shell=True, text=True, capture_output=True).stdout.strip()
