@@ -1,0 +1,75 @@
+name: Ahaneiffel Autonomous SEO Agent
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ahaneiffel-autonomous-agent
+  cancel-in-progress: false
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "Ahaneiffel Agent"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create isolated branch
+        id: branch
+        run: |
+          BRANCH="agent/seo-${GITHUB_RUN_ID}"
+          git checkout -b "$BRANCH"
+          echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Run Codex
+        id: codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          allow-bots: true
+          permission-profile: ":workspace"
+          prompt-file: .agent/ahaneiffel-agent-prompt.md
+          output-file: .agent/codex-last-run.txt
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git add -A
+          git commit -m "chore(agent): autonomous SEO maintenance"
+
+      - name: Push branch
+        if: steps.changes.outputs.changed == 'true'
+        run: git push origin "${{ steps.branch.outputs.name }}"
+
+      - name: Open pull request
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create             --base main             --head "${{ steps.branch.outputs.name }}"             --title "chore(agent): autonomous SEO maintenance"             --body-file .agent/codex-last-run.txt
+
+      - name: No-op report
+        if: steps.changes.outputs.changed == 'false'
+        run: echo "Codex found no safe change worth committing."
