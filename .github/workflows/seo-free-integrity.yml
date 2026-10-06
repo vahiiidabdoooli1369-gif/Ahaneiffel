@@ -1,0 +1,98 @@
+name: Ahaneiffel Free SEO Integrity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ahaneiffel-free-seo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  seo-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate robots.txt
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s robots.txt
+          grep -Fq "User-agent: *" robots.txt
+          grep -Fq "Allow: /" robots.txt
+          grep -Fq "Sitemap: https://ahaneiffel.top/sitemap.xml" robots.txt
+
+      - name: Validate sitemap index
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s sitemap.xml
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+          root = ET.parse("sitemap.xml").getroot()
+
+          if root.tag != "{http://www.sitemaps.org/schemas/sitemap/0.9}sitemapindex":
+              raise SystemExit("sitemap.xml must be a sitemapindex")
+
+          urls = [
+              x.text.strip()
+              for x in root.findall("sm:sitemap/sm:loc", ns)
+              if x.text and x.text.strip()
+          ]
+
+          if not urls:
+              raise SystemExit("sitemap.xml contains no child sitemaps")
+
+          for url in urls:
+              if not url.startswith("https://ahaneiffel.top/"):
+                  raise SystemExit(f"Unexpected sitemap host: {url}")
+
+          print(f"Validated {len(urls)} child sitemaps")
+          PY
+
+      - name: Validate AI/GEO assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s llms.txt
+          test -s reference/ai-retrieval-map/index.html
+          grep -Fq 'rel="canonical"' reference/ai-retrieval-map/index.html
+          grep -Fq 'dateModified' reference/ai-retrieval-map/index.html
+
+      - name: Run existing HTML audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/static_html_integrity_audit.py ]; then
+            python3 scripts/static_html_integrity_audit.py
+          else
+            echo "HTML audit script not present; skipped."
+          fi
+
+      - name: Check accidental hard-coded alternate domain
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE 'https?://(www\.)?ahaneiffel\.com' \
+              --exclude-dir=.git --exclude='*.map' .; then
+            echo "Found references to ahaneiffel.com; review them before merge."
+            exit 1
+          fi
+
+      - name: Summary
+        run: |
+          echo "Ahaneiffel free SEO integrity checks passed."
+          echo "No OpenAI API, paid cloud service, deployment, or production mutation is used."
