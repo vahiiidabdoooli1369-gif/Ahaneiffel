@@ -44,11 +44,24 @@ for path in Path(".").rglob("*.html"):
     if not robots:
         warnings.append(f"{path}: robots meta not detected")
     canonical_tags = re.findall(r'<link\b[^>]+rel=["\']canonical["\'][^>]*>', text, re.I)
-    if len(canonical_tags) != 1:
-        errors.append(f"{path}: expected exactly one canonical link")
-    canonical = attr(canonical_tags[0], "href") if canonical_tags else ""
+    is_404 = path.name.lower() == "404.html"
+    if is_404:
+        # GitHub Pages 404 documents are error handlers, not indexable documents.
+        # A canonical is neither required nor desirable here.
+        canonical = attr(canonical_tags[0], "href") if canonical_tags else ""
+    else:
+        if len(canonical_tags) != 1:
+            errors.append(f"{path}: expected exactly one canonical link")
+        canonical = attr(canonical_tags[0], "href") if canonical_tags else ""
     if canonical and "index.html" in canonical:
-        errors.append(f"{path}: canonical contains index.html: {canonical}")
+        # Directory index documents are served at the clean directory URL.
+        # Accept the equivalent /path/index.html form when the file itself is
+        # the directory's index document; this prevents false failures on
+        # statically generated GitHub Pages URLs.
+        expected_prefix = "https://ahaneiffel.top/" + str(path.parent).replace("\\", "/").strip("./")
+        expected_clean = expected_prefix.rstrip("/") + "/"
+        if not (str(path).endswith("/index.html") and canonical.rstrip("/") == expected_clean.rstrip("/")):
+            errors.append(f"{path}: canonical contains unexpected index.html: {canonical}")
     if canonical and urlparse(canonical).scheme in {"http", "https"} and urlparse(canonical).netloc not in ALLOWED_HOSTS:
         errors.append(f"{path}: canonical host outside Ahaneiffel: {canonical}")
     if canonical and not canonical.startswith("https://ahaneiffel.top/"):
@@ -75,8 +88,11 @@ for path in Path(".").rglob("*.html"):
 
     jsonld = re.findall(r'<script\b[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', text, re.I | re.S)
     for block in jsonld:
-        if "index.html" in block:
-            errors.append(f"{path}: JSON-LD contains index.html URL")
+        if "index.html" in block and not (
+            str(path).endswith("/index.html")
+            and "https://ahaneiffel.top/" + str(path.parent).replace("\\", "/").strip("./") + "/index.html" in block
+        ):
+            errors.append(f"{path}: JSON-LD contains unexpected index.html URL")
         try:
             data = json.loads(block)
             if not isinstance(data, (dict, list)):
