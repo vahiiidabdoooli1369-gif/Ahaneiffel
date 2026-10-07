@@ -58,9 +58,8 @@ for path in Path(".").rglob("*.html"):
         # Accept the equivalent /path/index.html form when the file itself is
         # the directory's index document; this prevents false failures on
         # statically generated GitHub Pages URLs.
-        expected_prefix = "https://ahaneiffel.top/" + str(path.parent).replace("\\", "/").strip("./")
-        expected_clean = expected_prefix.rstrip("/") + "/"
-        if not (str(path).endswith("/index.html") and canonical.rstrip("/") == expected_clean.rstrip("/")):
+        expected_file = "https://ahaneiffel.top/" + str(path).replace("\\", "/").lstrip("./")
+        if not (str(path).endswith("/index.html") and canonical.rstrip("/") == expected_file.rstrip("/")):
             errors.append(f"{path}: canonical contains unexpected index.html: {canonical}")
     if canonical and urlparse(canonical).scheme in {"http", "https"} and urlparse(canonical).netloc not in ALLOWED_HOSTS:
         errors.append(f"{path}: canonical host outside Ahaneiffel: {canonical}")
