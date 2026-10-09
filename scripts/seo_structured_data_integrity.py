@@ -6,24 +6,23 @@ from html import unescape
 from urllib.parse import urlparse
 
 errors = []
-warnings = []
 checked = 0
 skipped = 0
 ALLOWED_HOSTS = {"ahaneiffel.top", "www.ahaneiffel.top"}
 
 def attr(tag, name):
-    match = re.search(r"\\b" + re.escape(name) + r"""\\s*=\\s*["']([^"']*)["']""", tag, re.I)
+    match = re.search(r"\b" + re.escape(name) + r"""\\s*=\\s*["']([^"']*)["']""", tag, re.I)
     return unescape(match.group(1).strip()) if match else ""
 
 for path in Path(".").rglob("*.html"):
     if ".git" in path.parts or "node_modules" in path.parts:
         continue
     text = path.read_text(encoding="utf-8", errors="ignore")
-    if not re.search(r"<!doctype\\s+html|<html\\b", text, re.I):
+    if not re.search(r"<!doctype\s+html|<html\b", text, re.I):
         skipped += 1
         continue
 
-    robots_tags = re.findall(r"<meta\\b[^>]*>", text, re.I)
+    robots_tags = re.findall(r"<meta\b[^>]*>", text, re.I)
     is_noindex = any(
         attr(tag, "name").lower() == "robots"
         and "noindex" in attr(tag, "content").lower()
@@ -34,9 +33,9 @@ for path in Path(".").rglob("*.html"):
         continue
 
     checked += 1
-    canonical_tags = re.findall(r"<link\\b[^>]*>", text, re.I)
+    link_tags = re.findall(r"<link\b[^>]*>", text, re.I)
     canonical_tags = [
-        tag for tag in canonical_tags
+        tag for tag in link_tags
         if "canonical" in attr(tag, "rel").lower().split()
     ]
     if len(canonical_tags) != 1:
@@ -53,7 +52,7 @@ for path in Path(".").rglob("*.html"):
             errors.append(f"{path}: canonical contains unexpected index.html: {canonical}")
 
     jsonld_blocks = re.findall(
-        r'<script\\b[^>]*type=["\\']application/ld\\+json["\\'][^>]*>(.*?)</script\\s*>',
+        r'<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script\s*>',
         text, re.I | re.S
     )
     for block in jsonld_blocks:
@@ -68,8 +67,6 @@ print(
     f"SEO structured-data integrity: {checked} indexable HTML documents checked; "
     f"{skipped} fragments/noindex/404 documents skipped"
 )
-for warning in warnings[:100]:
-    print("WARN", warning)
 for error in errors[:300]:
     print("ERROR", error)
 if errors:
