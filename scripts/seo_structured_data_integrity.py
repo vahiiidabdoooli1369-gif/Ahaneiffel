@@ -9,7 +9,7 @@ errors = []
 checked = 0
 skipped = 0
 ALLOWED_HOSTS = {"ahaneiffel.top", "www.ahaneiffel.top"}
-
+    match = re.search(r"\b" + re.escape(name) + r"""\s*=\s*["']([^"']*)["']""", tag, re.I)
 def attr(tag, name):
     match = re.search(r"\b" + re.escape(name) + r"""\\s*=\\s*["']([^"']*)["']""", tag, re.I)
     return unescape(match.group(1).strip()) if match else ""
