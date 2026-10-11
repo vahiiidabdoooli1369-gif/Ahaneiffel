@@ -88,8 +88,8 @@ jobs:
           set -euo pipefail
           # This script intentionally reads the existing price feed from ahaneiffel.com.
           # Exclude that documented upstream-source reference from the domain guard.
-          if grep -RInE 'https?://(www\\.)?ahaneiffel\\.com' \\
-              --exclude-dir=.git --exclude='*.map' \\
+          if grep -RInE 'https?://(www\.)?ahaneiffel\.com' \
+              --exclude-dir=.git --exclude='*.map' \
               --exclude='update_market_prices.py' .; then
             echo "Found unexpected references to ahaneiffel.com; review them before merge."
             exit 1
