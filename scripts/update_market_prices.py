@@ -10,6 +10,15 @@ import requests
 
 SOURCE_URL = "https://ahaneiffel.com/page/927/قیمت-روز-آهن-آلات-میلگرد-تیرآهن-نبشی-پروفیل/"
 OUT = Path("data/market-prices.json")
+# Daily prices supplied by the site owner are authoritative; never overwrite them with scraped/adjusted values.
+if OUT.exists():
+    try:
+        existing = json.loads(OUT.read_text(encoding="utf-8"))
+        if existing.get("source_type") == "manual-user-provided":
+            print("Keeping manually supplied Ahaneiffel daily prices unchanged")
+            raise SystemExit(0)
+    except (json.JSONDecodeError, OSError):
+        pass
 MIN_PRICE = 1000
 PRICE_OFFSET = -200
 DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
