@@ -19,21 +19,15 @@ document.head.appendChild(st);
   if (!isAnglePage || document.getElementById('ae-angle-image') || document.getElementById('ae-angle-gallery')) return;
 
   const images = [
-    {file:'IMG-20260902-WA0007.jpg', alt:'تصویر نبشی فولادی آهن ایفل'},
-    {file:'IMG_۲۰۲۶۰۸۰۵_۱۰۵۴۳۳.jpg', alt:'نمای محصول نبشی فولادی'},
-    {file:'InShot_۲۰۲۵۰۵۱۵_۱۹۲۴۵۸۴۰۲.jpg', alt:'تصویر دیگر از نبشی آهنی'},
-    {file:'InShot_۲۰۲۵۰۶۰۳_۱۰۰۹۲۹۰۷۴.jpg', alt:'نبشی فولادی برای کاربردهای صنعتی و ساختمانی'},
-    {file:'InShot_۲۰۲۵۰۶۰۹_۱۷۲۵۵۹۷۶۰.jpg', alt:'نمای نزدیک نبشی فولادی'},
-    {file:'Polish_۲۰۲۵۰۵۱۶_۲۱۱۱۴۴۳۱۰.jpg', alt:'تصویر نبشی آهنی'},
-    {file:'b754a6c7707960f3ef383fdf7dc6823b.jpg', alt:'نبشی فولادی در تصاویر محصولات آهن ایفل'},
-    {file:'file_000000004e8881f496f699a98494e3d8.png', alt:'تصویر تکمیلی نبشی فولادی'}
+    {file:'6882178_1791215863_f9f79c033f86ea4f.jpg', alt:'عکس واقعی نبشی فولادی آهن ایفل'},
+    {file:'5840794_1788807556_47050c2b07bd3293 (1).jpg', alt:'نمای واقعی نبشی فولادی آهن ایفل'}
   ];
-  const imageUrl = file => encodeURI('/' + file);
+  const imageUrl = file => '/' + file.split('/').map(encodeURIComponent).join('/');
   const setImageSource = (img, file) => {
     img.onerror = () => {
       if (img.dataset.aeFallback === '1') return;
       img.dataset.aeFallback = '1';
-      img.src = 'https://raw.githubusercontent.com/vahiiidabdoooli1369-gif/Ahaneiffel/main/' + encodeURIComponent(file);
+      img.src = 'https://raw.githubusercontent.com/vahiiidabdoooli1369-gif/Ahaneiffel/main/' + file.split('/').map(encodeURIComponent).join('/');
     };
     img.src = imageUrl(file);
   };
