@@ -19,8 +19,14 @@ document.head.appendChild(st);
   if (!isAnglePage || document.getElementById('ae-angle-image') || document.getElementById('ae-angle-gallery')) return;
 
   const images = [
-    {file:'6882178_1791215863_f9f79c033f86ea4f.jpg', alt:'عکس واقعی نبشی فولادی آهن ایفل'},
-    {file:'5840794_1788807556_47050c2b07bd3293 (1).jpg', alt:'نمای واقعی نبشی فولادی آهن ایفل'}
+    {file:"IMG-20260902-WA0007.jpg", alt:"عکس واقعی نبشی فولادی آهن ایفل 1"},
+    {file:"IMG_۲۰۲۶۰۸۰۵_۱۰۵۴۳۳.jpg", alt:"عکس واقعی نبشی فولادی آهن ایفل 2"},
+    {file:"InShot_۲۰۲۵۰۵۱۵_۱۹۲۴۵۸۴۰۲.jpg", alt:"عکس واقعی نبشی فولادی آهن ایفل 3"},
+    {file:"InShot_۲۰۲۵۰۶۰۳_۱۰۰۹۲۹۰۷۴.jpg", alt:"عکس واقعی نبشی فولادی آهن ایفل 4"},
+    {file:"InShot_۲۰۲۵۰۶۰۹_۱۷۲۵۵۹۷۶۰.jpg", alt:"عکس واقعی نبشی فولادی آهن ایفل 5"},
+    {file:"Polish_۲۰۲۵۰۵۱۶_۲۱۱۱۴۴۳۱۰.jpg", alt:"عکس واقعی نبشی فولادی آهن ایفل 6"},
+    {file:"b754a6c7707960f3ef383fdf7dc6823b.jpg", alt:"عکس واقعی نبشی فولادی آهن ایفل 7"},
+    {file:"file_000000004e8881f496f699a98494e3d8.png", alt:"عکس واقعی نبشی فولادی آهن ایفل 8"}
   ];
   const imageUrl = file => '/' + file.split('/').map(encodeURIComponent).join('/');
   const setImageSource = (img, file) => {
