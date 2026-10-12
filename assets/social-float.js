@@ -29,6 +29,14 @@ document.head.appendChild(st);
     {file:'file_000000004e8881f496f699a98494e3d8.png', alt:'تصویر تکمیلی نبشی فولادی'}
   ];
   const imageUrl = file => encodeURI('/' + file);
+  const setImageSource = (img, file) => {
+    img.onerror = () => {
+      if (img.dataset.aeFallback === '1') return;
+      img.dataset.aeFallback = '1';
+      img.src = 'https://raw.githubusercontent.com/vahiiidabdoooli1369-gif/Ahaneiffel/main/' + encodeURIComponent(file);
+    };
+    img.src = imageUrl(file);
+  };
   const style = document.createElement('style');
   style.textContent = `
     .ae-angle-image{margin:18px auto 24px;max-width:1100px;text-align:center}
@@ -58,7 +66,7 @@ document.head.appendChild(st);
       const figure = document.createElement('figure');
       figure.className = 'ae-angle-gallery-card';
       const img = document.createElement('img');
-      img.src = imageUrl(item.file);
+      setImageSource(img, item.file);
       img.alt = item.alt;
       img.loading = 'lazy';
       img.decoding = 'async';
@@ -84,7 +92,7 @@ document.head.appendChild(st);
   figure.id = 'ae-angle-image';
   figure.className = 'ae-angle-image';
   const img = document.createElement('img');
-  img.src = imageUrl(item.file);
+  setImageSource(img, item.file);
   img.alt = item.alt;
   img.width = 1200;
   img.height = 700;
