@@ -79,6 +79,7 @@ document.head.appendChild(st);
   const sizes = ['30x30','40x40','50x50','60x60','80x80','100x100'];
   const size = sizes.find(value => p.includes('/' + value + '/')) || '30x30';
   const sizeIndex = sizes.indexOf(size);
+  const item = images[sizeIndex] || images[0];
   const figure = document.createElement('figure');
   figure.id = 'ae-angle-image';
   figure.className = 'ae-angle-image';
