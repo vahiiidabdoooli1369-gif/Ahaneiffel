@@ -46,7 +46,7 @@ document.head.appendChild(st);
   `;
   document.head.appendChild(style);
 
-  const isHub = /\\/products\\/angle\\/(?:index\\.html)?$/.test(p) || p.endsWith('/products/angle/');
+  const isHub = p.endsWith('/products/angle/') || p.endsWith('/products/angle/index.html');
   if (isHub) {
     const gallery = document.createElement('section');
     gallery.id = 'ae-angle-gallery';
@@ -76,9 +76,9 @@ document.head.appendChild(st);
   }
 
   const main = document.querySelector('main') || document.body;
-  const pathMatch = p.match(/\\/(30x30|40x40|50x50|60x60|80x80|100x100)(?:\\/|$)/);
-  const sizeIndex = pathMatch ? ({'30x30':0,'40x40':1,'50x50':2,'60x60':3,'80x80':4,'100x100':5}[pathMatch[1]]) : 0;
-  const item = images[sizeIndex] || images[0];
+  const sizes = ['30x30','40x40','50x50','60x60','80x80','100x100'];
+  const size = sizes.find(value => p.includes('/' + value + '/')) || '30x30';
+  const sizeIndex = sizes.indexOf(size);
   const figure = document.createElement('figure');
   figure.id = 'ae-angle-image';
   figure.className = 'ae-angle-image';
