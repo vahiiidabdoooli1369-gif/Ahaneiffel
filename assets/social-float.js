@@ -10,21 +10,88 @@ document.body.appendChild(box);
 const st=document.createElement("style");st.textContent=`.ahaneiffel-social-float{position:fixed;left:10px;top:50%;transform:translateY(-50%);z-index:99999;display:flex;flex-direction:column;gap:9px;direction:ltr}.aef-social{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff;box-shadow:0 5px 18px rgba(0,0,0,.22);transition:transform .2s ease,width .2s ease;border:2px solid rgba(255,255,255,.9);overflow:hidden}.aef-social:hover{transform:scale(1.08)}.aef-icon{width:27px;height:27px;display:flex}.aef-icon svg{width:100%;height:100%}.aef-label{position:absolute;left:58px;background:#0b1522;color:#fff;padding:7px 10px;border-radius:8px;white-space:nowrap;font-size:13px;opacity:0;pointer-events:none;transform:translateX(-5px);transition:.2s}.aef-social:hover .aef-label,.aef-social:focus-visible .aef-label{opacity:1;transform:none}.aef-social.whatsapp{background:#25D366}.aef-social.rubika{background:#7b2cff}.aef-social.bale{background:#168de2}@media(max-width:600px){.ahaneiffel-social-float{left:7px;gap:7px}.aef-social{width:42px;height:42px}.aef-icon{width:23px;height:23px}.aef-label{display:none}}`;
 document.head.appendChild(st);
 })();
-// نمایش تصویر اختصاصی نبشی در همه صفحات مرتبط با نبشی
-(()=>{
-  const p=decodeURIComponent(location.pathname).toLowerCase();
-  const h1=(document.querySelector('main h1')||document.querySelector('h1'))?.textContent?.toLowerCase()||'';
-  const title=(document.title||'').toLowerCase();
-  const isAnglePage=p.includes('/angle/') || p.includes('/angle-') || p.includes('نبشی') || h1.includes('نبشی') || title.includes('نبشی');
-  if(!isAnglePage || document.getElementById('ae-angle-image')) return;
-  const wrap=document.createElement('figure');
-  wrap.id='ae-angle-image';
-  wrap.className='ae-angle-image';
-  wrap.innerHTML='<img alt="نبشی فولادی آهن ایفل" width="180" height="180" loading="eager" decoding="async" src="data:image/jpeg;base64,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"><figcaption>نبشی فولادی؛ خرید و استعلام از آهن ایفل</figcaption>';
-  const main=document.querySelector('main')||document.body;
-  const first=main.querySelector('h1');
-  if(first && first.parentNode) first.parentNode.insertBefore(wrap, first.nextSibling); else main.prepend(wrap);
-  const st=document.createElement('style');
-  st.textContent='.ae-angle-image{margin:18px auto 24px;max-width:1200px;text-align:center}.ae-angle-image img{display:block;width:100%;height:auto;border-radius:18px;box-shadow:0 10px 35px rgba(0,0,0,.14);object-fit:cover}.ae-angle-image figcaption{margin-top:8px;font-size:13px;color:#5b6673}.ae-angle-image+*{margin-top:0}';
-  document.head.appendChild(st);
+// نمایش تصاویر واقعی نبشی در هاب و صفحات سایز نبشی
+(()=> {
+  const p = decodeURIComponent(location.pathname).toLowerCase();
+  const h1 = document.querySelector('main h1') || document.querySelector('h1');
+  const title = (document.title || '').toLowerCase();
+  const isAnglePage = p.includes('/products/angle/') || p.includes('/angle-') || p.includes('نبشی') || (h1 && h1.textContent.toLowerCase().includes('نبشی')) || title.includes('نبشی');
+  if (!isAnglePage || document.getElementById('ae-angle-image') || document.getElementById('ae-angle-gallery')) return;
+
+  const images = [
+    {file:'IMG-20260902-WA0007.jpg', alt:'تصویر نبشی فولادی آهن ایفل'},
+    {file:'IMG_۲۰۲۶۰۸۰۵_۱۰۵۴۳۳.jpg', alt:'نمای محصول نبشی فولادی'},
+    {file:'InShot_۲۰۲۵۰۵۱۵_۱۹۲۴۵۸۴۰۲.jpg', alt:'تصویر دیگر از نبشی آهنی'},
+    {file:'InShot_۲۰۲۵۰۶۰۳_۱۰۰۹۲۹۰۷۴.jpg', alt:'نبشی فولادی برای کاربردهای صنعتی و ساختمانی'},
+    {file:'InShot_۲۰۲۵۰۶۰۹_۱۷۲۵۵۹۷۶۰.jpg', alt:'نمای نزدیک نبشی فولادی'},
+    {file:'Polish_۲۰۲۵۰۵۱۶_۲۱۱۱۴۴۳۱۰.jpg', alt:'تصویر نبشی آهنی'},
+    {file:'b754a6c7707960f3ef383fdf7dc6823b.jpg', alt:'نبشی فولادی در تصاویر محصولات آهن ایفل'},
+    {file:'file_000000004e8881f496f699a98494e3d8.png', alt:'تصویر تکمیلی نبشی فولادی'}
+  ];
+  const imageUrl = file => encodeURI('/' + file);
+  const style = document.createElement('style');
+  style.textContent = `
+    .ae-angle-image{margin:18px auto 24px;max-width:1100px;text-align:center}
+    .ae-angle-image img{display:block;width:100%;max-height:520px;object-fit:contain;background:#fff;border:1px solid #e6edf5;border-radius:18px;box-shadow:0 10px 30px rgba(10,42,80,.10)}
+    .ae-angle-image figcaption{margin-top:8px;font-size:13px;color:#5b6673}
+    .ae-angle-gallery{margin:26px 0;padding:clamp(14px,3vw,24px);background:#fff;border:1px solid #e5edf6;border-radius:20px;box-shadow:0 12px 34px rgba(10,42,80,.07)}
+    .ae-angle-gallery h2{margin:0 0 8px;color:#123c68;font-size:clamp(20px,3vw,28px)}
+    .ae-angle-gallery>p{margin:0 0 18px;color:#526477;line-height:1.9}
+    .ae-angle-gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .ae-angle-gallery-card{min-width:0;margin:0;padding:9px;border:1px solid #e7edf4;border-radius:14px;background:#f9fbfe}
+    .ae-angle-gallery-card img{display:block;width:100%;height:190px;object-fit:contain;background:#fff;border-radius:10px}
+    .ae-angle-gallery-card figcaption{padding:8px 2px 2px;text-align:center;font-size:13px;color:#334b63}
+    @media(max-width:760px){.ae-angle-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ae-angle-gallery-card img{height:150px}}
+    @media(max-width:380px){.ae-angle-gallery-grid{grid-template-columns:1fr}.ae-angle-gallery-card img{height:210px}}
+  `;
+  document.head.appendChild(style);
+
+  const isHub = /\\/products\\/angle\\/(?:index\\.html)?$/.test(p) || p.endsWith('/products/angle/');
+  if (isHub) {
+    const gallery = document.createElement('section');
+    gallery.id = 'ae-angle-gallery';
+    gallery.className = 'ae-angle-gallery';
+    gallery.setAttribute('aria-labelledby','ae-angle-gallery-title');
+    gallery.innerHTML = '<h2 id="ae-angle-gallery-title">گالری تصاویر نبشی آهنی</h2><p>نمونه تصاویر نبشی برای بررسی محصول و انتخاب پیش از استعلام از آهن ایفل.</p><div class="ae-angle-gallery-grid"></div>';
+    const grid = gallery.querySelector('.ae-angle-gallery-grid');
+    images.forEach((item, i) => {
+      const figure = document.createElement('figure');
+      figure.className = 'ae-angle-gallery-card';
+      const img = document.createElement('img');
+      img.src = imageUrl(item.file);
+      img.alt = item.alt;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.width = 480;
+      img.height = 360;
+      const caption = document.createElement('figcaption');
+      caption.textContent = 'تصویر نبشی فولادی ' + (i + 1);
+      figure.append(img, caption);
+      grid.appendChild(figure);
+    });
+    const hero = document.querySelector('main .hero');
+    if (hero && hero.parentNode) hero.parentNode.insertBefore(gallery, hero.nextSibling);
+    else (document.querySelector('main') || document.body).appendChild(gallery);
+    return;
+  }
+
+  const main = document.querySelector('main') || document.body;
+  const pathMatch = p.match(/\\/(30x30|40x40|50x50|60x60|80x80|100x100)(?:\\/|$)/);
+  const sizeIndex = pathMatch ? ({'30x30':0,'40x40':1,'50x50':2,'60x60':3,'80x80':4,'100x100':5}[pathMatch[1]]) : 0;
+  const item = images[sizeIndex] || images[0];
+  const figure = document.createElement('figure');
+  figure.id = 'ae-angle-image';
+  figure.className = 'ae-angle-image';
+  const img = document.createElement('img');
+  img.src = imageUrl(item.file);
+  img.alt = item.alt;
+  img.width = 1200;
+  img.height = 700;
+  img.loading = 'eager';
+  img.decoding = 'async';
+  const caption = document.createElement('figcaption');
+  caption.textContent = 'تصویر نبشی فولادی | آهن ایفل';
+  figure.append(img, caption);
+  if (h1 && h1.parentNode) h1.parentNode.insertBefore(figure, h1.nextSibling);
+  else main.prepend(figure);
 })();
