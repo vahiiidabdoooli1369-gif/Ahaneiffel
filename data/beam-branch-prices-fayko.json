@@ -1,0 +1,49 @@
+{
+  "source": "User-provided daily beam price list for Ahaneiffel",
+  "source_type": "manual-user-provided",
+  "published_date": "۱۴۰۵/۰۷/۲۰",
+  "currency": "تومان",
+  "unit": "شاخه",
+  "manufacturer": "فایکو",
+  "updated_at_utc": "2026-10-12T20:00:00Z",
+  "price_adjustment_toman_per_unit": 0,
+  "price_adjustment_note": "قیمت‌ها عیناً از فهرست ارسالی کاربر ثبت شده‌اند؛ موجودی و قیمت نهایی هنگام سفارش تأیید شود.",
+  "rows": [
+    {
+      "size": 12,
+      "price": 20500000
+    },
+    {
+      "size": 14,
+      "price": 14800000
+    },
+    {
+      "size": 16,
+      "price": 19265000
+    },
+    {
+      "size": 18,
+      "price": 24090000
+    },
+    {
+      "size": 20,
+      "price": 32000000
+    },
+    {
+      "size": 22,
+      "price": 41100000
+    },
+    {
+      "size": 24,
+      "price": 41000000
+    },
+    {
+      "size": 27,
+      "price": 61336000
+    },
+    {
+      "size": 30,
+      "price": 89090000
+    }
+  ]
+}
