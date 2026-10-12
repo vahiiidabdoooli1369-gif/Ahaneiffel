@@ -1,6 +1,6 @@
 (function () {
   const feedUrl = "/data/market-prices.json";
-  const STALE_MS = 2 * 60 * 60 * 1000;
+  const STALE_MS = 26 * 60 * 60 * 1000;
   const normalize = s => String(s || "").replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[\u0660-\u0669]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/,/g, "").replace(/\s+/g, " ").trim();
   const tokens = s => normalize(s).toLowerCase().match(/[a-zآ-ی]+|\d+(?:\.\d+)?/g) || [];
   const score = (a, b) => {
@@ -25,9 +25,9 @@
     document.querySelectorAll(".live-price-meta").forEach(el => el.remove());
     const meta = document.createElement("p");
     meta.className = "last-update live-price-meta";
-    meta.textContent = "آخرین دریافت قیمت: " + (Number.isFinite(updatedAt)
-      ? new Date(updatedAt).toLocaleString("fa-IR")
-      : "زمان نامشخص");
+    meta.textContent = data.published_date
+      ? "تاریخ اعلام قیمت: " + data.published_date + " | واحد: " + (data.unit || "نیازمند تأیید") + " | مبالغ به " + (data.currency || "تومان")
+      : "آخرین دریافت قیمت: " + (Number.isFinite(updatedAt) ? new Date(updatedAt).toLocaleString("fa-IR") : "زمان نامشخص");
     if (!isFresh) meta.textContent += " — قیمت ها نیازمند بررسی هستند";
     const anchor = document.querySelector(".price-section, .price-table-card, .section, .hero");
     if (anchor) anchor.prepend(meta);
