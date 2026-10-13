@@ -1,4 +1,4 @@
-name: Normalize Persian spacing
+name: Persian Typography Audit
 
 on:
   push:
@@ -6,54 +6,61 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ahaneiffel-persian-typography-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  normalize:
+  typography-audit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Remove zero-width non-joiners from text content
+      - name: Audit Persian text without rewriting content
         shell: python
         run: |
           from pathlib import Path
 
-          root = Path('.')
+          root = Path(".")
           extensions = {
-              '.html', '.htm', '.md', '.txt', '.xml', '.json', '.css', '.js', '.mjs',
-              '.svg', '.yml', '.yaml', '.csv', '.ts', '.tsx', '.jsx'
+              ".html", ".htm", ".md", ".txt", ".xml", ".json",
+              ".css", ".js", ".mjs", ".svg", ".yml", ".yaml",
+              ".csv", ".ts", ".tsx", ".jsx"
           }
-          changed = []
+          files_scanned = 0
+          zwnj_files = []
+          decode_errors = []
 
-          for path in root.rglob('*'):
-              if not path.is_file() or '.git' in path.parts or path.suffix.lower() not in extensions:
+          for path in root.rglob("*"):
+              if not path.is_file() or ".git" in path.parts:
+                  continue
+              if path.suffix.lower() not in extensions:
                   continue
               try:
-                  text = path.read_text(encoding='utf-8')
-              except (UnicodeDecodeError, OSError):
+                  content = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  decode_errors.append(str(path))
                   continue
-              normalized = text.replace('\u200c', ' ')
-              if normalized != text:
-                  path.write_text(normalized, encoding='utf-8', newline='')
-                  changed.append(str(path))
+              except OSError as exc:
+                  print(f"WARNING: Could not read {path}: {exc}")
+                  continue
 
-          print(f'Normalized files: {len(changed)}')
-          for item in changed:
-              print(item)
+              files_scanned += 1
+              if "\\u200c" in content:
+                  zwnj_files.append(str(path))
 
-      - name: Commit normalized files
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No zero-width non-joiners found."
-            exit 0
-          fi
-          git commit -m "SEO: normalize Persian spacing without half-spaces"
-          git push origin main
+          print(f"Scanned {files_scanned} text files.")
+          print(f"Files containing Persian half-space (ZWNJ): {len(zwnj_files)}")
+          print("Persian half-spaces are preserved; this workflow does not rewrite or commit site content.")
+          for path in zwnj_files[:100]:
+              print(f"INFO: {path}")
+
+          if decode_errors:
+              print(f"WARNING: {len(decode_errors)} files were not valid UTF-8.")
+              for path in decode_errors[:50]:
+                  print(f"WARNING: {path}")
+
+          print("Persian typography audit completed.")
