@@ -2,6 +2,7 @@
 from pathlib import Path
 from html.parser import HTMLParser
 from collections import Counter
+from urllib.parse import urljoin, urlparse
 import json, re, sys
 
 ROOT = Path(".")
@@ -25,7 +26,6 @@ CHECK_NAMES = [
 class P(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.tags = []
         self.attrs = []
         self.links = []
         self.images = []
@@ -33,48 +33,101 @@ class P(HTMLParser):
         self.title = ""
         self.in_title = False
 
-    def handle_starttag(self, t, a):
-        d = dict(a)
-        self.tags.append(t)
-        self.attrs.append((t, d))
-        if t == "a" and d.get("href"):
-            self.links.append(d["href"])
-        if t == "img":
-            self.images.append(d)
-        if t == "h1":
+    def handle_starttag(self, tag, attrs):
+        data = dict(attrs)
+        self.attrs.append((tag, data))
+        if tag == "a" and data.get("href"):
+            self.links.append(data["href"])
+        if tag == "img":
+            self.images.append(data)
+        if tag == "h1":
             self.h1 += 1
-        if t == "title":
+        if tag == "title":
             self.in_title = True
 
-    def handle_endtag(self, t):
-        if t == "title":
+    def handle_endtag(self, tag):
+        if tag == "title":
             self.in_title = False
 
-    def handle_data(self, d):
+    def handle_data(self, data):
         if self.in_title:
-            self.title += d
+            self.title += data
 
-def checks(path, html):
-    p = P()
+def parse_page(html):
+    parser = P()
     try:
-        p.feed(html)
+        parser.feed(html)
     except Exception:
         pass
-    canon = re.findall(r"""<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)""", html, re.I)
-    desc = re.findall(r"""<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)""", html, re.I)
-    viewport = re.search(r"""<meta[^>]+name=["']viewport["']""", html, re.I)
-    lang = re.search(r"""<html[^>]+lang=["']([^"']+)""", html, re.I)
-    json_blocks = re.findall(r"""<script[^>]+type=["']application/ld\+json["'][^>]*>(.*?)</script>""", html, re.I | re.S)
+    return parser
+
+def canonical_urls(parser):
+    return [
+        attrs.get("href", "")
+        for tag, attrs in parser.attrs
+        if tag == "link" and "canonical" in attrs.get("rel", "").lower().split() and attrs.get("href")
+    ]
+
+def redirect_info(path, html, parser):
+    robots_noindex = any(
+        tag == "meta" and attrs.get("name", "").lower() == "robots"
+        and "noindex" in attrs.get("content", "").lower()
+        for tag, attrs in parser.attrs
+    )
+    refresh_target = None
+    for tag, attrs in parser.attrs:
+        if tag == "meta" and attrs.get("http-equiv", "").lower() == "refresh":
+            match = re.search(r"""url\s*=\s*['"]?([^;'"]+)""", attrs.get("content", ""), re.I)
+            if match:
+                refresh_target = match.group(1).strip()
+                break
+    js_match = re.search(r"""location\.(?:replace|assign)\(\s*['"]([^'"]+)['"]\s*\)""", html, re.I)
+    target = refresh_target or (js_match.group(1).strip() if js_match else None)
+    is_stub = bool(robots_noindex and target)
+    canon = canonical_urls(parser)
+    if not is_stub:
+        return None
+    source_dir = path.parent.as_posix()
+    base_url = BASE + "/" if source_dir == "." else BASE + "/" + source_dir.strip("/") + "/"
+    target_url = urljoin(base_url, target)
+    canonical_url = canon[0] if len(canon) == 1 else ""
+    target_path = urlparse(target_url).path.rstrip("/") or "/"
+    canonical_path = urlparse(canonical_url).path.rstrip("/") or "/" if canonical_url else ""
+    valid = bool(target and len(canon) == 1 and urlparse(target_url).netloc == urlparse(BASE).netloc
+                 and urlparse(canonical_url).netloc == urlparse(BASE).netloc
+                 and target_path == canonical_path)
+    return {"target": target, "resolved_target": target_url, "canonical": canonical_url, "valid": valid}
+
+def checks(path, html, p):
+    canon = canonical_urls(p)
+    desc = [
+        attrs.get("content", "")
+        for tag, attrs in p.attrs
+        if tag == "meta" and attrs.get("name", "").lower() == "description"
+    ]
+    viewport = any(tag == "meta" and "viewport" in attrs.get("name", "").lower() for tag, attrs in p.attrs)
+    lang = next((attrs.get("lang", "") for tag, attrs in p.attrs if tag == "html"), "")
+    charset = any(tag == "meta" and attrs.get("charset") for tag, attrs in p.attrs)
+    robots_noindex = any(
+        tag == "meta" and attrs.get("name", "").lower() == "robots"
+        and "noindex" in attrs.get("content", "").lower()
+        for tag, attrs in p.attrs
+    )
+    json_blocks = re.findall(r"""<script\b[^>]*type\s*=\s*["']application/ld\+json["'][^>]*>(.*?)</script>""", html, re.I | re.S)
     schemas = []
     invalid = 0
     for block in json_blocks:
         try:
             obj = json.loads(block)
-            schemas.append(obj.get("@type") if isinstance(obj, dict) else "")
+            if isinstance(obj, dict):
+                schemas.extend(obj.get("@type", []) if isinstance(obj.get("@type"), list) else [obj.get("@type", "")])
+            else:
+                invalid += 1
         except Exception:
             invalid += 1
     internal = [x for x in p.links if x.startswith("/") or x.startswith(BASE)]
     unique_internal = len(set(internal))
+    is_homepage = path == ROOT / "index.html"
     tests = [
         bool(re.search(r"<!doctype html", html, re.I)),
         bool(re.search(r"<html\b", html, re.I)),
@@ -83,39 +136,42 @@ def checks(path, html):
         bool(re.search(r"</head>", html, re.I)),
         bool(re.search(r"<body\b", html, re.I)),
         bool(re.search(r"</body>", html, re.I)),
-        bool(re.search(r"<meta[^>]+charset=", html, re.I)),
-        bool(viewport), bool(lang), bool(p.title.strip()),
+        charset, viewport, bool(lang), bool(p.title.strip()),
         10 <= len(p.title.strip()) <= 75,
         len(desc) == 1,
         80 <= len(desc[0]) <= 180 if desc else False,
         len(canon) == 1,
-        canon[0].startswith(BASE) if canon else False,
-        canon[0].endswith("/") if canon else False,
+        urlparse(canon[0]).netloc == urlparse(BASE).netloc if canon else False,
+        urlparse(canon[0]).path.endswith("/") if canon else False,
         p.h1 == 1, len(internal) >= 3, unique_internal >= 3,
         len(set(p.links)) >= len(p.links) * 0.75 if p.links else False,
-        all(i.get("alt") is not None for i in p.images),
+        all(img.get("alt") is not None for img in p.images),
         invalid == 0,
-        "BreadcrumbList" in schemas or path.name != "index.html",
+        ("BreadcrumbList" in schemas) if is_homepage else True,
         schemas.count("WebPage") <= 1,
         "ProductGroup" not in schemas,
-        not bool(re.search(r"""<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex""", html, re.I)),
+        not robots_noindex,
     ]
     failed = [name for name, ok in zip(CHECK_NAMES, tests) if not ok]
-    meta = {
+    return tests, {
         "schemas": schemas, "invalid_jsonld": invalid, "canon": canon[:1],
-        "h1": p.h1, "internal": len(internal), "unique_internal": unique_internal,
-        "failed_checks": failed
+        "h1": p.h1, "unique_internal": unique_internal, "failed_checks": failed
     }
-    return tests, meta
 
 total = 0
 passed = 0
 critical = []
 rows = []
+redirect_rows = []
 failure_counts = Counter()
 for path in pages:
     html = path.read_text("utf-8", errors="replace")
-    tests, meta = checks(path, html)
+    parser = parse_page(html)
+    redirect = redirect_info(path, html, parser)
+    if redirect:
+        redirect_rows.append((str(path), redirect))
+        continue
+    tests, meta = checks(path, html, parser)
     total += len(tests)
     passed += sum(bool(x) for x in tests)
     failure_counts.update(meta["failed_checks"])
@@ -126,24 +182,31 @@ for path in pages:
 report = ROOT / "seo-500-point-report.md"
 with report.open("w", encoding="utf-8") as f:
     f.write("# Ahaneiffel 500+ Point SEO Guard\n\n")
-    f.write(f"- HTML pages scanned: **{len(pages)}**\n- Checks executed: **{total}**\n- Passed: **{passed}**\n- Failed: **{total-passed}**\n- Critical files: **{len(critical)}**\n\n")
-    f.write("## Failed checks by category\n\n|Check|Failures|\n|---|---:|\n")
+    f.write(f"- HTML files discovered: **{len(pages)}**\n- Redirect stubs separately audited: **{len(redirect_rows)}**\n- Content pages audited: **{len(rows)}**\n- Checks executed on content pages: **{total}**\n- Passed: **{passed}**\n- Failed: **{total-passed}**\n- Critical content pages: **{len(critical)}**\n\n")
+    f.write("## Failed checks by category (content pages only)\n\n|Check|Failures|\n|---|---:|\n")
     for name, count in failure_counts.most_common():
         f.write(f"|{name}|{count}|\n")
-    f.write("\n## Per-page results\n\n|Page|Pass|Total|Failed checks|Schema|Invalid JSON-LD|Canonical|H1|Unique internal links|\n|---|---:|---:|---|---|---:|---|---:|---:|\n")
+    f.write("\n## Redirect stubs\n\n|File|Target|Canonical|Redirect/canonical match|\n|---|---|---|---|\n")
+    for path, info in redirect_rows:
+        f.write(f"|{path}|{info['resolved_target']}|{info['canonical'] or '-'}|{'PASS' if info['valid'] else 'CHECK'}|\n")
+    f.write("\n## Content page results\n\n|Page|Pass|Total|Failed checks|Schema types|Invalid JSON-LD|Canonical|H1|Unique internal links|\n|---|---:|---:|---|---|---:|---|---:|---:|\n")
     for path, ok, count, meta in rows:
         failed = ", ".join(meta["failed_checks"]) or "—"
         f.write(f"|{path}|{ok}|{count}|{failed}|{','.join(map(str, meta['schemas']))}|{meta['invalid_jsonld']}|{meta['canon'][0] if meta['canon'] else '-'}|{meta['h1']}|{meta['unique_internal']}|\n")
-    f.write("\n## Critical files\n")
+    f.write("\n## Critical content pages\n")
     for path in critical[:200]:
         f.write(f"- {path}\n")
 
-print(f"SCANNED={len(pages)} CHECKS={total} PASSED={passed} FAILED={total-passed} CRITICAL={len(critical)}")
+print(f"FILES={len(pages)} REDIRECT_STUBS={len(redirect_rows)} CONTENT_PAGES={len(rows)} CHECKS={total} PASSED={passed} FAILED={total-passed} CRITICAL={len(critical)}")
 print("FAILURE_BREAKDOWN:")
 for name, count in failure_counts.most_common():
     print(f"  {name}={count}")
-print("CRITICAL_FILES:")
+print("REDIRECT_STUB_AUDIT:")
+for path, info in redirect_rows:
+    if not info["valid"]:
+        print(f"  CHECK {path} target={info['resolved_target']} canonical={info['canonical'] or '-'}")
+print("CRITICAL_CONTENT_PAGES:")
 for path in critical[:200]:
     print(f"  {path}")
-# Intentionally non-blocking during staged cleanup; diagnostics are visible in workflow logs.
+# Keep non-blocking while batches of verified fixes are applied.
 sys.exit(0)
