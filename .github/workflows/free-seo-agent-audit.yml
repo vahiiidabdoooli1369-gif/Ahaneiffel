@@ -54,12 +54,15 @@ jobs:
                   self.jsonlds = []
                   self.links = []
                   self.in_title = False
+                  self.in_h1 = False
                   self.in_script = False
                   self.script_buf = []
               def handle_starttag(self, tag, attrs):
                   a = dict(attrs)
                   if tag == "title": self.in_title = True
-                  if tag == "h1": self.h1.append("")
+                  if tag == "h1":
+                      self.h1.append("")
+                      self.in_h1 = True
                   if tag == "link" and a.get("rel") == "canonical": self.canonical = a.get("href")
                   if tag == "meta" and a.get("name","").lower() == "robots": self.robots = a.get("content")
                   if tag == "script" and a.get("type") == "application/ld+json":
@@ -67,11 +70,12 @@ jobs:
                   if tag == "a" and a.get("href"): self.links.append(a["href"])
               def handle_endtag(self, tag):
                   if tag == "title": self.in_title = False
+                  if tag == "h1": self.in_h1 = False
                   if tag == "script" and self.in_script:
                       self.jsonlds.append("".join(self.script_buf)); self.in_script = False
               def handle_data(self, data):
                   if self.in_title: self.title += data.strip()
-                  if self.h1: self.h1[-1] += data.strip()
+                  if self.in_h1 and self.h1: self.h1[-1] += data.strip()
                   if self.in_script: self.script_buf.append(data)
 
           try:
@@ -108,7 +112,7 @@ jobs:
           urls = []
           try:
               _, _, sm = fetch(site + "/sitemap.xml", timeout=20)
-              urls = re.findall(r"<loc>\\s*(.*?)\\s*</loc>", sm, flags=re.I|re.S)
+              urls = re.findall(r"<loc>\s*(.*?)\s*</loc>", sm, flags=re.I|re.S)
               urls = [u.strip() for u in urls if u.strip().startswith(site)]
           except Exception:
               pass
