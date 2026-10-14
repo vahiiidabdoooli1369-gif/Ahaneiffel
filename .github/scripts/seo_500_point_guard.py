@@ -98,6 +98,30 @@ def redirect_info(path, html, parser):
                  and target_path == canonical_path)
     return {"target": target, "resolved_target": target_url, "canonical": canonical_url, "valid": valid}
 
+def noindex_info(path, parser):
+    robots_noindex = any(
+        tag == "meta" and attrs.get("name", "").lower() == "robots"
+        and "noindex" in attrs.get("content", "").lower()
+        for tag, attrs in parser.attrs
+    )
+    if not robots_noindex:
+        return None
+    canon = canonical_urls(parser)
+    canonical_url = canon[0] if len(canon) == 1 else ""
+    canonical_path = urlparse(canonical_url).path if canonical_url else ""
+    source_dir = path.parent.as_posix()
+    source_path = "/" if source_dir == "." else "/" + source_dir.strip("/") + "/"
+    valid = bool(
+        len(canon) == 1
+        and urlparse(canonical_url).netloc == urlparse(BASE).netloc
+        and (canonical_path == "/" or canonical_path.endswith("/"))
+    )
+    return {
+        "canonical": canonical_url,
+        "self_canonical": canonical_path.rstrip("/") == source_path.rstrip("/"),
+        "valid": valid
+    }
+
 def checks(path, html, p):
     canon = canonical_urls(p)
     desc = [
@@ -163,6 +187,7 @@ passed = 0
 critical = []
 rows = []
 redirect_rows = []
+noindex_rows = []
 failure_counts = Counter()
 for path in pages:
     html = path.read_text("utf-8", errors="replace")
@@ -170,6 +195,10 @@ for path in pages:
     redirect = redirect_info(path, html, parser)
     if redirect:
         redirect_rows.append((str(path), redirect))
+        continue
+    noindex = noindex_info(path, parser)
+    if noindex:
+        noindex_rows.append((str(path), noindex))
         continue
     tests, meta = checks(path, html, parser)
     total += len(tests)
@@ -182,7 +211,7 @@ for path in pages:
 report = ROOT / "seo-500-point-report.md"
 with report.open("w", encoding="utf-8") as f:
     f.write("# Ahaneiffel 500+ Point SEO Guard\n\n")
-    f.write(f"- HTML files discovered: **{len(pages)}**\n- Redirect stubs separately audited: **{len(redirect_rows)}**\n- Content pages audited: **{len(rows)}**\n- Checks executed on content pages: **{total}**\n- Passed: **{passed}**\n- Failed: **{total-passed}**\n- Critical content pages: **{len(critical)}**\n\n")
+    f.write(f"- HTML files discovered: **{len(pages)}**\n- Redirect stubs separately audited: **{len(redirect_rows)}**\n- Noindex alias/utility pages separately audited: **{len(noindex_rows)}**\n- Content pages audited: **{len(rows)}**\n- Checks executed on content pages: **{total}**\n- Passed: **{passed}**\n- Failed: **{total-passed}**\n- Critical content pages: **{len(critical)}**\n\n")
     f.write("## Failed checks by category (content pages only)\n\n|Check|Failures|\n|---|---:|\n")
     for name, count in failure_counts.most_common():
         f.write(f"|{name}|{count}|\n")
@@ -197,7 +226,7 @@ with report.open("w", encoding="utf-8") as f:
     for path in critical[:200]:
         f.write(f"- {path}\n")
 
-print(f"FILES={len(pages)} REDIRECT_STUBS={len(redirect_rows)} CONTENT_PAGES={len(rows)} CHECKS={total} PASSED={passed} FAILED={total-passed} CRITICAL={len(critical)}")
+print(f"FILES={len(pages)} REDIRECT_STUBS={len(redirect_rows)} NOINDEX_ALIASES={len(noindex_rows)} CONTENT_PAGES={len(rows)} CHECKS={total} PASSED={passed} FAILED={total-passed} CRITICAL={len(critical)}")
 print("FAILURE_BREAKDOWN:")
 for name, count in failure_counts.most_common():
     print(f"  {name}={count}")
@@ -205,6 +234,10 @@ print("REDIRECT_STUB_AUDIT:")
 for path, info in redirect_rows:
     if not info["valid"]:
         print(f"  CHECK {path} target={info['resolved_target']} canonical={info['canonical'] or '-'}")
+print("NOINDEX_ALIAS_AUDIT:")
+for path, info in noindex_rows:
+    if not info["valid"]:
+        print(f"  CHECK {path} canonical={info['canonical'] or '-'}")
 print("PRIORITY_FAILURE_PATHS:")
 for category in ("not_noindex", "canonical_trailing_slash", "title_length_10_75", "description_length_80_180", "html_close", "max_one_webpage_schema", "no_productgroup_schema", "homepage_breadcrumb_schema"):
     matched = [(path, meta["failed_checks"]) for path, _, _, meta in rows if category in meta["failed_checks"]]
