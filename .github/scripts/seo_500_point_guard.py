@@ -218,6 +218,9 @@ with report.open("w", encoding="utf-8") as f:
     f.write("\n## Redirect stubs\n\n|File|Target|Canonical|Redirect/canonical match|\n|---|---|---|---|\n")
     for path, info in redirect_rows:
         f.write(f"|{path}|{info['resolved_target']}|{info['canonical'] or '-'}|{'PASS' if info['valid'] else 'CHECK'}|\n")
+    f.write("\n## Noindex aliases and utility pages\n\n|File|Canonical|Self-canonical|Canonical metadata valid|\n|---|---|---|---|\n")
+    for path, info in noindex_rows:
+        f.write(f"|{path}|{info['canonical'] or '-'}|{'yes' if info['self_canonical'] else 'no'}|{'PASS' if info['valid'] else 'CHECK'}|\n")
     f.write("\n## Content page results\n\n|Page|Pass|Total|Failed checks|Schema types|Invalid JSON-LD|Canonical|H1|Unique internal links|\n|---|---:|---:|---|---|---:|---|---:|---:|\n")
     for path, ok, count, meta in rows:
         failed = ", ".join(meta["failed_checks"]) or "—"
