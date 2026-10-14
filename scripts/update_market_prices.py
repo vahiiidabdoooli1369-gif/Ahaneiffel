@@ -20,7 +20,7 @@ if OUT.exists():
     except (json.JSONDecodeError, OSError):
         pass
 MIN_PRICE = 1000
-PRICE_OFFSET = -200
+PRICE_OFFSET = 0
 DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
 def clean(value):
@@ -56,7 +56,7 @@ OUT.write_text(json.dumps({
     "source": SOURCE_URL,
     "source_type": "Ahaneiffel.com price page",
     "price_adjustment_toman_per_unit": PRICE_OFFSET,
-    "price_adjustment_note": "قیمت نهایی باید پیش از سفارش توسط کارشناس تایید شود.",
+    "price_adjustment_note": "قیمت منبع بدون تعدیل خودکار ثبت شده است؛ پیش از انتشار یا سفارش باید توسط کارشناس تایید شود.",
     "updated_at_utc": datetime.now(timezone.utc).isoformat(),
     "rows": rows
 }, ensure_ascii=False, indent=2), encoding="utf-8")
