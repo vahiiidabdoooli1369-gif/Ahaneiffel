@@ -205,6 +205,17 @@ print("REDIRECT_STUB_AUDIT:")
 for path, info in redirect_rows:
     if not info["valid"]:
         print(f"  CHECK {path} target={info['resolved_target']} canonical={info['canonical'] or '-'}")
+print("PRIORITY_FAILURE_PATHS:")
+for category in ("not_noindex", "canonical_trailing_slash", "title_length_10_75", "description_length_80_180", "html_close", "max_one_webpage_schema", "no_productgroup_schema", "homepage_breadcrumb_schema"):
+    matched = [(path, meta["failed_checks"]) for path, _, _, meta in rows if category in meta["failed_checks"]]
+    if matched:
+        print(f"  [{category}] {len(matched)} page(s)")
+        for path, _ in matched[:100]:
+            print(f"    {path}")
+print("TOP_FAILED_CONTENT_PAGES:")
+for path, ok, count, meta in sorted(rows, key=lambda row: row[2]-row[1], reverse=True)[:30]:
+    failed = ", ".join(meta["failed_checks"]) or "none"
+    print(f"  {path} | failures={count-ok} | {failed}")
 print("CRITICAL_CONTENT_PAGES:")
 for path in critical[:200]:
     print(f"  {path}")
