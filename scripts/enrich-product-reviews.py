@@ -70,7 +70,7 @@ WEIGHT_RE = re.compile(
     re.I,
 )
 LEGACY_REVIEW_RE = re.compile(
-    r"<section\b[^>]*(?:id=["']review["']|class=["'][^"']*expert-review[^"']*["'])[^>]*>[\s\S]*?</section>",
+    r"<section\b[^>]*(?:id=[\"']review[\"']|class=[\"'][^\"']*expert-review[^\"']*[\"'])[^>]*>[\s\S]*?</section>",
     re.I,
 )
 
