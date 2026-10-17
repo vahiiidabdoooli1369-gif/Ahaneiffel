@@ -84,30 +84,18 @@ changed = 0
 for p in PRODUCTS.rglob("index.html"):
     text = p.read_text(encoding="utf-8")
     original = text
-    rel = p.relative_to(PRODUCTS)
-    eligible = len(rel.parts) >= 3 and rel.parts[0] in FAMILY
-    block = make_block(rel.parts[0], rel.parts[1]) if eligible else None
 
-    # Prefer replacing the managed block. If absent, wrap the first legacy
-    # expert-review section; if neither exists, add one before </main>.
+    # Never create a review section on a page that did not already have one.
+    # Managed blocks may be refreshed in place; legacy sections are only deduped.
     marked = list(REVIEW_RE.finditer(text))
     if marked:
         first = marked[0]
+        rel = p.relative_to(PRODUCTS)
+        eligible = len(rel.parts) >= 3 and rel.parts[0] in FAMILY
         if eligible:
+            block = make_block(rel.parts[0], rel.parts[1])
             text = text[:first.start()] + REVIEW_START + block + REVIEW_END + text[first.end():]
         text = keep_first(REVIEW_RE, text)
-    elif eligible:
-        legacy = list(LEGACY_REVIEW_RE.finditer(text))
-        if legacy:
-            first = legacy[0]
-            text = text[:first.start()] + REVIEW_START + block + REVIEW_END + text[first.end():]
-            text = keep_first(REVIEW_RE, text)
-            text = keep_first(LEGACY_REVIEW_RE, text)
-        elif re.search(r"</main>", text, re.I):
-            text = re.sub(r"</main>", REVIEW_START + block + REVIEW_END + "</main>", text, count=1, flags=re.I)
-    # Remove unmarked legacy review sections outside the managed block. When no
-    # managed block exists on a non-family page, keep only the first legacy one.
-    if REVIEW_RE.search(text):
         marker_ranges = [(m.start(), m.end()) for m in REVIEW_RE.finditer(text)]
         legacy = list(LEGACY_REVIEW_RE.finditer(text))
         for match in reversed(legacy):
@@ -116,10 +104,10 @@ for p in PRODUCTS.rglob("index.html"):
     else:
         text = keep_first(LEGACY_REVIEW_RE, text)
 
-    # On all product pages retain only the first matching weight-control section.
+    # Keep only the first weight-control section on each product page.
     text = keep_first(WEIGHT_RE, text)
 
     if text != original:
         p.write_text(text, encoding="utf-8")
         changed += 1
-print(f"cleaned_or_enriched={changed}")
+print(f"cleaned_or_refreshed={changed}")
