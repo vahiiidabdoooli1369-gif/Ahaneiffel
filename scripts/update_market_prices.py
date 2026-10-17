@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Render family-level base prices into existing Ahaneiffel HTML price tables.
 
+This script is safe to rerun and supports a read-only dry-run report.
+
 The JSON feed is authoritative. Family-only rows display the family price;
 size-specific rows display it as a base price ("از ..."). No size-specific
 price is inferred from a family-level price.
