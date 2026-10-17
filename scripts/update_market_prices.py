@@ -85,7 +85,8 @@ def render_file(path, payload, prices, dry_run, report):
             cell_texts = [html.unescape(re.sub(r"<[^>]+>", " ", c.group(0))).strip() for c in cells]
             # Product labels are typically in the first cell; search the first
             # two cells only to avoid mistaking a price/description for a product.
-            product = " ".join(cell_texts[:2])
+            first_label = cell_texts[0]
+            product = first_label if family_for(first_label) else " ".join(cell_texts[:2])
             family = family_for(product)
             if not family or family not in prices:
                 continue
