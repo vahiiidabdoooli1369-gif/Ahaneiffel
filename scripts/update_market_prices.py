@@ -11,6 +11,10 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+parser = argparse.ArgumentParser(description="Render verified market prices into static HTML")
+parser.add_argument("--dry-run", action="store_true", help="Print exact family+size matches without changing files")
+args = parser.parse_args()
+
 SOURCE_URL = "https://ahaneiffel.com/page/927/قیمت-روز-آهن-آلات-میلگرد-تیرآهن-نبشی-پروفیل/"
 OUT = Path("data/market-prices.json")
 SITEMAP = Path("sitemap-prices.xml")
@@ -84,11 +88,13 @@ def size_keys(value):
 def source_match(page_family, page_sizes, row):
     raw = row.get("raw", [])
     # The price is a separate field in the feed and must never count as size.
-    descriptive = " ".join(map(str, raw[:-1] if len(raw) > 1 else raw))
+    descriptive_values = raw[:-1] if row.get("source_price") is not None and len(raw) > 1 else raw
+    descriptive = " ".join(map(str, descriptive_values))
     if family_key(descriptive) != page_family:
         return False
     source_sizes = set()
-    for value in (raw[:-1] if len(raw) > 1 else raw):
+    for value in descriptive_values:
+        # Only numbers in source values that look like product sizes can match.
         source_sizes.update(size_keys(value))
     return bool(set(page_sizes) & source_sizes)
 
@@ -128,7 +134,8 @@ else:
         "updated_at_utc": datetime.now(timezone.utc).isoformat(),
         "rows": rows,
     }
-    OUT.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    if not args.dry_run:
+        OUT.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Extracted {len(rows)} price rows")
 
 rows = data.get("rows", [])
@@ -193,10 +200,6 @@ def update_table(html_text, page_path, dry_run_rows):
     wrapped = "\n" + PRICE_START + "\n" + changed_body + "\n" + PRICE_END + "\n"
     new_table = table[:tbody_match.start(2)] + wrapped + table[tbody_match.end(2):]
     return html_text[:table_match.start()] + new_table + html_text[table_match.end():]
-
-parser = argparse.ArgumentParser(description="Render verified market prices into static HTML")
-parser.add_argument("--dry-run", action="store_true", help="Print exact family+size matches without changing files")
-args = parser.parse_args()
 
 today = date.today().isoformat()
 changed_pages = set()
