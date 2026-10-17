@@ -85,6 +85,25 @@ def size_keys(value):
             found.append(token)
     return found
 
+def exact_sizes(values):
+    values = [clean(v).lower().replace("×", "x").replace("*", "x") for v in values]
+    pure = []
+    for value in values:
+        if re.fullmatch(r"\d+(?:\.\d+)?(?:\s*x\s*\d+(?:\.\d+)?)*(?:\s*(?:mm|میل))?", value, re.I):
+            pure.extend(size_keys(value))
+    pure = list(dict.fromkeys(pure))
+    if len(pure) > 1:
+        return [ "x".join(pure) ]
+    if len(pure) == 1:
+        return pure
+    # Fallback only for an explicit product label that embeds its size.
+    for value in values:
+        if family_key(value):
+            embedded = size_keys(value)
+            if embedded:
+                return embedded
+    return []
+
 def source_match(page_family, page_sizes, row):
     raw = row.get("raw", [])
     # The price is a separate field in the feed and must never count as size.
@@ -92,11 +111,9 @@ def source_match(page_family, page_sizes, row):
     descriptive = " ".join(map(str, descriptive_values))
     if family_key(descriptive) != page_family:
         return False
-    source_sizes = set()
-    for value in descriptive_values:
-        # Only numbers in source values that look like product sizes can match.
-        source_sizes.update(size_keys(value))
-    return bool(set(page_sizes) & source_sizes)
+    source_sizes = exact_sizes(descriptive_values)
+    # Exact normalized size equality only; never match on a shared component.
+    return bool(set(page_sizes) & set(source_sizes))
 
 def fetch_rows():
     response = requests.get(SOURCE_URL, timeout=30, headers={"User-Agent": "Ahaneiffel-PriceFeed/1.0"})
@@ -174,16 +191,17 @@ def update_table(html_text, page_path, dry_run_rows):
             target = cells[-2] if len(cells) >= 4 else cells[2]
         # Prefer explicit size columns from the table header; this prevents
         # weights, prices and dates from being mistaken for product sizes.
-        page_sizes = []
-        for idx in size_indices:
-            if idx < len(cell_texts):
-                page_sizes.extend(size_keys(cell_texts[idx]))
+        # Prefer semantic size/measurement columns. If there are several,
+        # treat their ordered values as one composite size, not separate matches.
+        primary_size_indices = [i for i, name in enumerate(headers) if re.search(r"سایز|ابعاد|اندازه", name)]
+        if primary_size_indices:
+            selected_indices = primary_size_indices
+        else:
+            selected_indices = [i for i, name in enumerate(headers) if re.search(r"ضخامت|قطر", name)]
+        size_values = [cell_texts[i] for i in selected_indices if i < len(cell_texts)]
+        page_sizes = exact_sizes(size_values)
         if not page_sizes:
-            for txt in cell_texts:
-                compact = clean(txt).replace("×", "x").replace("*", "x")
-                if re.search(r"(?:میلگرد|تیرآهن|پروفیل|قوطی|نبشی|ناودانی|ورق|rebar|beam|profile|angle|channel|sheet)", compact, re.I):
-                    page_sizes.extend(size_keys(compact))
-        page_sizes = list(dict.fromkeys(page_sizes))
+            page_sizes = exact_sizes([txt for txt in cell_texts if family_key(txt)])
         matches = [item for item in rows if family and page_sizes and source_match(family, page_sizes, item)]
         best = matches[0] if len(matches) == 1 else None
         product = next((txt for txt in cell_texts if family_key(txt) == family), family or "نامشخص")
