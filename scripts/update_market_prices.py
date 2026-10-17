@@ -119,7 +119,7 @@ def render_file(path, payload, prices, dry_run, report):
         if matched_rows:
             table_count += 1
             for product, family, exact_family, price_text in matched_rows:
-                size_match = re.search(r"\\d+(?:\\.\\d+)?(?:\\s*[x*×]\\s*\\d+(?:\\.\\d+)?)?", norm(product))
+                size_match = re.search(r"\d+(?:\.\d+)?(?:\s*[x*×]\s*\d+(?:\.\d+)?)?", norm(product))
                 size_label = "—" if exact_family else (size_match.group(0) if size_match else product)
                 report.append((str(path), product, size_label, family, price_text))
             date_line = f'<p class="last-update" dir="rtl">آخرین به‌روزرسانی: {html.escape(str(payload.get("published_date", "نامشخص")))}</p>'
