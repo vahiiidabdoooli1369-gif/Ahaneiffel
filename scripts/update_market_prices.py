@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import html
 import json
 import re
@@ -51,9 +52,45 @@ def plain(markup):
 def tokens(value):
     return re.findall(r"[a-zآ-ی]+|\d+(?:\.\d+)?", clean(value).lower())
 
-def match_score(left, right):
-    right_tokens = set(tokens(right))
-    return sum(4 if token[0].isdigit() else 2 for token in tokens(left) if token in right_tokens)
+FAMILY_TERMS = {
+    "میلگرد": ("میلگرد", "rebar"),
+    "تیرآهن": ("تیرآهن", "تيرآهن", "beam", "ipe"),
+    "پروفیل": ("پروفیل", "قوطی", "profile"),
+    "نبشی": ("نبشی", "angle"),
+    "ناودانی": ("ناودانی", "channel"),
+    "ورق": ("ورق", "sheet", "plate"),
+}
+
+def family_key(value):
+    text = clean(value).lower()
+    for family, terms in FAMILY_TERMS.items():
+        if any(term.lower() in text for term in terms):
+            # Avoid treating specialized sheet types as generic sheet only
+            # when the source row explicitly says ورق; both still map to ورق.
+            return family
+    return None
+
+def size_keys(value):
+    text = clean(value).lower().replace("×", "x").replace("*", "x").replace("٫", ".")
+    found = []
+    # Dimensions such as 60x40 are one exact size; standalone sizes such as 14
+    # are exact too. Avoid extracting arbitrary numbers from prices/weights.
+    for m in re.finditer(r"(?<![\w.])(\d+(?:\.\d+)?(?:\s*x\s*\d+(?:\.\d+)?)?)(?![\w.])", text):
+        token = re.sub(r"\s+", "", m.group(1))
+        if token not in found:
+            found.append(token)
+    return found
+
+def source_match(page_family, page_sizes, row):
+    raw = row.get("raw", [])
+    # The price is a separate field in the feed and must never count as size.
+    descriptive = " ".join(map(str, raw[:-1] if len(raw) > 1 else raw))
+    if family_key(descriptive) != page_family:
+        return False
+    source_sizes = set()
+    for value in (raw[:-1] if len(raw) > 1 else raw):
+        source_sizes.update(size_keys(value))
+    return bool(set(page_sizes) & source_sizes)
 
 def fetch_rows():
     response = requests.get(SOURCE_URL, timeout=30, headers={"User-Agent": "Ahaneiffel-PriceFeed/1.0"})
@@ -98,7 +135,7 @@ rows = data.get("rows", [])
 if not rows:
     raise RuntimeError("market-prices.json has no rows; cannot render static prices")
 
-def update_table(html_text):
+def update_table(html_text, page_path, dry_run_rows):
     # Remove previous generated markers before recomputing the static table.
     html_text = html_text.replace(PRICE_START, "").replace(PRICE_END, "")
     table_pattern = re.compile(r"<table\b(?=[^>]*class=[\"'][^\"']*\bprice-table\b[^\"']*[\"'])[^>]*>[\s\S]*?</table>", re.I)
@@ -118,17 +155,34 @@ def update_table(html_text):
         cells = list(re.finditer(r"<td\b([^>]*)>([\s\S]*?)</td>", row, re.I))
         if not cells:
             return row
-        # Match using the product/size columns, not the existing price/status cells.
-        row_text = " ".join(plain(cell.group(2)) for cell in cells[:2])
-        has_numeric_key = any(token[0].isdigit() for token in tokens(row_text) if token)
-        best = max(rows, key=lambda item: match_score(row_text, " ".join(map(str, item.get("raw", [])))), default=None)
-        score = match_score(row_text, " ".join(map(str, best.get("raw", [])))) if best else 0
-        if not best or score < (4 if has_numeric_key else 2):
-            return row
+        cell_texts = [plain(cell.group(2)) for cell in cells]
+        combined = " ".join(cell_texts)
+        family = family_key(combined)
         target = next((cell for cell in cells if re.search(r"\bquote\b", cell.group(1), re.I)), None)
         if target is None and len(cells) >= 3:
-            target = cells[2]
-        if target is None:
+            target = cells[-2] if len(cells) >= 4 else cells[2]
+        # Ignore the price/status cell and non-size measurements. Only exact
+        # size-shaped cells are considered, never a shared number in prose.
+        descriptive_cells = [txt for cell, txt in zip(cells, cell_texts) if cell is not target]
+        page_sizes = []
+        for txt in descriptive_cells:
+            compact = clean(txt).replace("×", "x").replace("*", "x")
+            if re.fullmatch(r"\d+(?:\.\d+)?(?:\s*x\s*\d+(?:\.\d+)?)?(?:\s*(?:mm|میل))?", compact, re.I):
+                page_sizes.extend(size_keys(compact))
+            else:
+                # Product links may include the size in their label (e.g. میلگرد 14).
+                for size in size_keys(compact):
+                    if re.search(r"(?:میلگرد|تیرآهن|پروفیل|قوطی|نبشی|ناودانی|ورق|rebar|beam|profile|angle|channel|sheet)", compact, re.I):
+                        page_sizes.append(size)
+        page_sizes = list(dict.fromkeys(page_sizes))
+        matches = [item for item in rows if family and page_sizes and source_match(family, page_sizes, item)]
+        best = matches[0] if len(matches) == 1 else None
+        product = next((txt for txt in cell_texts if family_key(txt) == family), family or "نامشخص")
+        size_label = ", ".join(page_sizes) if page_sizes else "نامشخص"
+        source_label = " | ".join(map(str, best.get("raw", []))) if best else "بدون تطبیق دقیق"
+        amount_label = f'{int(round(float(best["price"]))):,} تومان' if best else "بدون تغییر"
+        dry_run_rows.append((page_path, product, size_label, source_label, amount_label))
+        if not best or target is None:
             return row
         amount = f'{int(round(float(best["price"]))):,}'
         replacement = target.group(0)[:target.start(2)-target.start()] + amount + " تومان" + target.group(0)[target.end(2)-target.start():]
@@ -140,8 +194,13 @@ def update_table(html_text):
     new_table = table[:tbody_match.start(2)] + wrapped + table[tbody_match.end(2):]
     return html_text[:table_match.start()] + new_table + html_text[table_match.end():]
 
+parser = argparse.ArgumentParser(description="Render verified market prices into static HTML")
+parser.add_argument("--dry-run", action="store_true", help="Print exact family+size matches without changing files")
+args = parser.parse_args()
+
 today = date.today().isoformat()
 changed_pages = set()
+dry_run_rows = []
 html_paths = [Path("index.html")]
 prices_dir = Path("prices")
 if prices_dir.exists():
@@ -151,14 +210,21 @@ for path in html_paths:
     if not path.is_file():
         continue
     before = path.read_text(encoding="utf-8")
-    after = update_table(before)
-    if after != before:
+    after = update_table(before, path.as_posix(), dry_run_rows)
+    if after != before and not args.dry_run:
         path.write_text(after, encoding="utf-8")
         changed_pages.add(path.as_posix())
         print(f"Rendered static prices: {path.as_posix()}")
 
+if args.dry_run:
+    print("| page | product | size | matched source row | price |")
+    print("|---|---|---|---|---|")
+    for page, product, size, source_row, price in dry_run_rows:
+        print(f"| {page} | {product} | {size} | {source_row} | {price} |")
+    print(f"Rows inspected: {len(dry_run_rows)}; exact matches: {sum(1 for row in dry_run_rows if row[4] != 'بدون تغییر')} (dry-run: no files changed)")
+
 # Update only sitemap entries whose corresponding price-page HTML changed.
-if changed_pages and SITEMAP.exists():
+if changed_pages and SITEMAP.exists() and not args.dry_run:
     sitemap_text = SITEMAP.read_text(encoding="utf-8")
     def update_url(match):
         block = match.group(0)
