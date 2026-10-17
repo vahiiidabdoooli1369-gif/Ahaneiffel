@@ -1,6 +1,10 @@
 name: SEO Sitemap Integrity
 
 on:
+  pull_request:
+    paths:
+      - 'sitemap*.xml'
+      - '.github/workflows/seo-sitemap-integrity.yml'
   push:
     branches: [main]
     paths:
