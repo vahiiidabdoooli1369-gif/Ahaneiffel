@@ -77,6 +77,7 @@ def render_file(path, payload, prices, dry_run, report):
         table_changed = table
         row_pattern = re.compile(r"<tr\b[^>]*>.*?</tr\s*>", re.I | re.S)
         matched_rows = []
+        row_edits = []
         for row_match in list(row_pattern.finditer(table)):
             row = row_match.group(0)
             cells = list(re.finditer(r"<td\b[^>]*>.*?</td\s*>", row, re.I | re.S))
@@ -108,8 +109,10 @@ def render_file(path, payload, prices, dry_run, report):
             new_cell = re.sub(r"^(<td\b[^>]*>).*?(</td\s*>)$", lambda m: m.group(1) + html.escape(price_text) + m.group(2), last.group(0), flags=re.I | re.S)
             start, end = row_match.span()
             new_row = row[:last.start()] + new_cell + row[last.end():]
-            table_changed = table_changed[:start] + new_row + table_changed[end:]
+            row_edits.append((start, end, new_row))
             matched_rows.append((product, family, exact_family, price_text))
+        for start, end, new_row in reversed(row_edits):
+            table_changed = table_changed[:start] + new_row + table_changed[end:]
         if matched_rows:
             table_count += 1
             for product, family, exact_family, price_text in matched_rows:
