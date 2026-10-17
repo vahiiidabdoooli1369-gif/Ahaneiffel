@@ -64,9 +64,13 @@ def make_block(family, slug):
 
 REVIEW_START = "<!-- review:start -->"
 REVIEW_END = "<!-- review:end -->"
-REVIEW_RE = re.compile(re.escape(REVIEW_START) + r"[\\s\\S]*?" + re.escape(REVIEW_END), re.I)
+REVIEW_RE = re.compile(re.escape(REVIEW_START) + r"[\s\S]*?" + re.escape(REVIEW_END), re.I)
 WEIGHT_RE = re.compile(
-    r"<section\\b[^>]*>\\s*<h[1-6]\\b[^>]*>[^<]*کنترل وزن واقعی سفارش[^<]*</h[1-6]>[\\s\\S]*?</section>",
+    r"<section\b[^>]*>\s*<h[1-6]\b[^>]*>[^<]*کنترل وزن واقعی سفارش[^<]*</h[1-6]>[\s\S]*?</section>",
+    re.I,
+)
+LEGACY_REVIEW_RE = re.compile(
+    r"<section\b[^>]*(?:id=["']review["']|class=["'][^"']*expert-review[^"']*["'])[^>]*>[\s\S]*?</section>",
     re.I,
 )
 
@@ -80,28 +84,30 @@ changed = 0
 for p in PRODUCTS.rglob("index.html"):
     text = p.read_text(encoding="utf-8")
     original = text
-    # Remove duplicate review sections, retaining the first block, and replace
-    # any prior unmarked review section with a single managed, marked block.
-    text = keep_first(REVIEW_RE, text)
-    if REVIEW_RE.search(text):
-        text = REVIEW_RE.sub(lambda m: m.group(0), text, count=1)
-    else:
-        review_sections = re.compile(
-            r"<section\\b[^>]*(?:id=[\\"']review[\\"']|class=[\\"'][^\\"']*expert-review[^\\"']*[\\"'])[^>]*>[\\s\\S]*?</section>",
-            re.I,
-        )
-        text = keep_first(review_sections, text)
-        if p.is_relative_to(PRODUCTS):
-            rel = p.relative_to(PRODUCTS)
-            if len(rel.parts) >= 3 and rel.parts[0] in FAMILY:
-                block = make_block(rel.parts[0], rel.parts[1])
-                # Replace the first legacy review block in place; otherwise insert before </main>.
-                if review_sections.search(text):
-                    text = review_sections.sub(REVIEW_START + block + REVIEW_END, text, count=1)
-                elif re.search(r"</main>", text, re.I):
-                    text = re.sub(r"</main>", REVIEW_START + block + REVIEW_END + "</main>", text, count=1, flags=re.I)
-    # Keep only the first "real order weight control" section on every product page.
+    rel = p.relative_to(PRODUCTS)
+    eligible = len(rel.parts) >= 3 and rel.parts[0] in FAMILY
+    block = make_block(rel.parts[0], rel.parts[1]) if eligible else None
+
+    # Prefer replacing the managed block. If absent, wrap the first legacy
+    # expert-review section; if neither exists, add one before </main>.
+    marked = list(REVIEW_RE.finditer(text))
+    if marked:
+        first = marked[0]
+        if eligible:
+            text = text[:first.start()] + REVIEW_START + block + REVIEW_END + text[first.end():]
+        text = keep_first(REVIEW_RE, text)
+    elif eligible:
+        legacy = list(LEGACY_REVIEW_RE.finditer(text))
+        if legacy:
+            first = legacy[0]
+            text = text[:first.start()] + REVIEW_START + block + REVIEW_END + text[first.end():]
+            text = keep_first(REVIEW_RE, text)
+            text = keep_first(LEGACY_REVIEW_RE, text)
+        elif re.search(r"</main>", text, re.I):
+            text = re.sub(r"</main>", REVIEW_START + block + REVIEW_END + "</main>", text, count=1, flags=re.I)
+    # On all product pages retain only the first matching weight-control section.
     text = keep_first(WEIGHT_RE, text)
+
     if text != original:
         p.write_text(text, encoding="utf-8")
         changed += 1
