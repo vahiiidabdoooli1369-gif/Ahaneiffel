@@ -14,6 +14,7 @@ from pathlib import Path
 
 DATA = Path("data/market-prices.json")
 DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
+PATH_FAMILIES = {"rebar": "میلگرد", "beam": "تیرآهن", "profile": "پروفیل", "angle": "نبشی", "channel": "ناودانی", "sheet": "ورق سیاه", "roofing-sheet": "ورق شیروانی"}
 FAMILIES = {
     "میلگرد": ("میلگرد", "میلگرد آجدار", "میلگرد فولادی"),
     "تیرآهن": ("تیرآهن", "تیرآهن فولادی", "تیرآهن ipe", "تیرآهن IPE"),
@@ -89,6 +90,8 @@ def render_file(path, payload, prices, dry_run, report):
             first_label = cell_texts[0]
             product = first_label if family_for(first_label) else " ".join(cell_texts[:2])
             family = family_for(product)
+            if not family:
+                family = next((value for key, value in PATH_FAMILIES.items() if key in path.parts), None)
             if not family or family not in prices:
                 continue
             rows_seen += 1
@@ -116,7 +119,9 @@ def render_file(path, payload, prices, dry_run, report):
         if matched_rows:
             table_count += 1
             for product, family, exact_family, price_text in matched_rows:
-                report.append((str(path), product, "خانوادگی" if exact_family else "سایز مشخص", family, price_text))
+                size_match = re.search(r"\\d+(?:\\.\\d+)?(?:\\s*[x*×]\\s*\\d+(?:\\.\\d+)?)?", norm(product))
+                size_label = "—" if exact_family else (size_match.group(0) if size_match else product)
+                report.append((str(path), product, size_label, family, price_text))
             date_line = f'<p class="last-update" dir="rtl">آخرین به‌روزرسانی: {html.escape(str(payload.get("published_date", "نامشخص")))}</p>'
             # Avoid adding another date line when one is already directly below this table.
             following = match.string[match.end():]
