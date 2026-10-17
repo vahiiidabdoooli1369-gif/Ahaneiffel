@@ -155,6 +155,10 @@ def update_table(html_text, page_path, dry_run_rows):
     if not tbody_match:
         return html_text
     body = tbody_match.group(2)
+    header_match = re.search(r"<tr\b[^>]*>[\s\S]*?</tr>", table, re.I)
+    headers = [plain(m.group(2)) for m in re.finditer(r"<t[hd]\b([^>]*)>([\s\S]*?)</t[hd]>", header_match.group(0), re.I)] if header_match else []
+    size_indices = [i for i, name in enumerate(headers) if re.search(r"سایز|ابعاد|ضخامت|قطر|اندازه", name)]
+    product_indices = [i for i, name in enumerate(headers) if re.search(r"محصول|نام کالا|نام محصول|کالا", name)]
     changed_body = body
     row_pattern = re.compile(r"<tr\b[^>]*>[\s\S]*?</tr>", re.I)
     def update_row(row_match):
@@ -168,19 +172,17 @@ def update_table(html_text, page_path, dry_run_rows):
         target = next((cell for cell in cells if re.search(r"\bquote\b", cell.group(1), re.I)), None)
         if target is None and len(cells) >= 3:
             target = cells[-2] if len(cells) >= 4 else cells[2]
-        # Ignore the price/status cell and non-size measurements. Only exact
-        # size-shaped cells are considered, never a shared number in prose.
-        descriptive_cells = [txt for cell, txt in zip(cells, cell_texts) if cell is not target]
+        # Prefer explicit size columns from the table header; this prevents
+        # weights, prices and dates from being mistaken for product sizes.
         page_sizes = []
-        for txt in descriptive_cells:
-            compact = clean(txt).replace("×", "x").replace("*", "x")
-            if re.fullmatch(r"\d+(?:\.\d+)?(?:\s*x\s*\d+(?:\.\d+)?)?(?:\s*(?:mm|میل))?", compact, re.I):
-                page_sizes.extend(size_keys(compact))
-            else:
-                # Product links may include the size in their label (e.g. میلگرد 14).
-                for size in size_keys(compact):
-                    if re.search(r"(?:میلگرد|تیرآهن|پروفیل|قوطی|نبشی|ناودانی|ورق|rebar|beam|profile|angle|channel|sheet)", compact, re.I):
-                        page_sizes.append(size)
+        for idx in size_indices:
+            if idx < len(cell_texts):
+                page_sizes.extend(size_keys(cell_texts[idx]))
+        if not page_sizes:
+            for txt in cell_texts:
+                compact = clean(txt).replace("×", "x").replace("*", "x")
+                if re.search(r"(?:میلگرد|تیرآهن|پروفیل|قوطی|نبشی|ناودانی|ورق|rebar|beam|profile|angle|channel|sheet)", compact, re.I):
+                    page_sizes.extend(size_keys(compact))
         page_sizes = list(dict.fromkeys(page_sizes))
         matches = [item for item in rows if family and page_sizes and source_match(family, page_sizes, item)]
         best = matches[0] if len(matches) == 1 else None
