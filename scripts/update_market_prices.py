@@ -90,7 +90,7 @@ def render_file(path, payload, prices, dry_run, report):
             if not family or family not in prices:
                 continue
             rows_seen += 1
-            exact_family = any(family_only(cell_texts[i], family) for i in range(min(2, len(cell_texts))))
+            has_size = bool(re.search(r"(?<!\\d)\\d+(?:\\.\\d+)?\\s*(?:x|\\*|×)?\\s*\\d*(?!\\w)", norm(product)))\n            exact_family = family_only(product, family) and not has_size
             price_text = format_price(prices[family]) + " تومان / کیلوگرم"
             if not exact_family:
                 price_text = "از " + price_text
