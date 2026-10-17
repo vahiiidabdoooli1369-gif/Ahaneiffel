@@ -100,7 +100,7 @@ if not rows:
 
 def update_table(html_text):
     # Remove previous generated markers before recomputing the static table.
-    html_text = re.sub(re.escape(PRICE_START) + r"[\s\S]*?" + re.escape(PRICE_END), "", html_text)
+    html_text = html_text.replace(PRICE_START, "").replace(PRICE_END, "")
     table_pattern = re.compile(r"<table\b(?=[^>]*class=[\"'][^\"']*\bprice-table\b[^\"']*[\"'])[^>]*>[\s\S]*?</table>", re.I)
     table_match = table_pattern.search(html_text)
     if not table_match:
@@ -166,7 +166,8 @@ if changed_pages and SITEMAP.exists():
         url_path = re.sub(r"^https?://[^/]+", "", html.unescape(loc_match.group(1)))
         if not url_path.endswith("/"):
             url_path += "/"
-        changed_path = "prices/" + url_path.removeprefix("/prices/").rstrip("/") + "/index.html"
+        relative = url_path.removeprefix("/prices/").strip("/")
+        changed_path = "prices/" + (relative + "/" if relative else "") + "index.html"
         if changed_path not in changed_pages:
             return block
         if re.search(r"<lastmod>.*?</lastmod>", block, re.I):
