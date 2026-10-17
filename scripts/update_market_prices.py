@@ -118,12 +118,10 @@ def render_file(path, payload, prices, dry_run, report):
             for product, family, exact_family, price_text in matched_rows:
                 report.append((str(path), product, "خانوادگی" if exact_family else "سایز مشخص", family, price_text))
             date_line = f'<p class="last-update" dir="rtl">آخرین به‌روزرسانی: {html.escape(str(payload.get("published_date", "نامشخص")))}</p>'
-            # Replace any existing update line directly following the table.
-            tail = table_changed[table_changed.lower().rfind("</table>") + 8:]
-            if not re.match(r"\s*<p\b[^>]*class=[\"'][^\"']*last-update", tail, re.I):
-                table_changed = re.sub(r"(</table\s*>)", r"\1" + date_line, table_changed, count=1, flags=re.I)
-            else:
-                table_changed = re.sub(r"(<p\b[^>]*class=[\"'][^\"']*last-update[\"'][^>]*>).*?(</p\s*>)", lambda m: m.group(1) + "آخرین به‌روزرسانی: " + html.escape(str(payload.get("published_date", "نامشخص"))) + m.group(2), table_changed, count=1, flags=re.I | re.S)
+            # Avoid adding another date line when one is already directly below this table.
+            following = match.string[match.end():]
+            if not re.match(r'\s*<p\b[^>]*class=["\'][^"\']*last-update', following, re.I):
+                table_changed = re.sub(r'(</table\s*>)', lambda m: m.group(1) + date_line, table_changed, count=1, flags=re.I)
         return table_changed
 
     # Only process existing HTML tables; no page/table is created.
