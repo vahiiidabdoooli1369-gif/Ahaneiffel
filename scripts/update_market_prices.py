@@ -118,10 +118,12 @@ def update_table(html_text):
         cells = list(re.finditer(r"<td\b([^>]*)>([\s\S]*?)</td>", row, re.I))
         if not cells:
             return row
-        row_text = " ".join(plain(cell.group(2)) for cell in cells)
+        # Match using the product/size columns, not the existing price/status cells.
+        row_text = " ".join(plain(cell.group(2)) for cell in cells[:2])
+        has_numeric_key = any(token[0].isdigit() for token in tokens(row_text) if token)
         best = max(rows, key=lambda item: match_score(row_text, " ".join(map(str, item.get("raw", [])))), default=None)
         score = match_score(row_text, " ".join(map(str, best.get("raw", [])))) if best else 0
-        if not best or score < 4:
+        if not best or score < (4 if has_numeric_key else 2):
             return row
         target = next((cell for cell in cells if re.search(r"\bquote\b", cell.group(1), re.I)), None)
         if target is None and len(cells) >= 3:
