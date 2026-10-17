@@ -105,6 +105,17 @@ for p in PRODUCTS.rglob("index.html"):
             text = keep_first(LEGACY_REVIEW_RE, text)
         elif re.search(r"</main>", text, re.I):
             text = re.sub(r"</main>", REVIEW_START + block + REVIEW_END + "</main>", text, count=1, flags=re.I)
+    # Remove unmarked legacy review sections outside the managed block. When no
+    # managed block exists on a non-family page, keep only the first legacy one.
+    if REVIEW_RE.search(text):
+        marker_ranges = [(m.start(), m.end()) for m in REVIEW_RE.finditer(text)]
+        legacy = list(LEGACY_REVIEW_RE.finditer(text))
+        for match in reversed(legacy):
+            if not any(start <= match.start() and match.end() <= end for start, end in marker_ranges):
+                text = text[:match.start()] + text[match.end():]
+    else:
+        text = keep_first(LEGACY_REVIEW_RE, text)
+
     # On all product pages retain only the first matching weight-control section.
     text = keep_first(WEIGHT_RE, text)
 
