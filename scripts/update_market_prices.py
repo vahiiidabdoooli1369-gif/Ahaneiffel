@@ -126,6 +126,8 @@ def render_file(path, payload, prices, dry_run, report):
 
     # Only process existing HTML tables; no page/table is created.
     changed = re.sub(r"<table\b[^>]*>.*?</table\s*>", table_replacer, changed, flags=re.I | re.S)
+    date_text = "آخرین به‌روزرسانی: " + str(payload.get("published_date", "نامشخص"))
+    changed = re.sub(r'(<p\b[^>]*class=["\'][^"\']*last-update["\'][^>]*>).*?(</p\s*>)', lambda m: m.group(1) + html.escape(date_text) + m.group(2), changed, flags=re.I | re.S)
     if changed != original and not dry_run:
         path.write_text(changed, encoding="utf-8")
     return table_count, rows_seen, changed != original
