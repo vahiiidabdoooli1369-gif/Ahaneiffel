@@ -72,6 +72,12 @@ jobs:
           grep -Fq 'rel="canonical"' reference/ai-retrieval-map/index.html
           grep -Fq 'dateModified' reference/ai-retrieval-map/index.html
 
+      - name: Run architecture audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/seo_architecture_audit.py
+
       - name: Run existing HTML audit
         shell: bash
         run: |

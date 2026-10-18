@@ -1,0 +1,76 @@
+name: Ahaneiffel Live SEO Smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "47 */6 * * *"
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  live-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check critical live endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://ahaneiffel.top"
+          for path in "/" "/robots.txt" "/sitemap.xml" "/llms.txt" "/reference/ai-retrieval-map/"; do
+            code="$(curl -L -sS -o /tmp/body -w "%{http_code}" --max-time 20 "$base$path")"
+            echo "$path -> $code"
+            case "$path" in
+              "/robots.txt"|"/sitemap.xml"|"/llms.txt") test "$code" = "200" ;;
+              *) test "$code" = "200" || test "$code" = "301" || test "$code" = "302" ;;
+            esac
+          done
+
+      - name: Check sitemap children live
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re, subprocess, sys
+          from urllib.request import urlopen
+          from xml.etree import ElementTree as ET
+
+          root = ET.parse("sitemap.xml").getroot()
+          ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+          urls = [x.text.strip() for x in root.findall("sm:sitemap/sm:loc", ns) if x.text]
+          failures = []
+          for u in urls:
+              p = subprocess.run(
+                  ["curl","-L","-sS","-o","/dev/null","-w","%{http_code}","--max-time","20",u],
+                  text=True, capture_output=True
+              )
+              code = p.stdout.strip()
+              print(u, "->", code)
+              if not code.isdigit() or int(code) >= 400:
+                  failures.append((u, code))
+          if failures:
+              print("LIVE SITEMAP FAILURES:")
+              for item in failures:
+                  print(item)
+              sys.exit(1)
+          PY
+
+      - name: Run architecture audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/seo_architecture_audit.py
+
+      - name: Upload machine-readable report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ahaneiffel-seo-architecture-report
+          path: seo-architecture-report.json
+          if-no-files-found: error
