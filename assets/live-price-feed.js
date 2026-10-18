@@ -36,13 +36,25 @@
       table.querySelectorAll("tbody tr").forEach(row => {
         const cells = row.querySelectorAll("td");
         if (!cells.length) return;
-        const text = row.textContent;
-        let best = null, bestScore = 0;
+        // Match the product label, not the size/weight cells. The feed contains
+        // one confirmed price per product family, not per size.
+        const label = normalize(cells[0].textContent).toLowerCase();
+        let best = null, bestScore = 0, tied = false;
         for (const item of data.rows) {
-          const s = score(text, item.raw.join(" "));
-          if (s > bestScore) { bestScore = s; best = item; }
+          const aliases = (item.raw || []).map(value => normalize(value).toLowerCase()).filter(Boolean);
+          const exactAlias = aliases.find(alias => label.includes(alias));
+          if (exactAlias) {
+            best = item;
+            bestScore = 100 + exactAlias.length;
+            tied = false;
+            break;
+          }
+          const s = score(label, aliases.join(" "));
+          if (s > bestScore) { bestScore = s; best = item; tied = false; }
+          else if (s > 0 && s === bestScore) { tied = true; }
         }
-        if (!best || bestScore < 4) return;
+        // Do not guess a family price for a generic or ambiguous product label.
+        if (!best || bestScore < 2 || tied) return;
         // Prefer an explicit .quote cell; otherwise use the conventional third cell
         // used by the site's existing price cards. This keeps legacy tables intact.
         const priceCell = row.querySelector(".quote") || cells[2];
