@@ -62,17 +62,52 @@ def make_block(family, slug):
 <p><a href="{price_url}">{price_label}</a> | <a href="/tools/steel-weight-calculator/">محاسبه وزن آهن</a> | <a href="/tools/steel-purchase-cost-calculator/">محاسبه هزینه خرید</a> | <a href="/buy-iron/">خرید آهن آلات</a></p>
 </section>'''
 
-changed=0
+REVIEW_START = "<!-- review:start -->"
+REVIEW_END = "<!-- review:end -->"
+REVIEW_RE = re.compile(re.escape(REVIEW_START) + r"[\s\S]*?" + re.escape(REVIEW_END), re.I)
+WEIGHT_RE = re.compile(
+    r"<section\b[^>]*>\s*<h[1-6]\b[^>]*>[^<]*کنترل وزن واقعی سفارش[^<]*</h[1-6]>[\s\S]*?</section>",
+    re.I,
+)
+LEGACY_REVIEW_RE = re.compile(
+    r"<section\b[^>]*(?:id=[\"']review[\"']|class=[\"'][^\"']*expert-review[^\"']*[\"'])[^>]*>[\s\S]*?</section>",
+    re.I,
+)
+
+def keep_first(pattern, text):
+    matches = list(pattern.finditer(text))
+    for match in reversed(matches[1:]):
+        text = text[:match.start()] + text[match.end():]
+    return text
+
+changed = 0
 for p in PRODUCTS.rglob("index.html"):
-    rel=p.relative_to(PRODUCTS)
-    if len(rel.parts) < 3:
-        continue
-    family=rel.parts[0]
-    if family not in FAMILY or 'id="review"' in p.read_text(encoding="utf-8"):
-        continue
-    text=p.read_text(encoding="utf-8")
-    if re.search(r"</main>", text, re.I):
-        text=re.sub(r"</main>", make_block(family, str(rel.parts[1]))+"</main>", text, count=1, flags=re.I)
+    text = p.read_text(encoding="utf-8")
+    original = text
+
+    # Never create a review section on a page that did not already have one.
+    # Managed blocks may be refreshed in place; legacy sections are only deduped.
+    marked = list(REVIEW_RE.finditer(text))
+    if marked:
+        first = marked[0]
+        rel = p.relative_to(PRODUCTS)
+        eligible = len(rel.parts) >= 3 and rel.parts[0] in FAMILY
+        if eligible:
+            block = make_block(rel.parts[0], rel.parts[1])
+            text = text[:first.start()] + REVIEW_START + block + REVIEW_END + text[first.end():]
+        text = keep_first(REVIEW_RE, text)
+        marker_ranges = [(m.start(), m.end()) for m in REVIEW_RE.finditer(text)]
+        legacy = list(LEGACY_REVIEW_RE.finditer(text))
+        for match in reversed(legacy):
+            if not any(start <= match.start() and match.end() <= end for start, end in marker_ranges):
+                text = text[:match.start()] + text[match.end():]
+    else:
+        text = keep_first(LEGACY_REVIEW_RE, text)
+
+    # Keep only the first weight-control section on each product page.
+    text = keep_first(WEIGHT_RE, text)
+
+    if text != original:
         p.write_text(text, encoding="utf-8")
         changed += 1
-print(f"enriched={changed}")
+print(f"cleaned_or_refreshed={changed}")

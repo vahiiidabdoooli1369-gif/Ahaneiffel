@@ -1,6 +1,7 @@
 name: Enrich product review content
 on:
   push:
+    branches: [main]
     paths:
       - "scripts/enrich-product-reviews.py"
   workflow_dispatch:
