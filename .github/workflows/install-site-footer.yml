@@ -1,0 +1,39 @@
+name: Install site-wide footer
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  inject-footer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add footer loader to every HTML page
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          tag='<script src="/assets/site-footer.js" defer></script>'
+          for p in Path('.').rglob('*.html'):
+              if '.git' in p.parts:
+                  continue
+              s=p.read_text(encoding='utf-8')
+              if '/assets/site-footer.js' in s:
+                  continue
+              if '</head>' in s:
+                  p.write_text(s.replace('</head>', tag+'\n</head>', 1), encoding='utf-8')
+          PY
+      - name: Commit footer loader injection
+        run: |
+          git config user.name "Ahaneiffel Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add '*.html'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Install shared footer on all HTML pages [skip ci]"
+          git fetch origin main
+          if ! git rebase origin/main; then
+            echo "Concurrent change detected; aborting injection run without failing the workflow."
+            git rebase --abort || true
+            exit 0
+          fi
+          git push
