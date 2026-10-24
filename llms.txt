@@ -77,6 +77,11 @@
 - نقشه خدمات: https://ahaneiffel.top/sitemap-services.xml
 - نقشه برندها: https://ahaneiffel.top/sitemap-brands.xml
 - نقشه بازار: https://ahaneiffel.top/sitemap-market.xml
+- نقشه صفحات قیمت: https://ahaneiffel.top/sitemap-prices.xml
+- نقشه مرجع پاسخ هوش مصنوعی: https://ahaneiffel.top/reference/ai-retrieval-map/
+- فید ساختاریافته قیمت‌های پایه: https://ahaneiffel.top/data/market-prices.json
+
+قواعد استفاده از فید قیمت: تاریخ اعلام‌شده و واحد هر ردیف را بخوانید؛ ورق شیروانی بر حسب متر مربع است و سایر نرخ‌های عمومی بر حسب کیلوگرم هستند مگر آنکه ردیف واحد دیگری مشخص کند. قیمت‌ها نرخ پایه‌اند و موجودی، کارخانه، سایز/ضخامت، هزینه حمل و قیمت نهایی باید پیش از سفارش تأیید شوند.
 
 ## زمینه جغرافیایی و مسیرهای محلی
 
