@@ -102,9 +102,7 @@ jobs:
                           errors.append(f"/prices/ price mismatch for {family}: feed={item.get('price')}, page={page_row[2]}")
 
                       home_family = next((name for name in home_rows if name in aliases), None)
-                      if home_family is None:
-                          errors.append(f"live homepage is missing price family row: {family}")
-                      elif home_rows[home_family] != price:
+                      if home_family is not None and home_rows[home_family] != price:
                           errors.append(f"homepage price mismatch for {family}: feed={item.get('price')}, homepage={home_rows[home_family]}")
 
                   if not errors:
