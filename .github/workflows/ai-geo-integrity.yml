@@ -94,6 +94,63 @@ jobs:
           print(f"Validated {sitemap_indexes} sitemap index file(s), {urlsets} URL set(s), {len(all_urls)} unique page URL(s).")
           print(f"Optional lastmod missing on {missing_lastmod} page URL(s); this is a warning, not a failure.")
           PY
+      - name: Check price feed matches visible price tables
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import html
+          import json
+          import re
+          from pathlib import Path
+
+          digits = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
+
+          def number(value):
+              normalized = str(value).translate(digits)
+              return re.sub(r"\D", "", normalized)
+
+          def text_only(value):
+              return re.sub(r"<[^>]+>", " ", html.unescape(value)).strip()
+
+          feed = json.loads(Path("data/market-prices.json").read_text(encoding="utf-8"))
+          price_html = Path("prices/index.html").read_text(encoding="utf-8")
+          daily = re.search(r'<section class="price-section" id="daily-prices">([\s\S]*?)</section>', price_html)
+          if not daily:
+              raise SystemExit("Could not find the daily price summary table")
+          summary_rows = []
+          for row in re.findall(r"<tr\b[^>]*>([\s\S]*?)</tr>", daily.group(1), re.I):
+              cells = [text_only(cell) for cell in re.findall(r"<td\b[^>]*>([\s\S]*?)</td>", row, re.I)]
+              if len(cells) >= 3:
+                  summary_rows.append(cells)
+          if not summary_rows:
+              raise SystemExit("Daily price summary table contains no data rows")
+
+          for item in feed.get("rows", []):
+              aliases = item.get("raw", [])
+              family = aliases[0] if aliases else ""
+              row = next((r for r in summary_rows if any(alias and alias in r[0] for alias in aliases)), None)
+              if row is None:
+                  raise SystemExit(f"Price family missing from /prices/: {family}")
+              if number(row[2]) != str(item.get("price", "")):
+                  raise SystemExit(f"Price mismatch for {family}: feed={item.get('price')} page={row[2]}")
+              expected_unit = item.get("unit", feed.get("unit", ""))
+              if expected_unit and expected_unit not in row[1]:
+                  raise SystemExit(f"Unit mismatch for {family}: expected {expected_unit}, page={row[1]}")
+
+          homepage = Path("index.html").read_text(encoding="utf-8")
+          home_rows = re.findall(r'<tr\b[^>]*data-price-family="([^"]+)"[^>]*>([\s\S]*?)</tr>', homepage, re.I)
+          for family, row_html in home_rows:
+              item = next((x for x in feed.get("rows", []) if family in x.get("raw", [])), None)
+              if item is None:
+                  raise SystemExit(f"Homepage family is not in the price feed: {family}")
+              quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', row_html, re.I)
+              if not quote:
+                  raise SystemExit(f"Homepage price cell missing for {family}")
+              if number(text_only(quote.group(1))) != str(item.get("price", "")):
+                  raise SystemExit(f"Homepage/feed price mismatch for {family}")
+          print(f"Price integrity OK: {len(feed.get('rows', []))} feed rows match /prices/; {len(home_rows)} homepage rows match the feed.")
+          PY
       - name: Check canonical URL is live in source
         shell: bash
         run: |
