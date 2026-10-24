@@ -36,6 +36,64 @@ jobs:
               print(name, "OK")
           PY
 
+      - name: Validate every sitemap and detect duplicate URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          from datetime import date, datetime
+          from pathlib import Path
+          from urllib.parse import urlparse
+
+          NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+          files = sorted(Path(".").glob("sitemap*.xml"))
+          if not files:
+              raise SystemExit("No sitemap XML files found")
+
+          all_urls = {}
+          sitemap_indexes = 0
+          urlsets = 0
+          missing_lastmod = 0
+
+          for path in files:
+              root = ET.parse(path).getroot()
+              if root.tag.endswith("sitemapindex"):
+                  sitemap_indexes += 1
+                  for node in root.findall("sm:sitemap", NS):
+                      loc = (node.findtext("sm:loc", default="", namespaces=NS) or "").strip()
+                      if not loc.startswith("https://ahaneiffel.top/"):
+                          raise SystemExit(f"{path}: invalid sitemap location: {loc}")
+                      child_path = Path(urlparse(loc).path.lstrip("/"))
+                      if not child_path.is_file():
+                          raise SystemExit(f"{path}: referenced sitemap file missing: {child_path}")
+                  continue
+
+              if not root.tag.endswith("urlset"):
+                  raise SystemExit(f"{path}: unexpected XML root: {root.tag}")
+              urlsets += 1
+              for node in root.findall("sm:url", NS):
+                  loc = (node.findtext("sm:loc", default="", namespaces=NS) or "").strip()
+                  if not loc.startswith("https://ahaneiffel.top/"):
+                      raise SystemExit(f"{path}: invalid page URL: {loc}")
+                  if loc in all_urls:
+                      raise SystemExit(f"Duplicate sitemap URL: {loc} in {all_urls[loc]} and {path}")
+                  all_urls[loc] = path
+                  lastmod = (node.findtext("sm:lastmod", default="", namespaces=NS) or "").strip()
+                  if not lastmod:
+                      missing_lastmod += 1
+                      continue
+                  try:
+                      date.fromisoformat(lastmod[:10])
+                  except ValueError:
+                      try:
+                          datetime.fromisoformat(lastmod.replace("Z", "+00:00"))
+                      except ValueError:
+                          raise SystemExit(f"{path}: invalid lastmod for {loc}: {lastmod}")
+
+          print(f"Validated {sitemap_indexes} sitemap index file(s), {urlsets} URL set(s), {len(all_urls)} unique page URL(s).")
+          print(f"Optional lastmod missing on {missing_lastmod} page URL(s); this is a warning, not a failure.")
+          PY
       - name: Check canonical URL is live in source
         shell: bash
         run: |
