@@ -71,19 +71,19 @@ jobs:
                   def text_only(value):
                       return re.sub(r"<[^>]+>", " ", html.unescape(value)).strip()
 
-                  daily = re.search(r'<section class="price-section" id="daily-prices">([\\s\\S]*?)</section>', prices, re.I)
+                  daily = re.search(r'<section class="price-section" id="daily-prices">([\s\S]*?)</section>', prices, re.I)
                   price_rows = []
                   if not daily:
                       errors.append("live /prices/ is missing the daily price summary section")
                   else:
-                      for row_html in re.findall(r"<tr\\b[^>]*>([\\s\\S]*?)</tr>", daily.group(1), re.I):
-                          cells = [text_only(cell) for cell in re.findall(r"<td\\b[^>]*>([\\s\\S]*?)</td>", row_html, re.I)]
+                      for row_html in re.findall(r"<tr\b[^>]*>([\s\S]*?)</tr>", daily.group(1), re.I):
+                          cells = [text_only(cell) for cell in re.findall(r"<td\b[^>]*>([\s\S]*?)</td>", row_html, re.I)]
                           if len(cells) >= 3:
                               price_rows.append(cells)
 
                   home_rows = {}
-                  for family, row_html in re.findall(r'<tr\\b[^>]*data-price-family="([^"]+)"[^>]*>([\\s\\S]*?)</tr>', home, re.I):
-                      quote = re.search(r'<td\\b[^>]*class="quote"[^>]*>([\\s\\S]*?)</td>', row_html, re.I)
+                  for family, row_html in re.findall(r'<tr\b[^>]*data-price-family="([^"]+)"[^>]*>([\s\S]*?)</tr>', home, re.I):
+                      quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', row_html, re.I)
                       if quote:
                           home_rows[family] = digits_only(text_only(quote.group(1)))
 
