@@ -1,12 +1,12 @@
 {
-  "source": "User-provided daily price list for Ahaneiffel",
+  "source": "User-provided daily prices, aligned with the currently published Ahaneiffel price list",
   "source_type": "manual-user-provided",
-  "published_date": "۱۴۰۵/۰۷/۲۶",
+  "published_date": "۱۴۰۵/۰۸/۰۲",
   "currency": "تومان",
   "unit": "کیلوگرم",
-  "updated_at_utc": "2026-10-18T00:00:00Z",
+  "updated_at_utc": "2026-10-24T13:00:00Z",
   "price_adjustment_toman_per_unit": 0,
-  "price_adjustment_note": "قیمت‌ها طبق اعلام مستقیم کاربر ثبت شده‌اند؛ پیش از سفارش، موجودی و قیمت قطعی را تأیید کنید. ورق شیروانی با واحد متر مربع ثبت شده است.",
+  "price_adjustment_note": "قیمت‌های پایه مطابق فهرست منتشرشده آهن ایفل هستند؛ ورق شیروانی بر اساس متر مربع است. قیمت نهایی، موجودی و هزینه حمل باید پیش از سفارش تأیید شود.",
   "rows": [
     {
       "raw": [
@@ -20,14 +20,14 @@
         "تیرآهن",
         "تیرآهن فولادی"
       ],
-      "price": 122000
+      "price": 132000
     },
     {
       "raw": [
         "پروفیل",
         "قوطی پروفیل"
       ],
-      "price": 167000
+      "price": 170000
     },
     {
       "raw": [
@@ -41,21 +41,21 @@
         "ناودانی",
         "ناودانی آهنی"
       ],
-      "price": 125000
+      "price": 124000
     },
     {
       "raw": [
         "ورق سیاه",
         "ورق فولادی سیاه"
       ],
-      "price": 172000
+      "price": 171000
     },
     {
       "raw": [
         "ورق شیروانی",
         "ورق رنگی شیروانی"
       ],
-      "price": 1085000,
+      "price": 1150000,
       "unit": "متر مربع"
     },
     {
@@ -64,21 +64,21 @@
         "لوله فولادی",
         "لوله داربستی"
       ],
-      "price": 172000
+      "price": 178000
     },
     {
       "raw": [
         "پلیت",
         "صفحه پلیت"
       ],
-      "price": 119000
+      "price": 117000
     },
     {
       "raw": [
         "ورق پانچ",
         "ورق سوراخ دار"
       ],
-      "price": 172000
+      "price": 175000
     }
   ]
 }
