@@ -1,0 +1,94 @@
+name: Live Site Deployment Smoke Check
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ahaneiffel-live-smoke
+  cancel-in-progress: true
+
+jobs:
+  live-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Wait for static-site publication
+        run: sleep 60
+
+      - name: Verify live homepage, price center, and price feed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          import time
+          from urllib.request import Request, urlopen
+
+          BASE = "https://ahaneiffel.top"
+          DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
+
+          def fetch(path):
+              url = f"{BASE}{path}?smoke={int(time.time())}"
+              req = Request(url, headers={
+                  "User-Agent": "Ahaneiffel-Live-Smoke/1.0",
+                  "Cache-Control": "no-cache, no-store, max-age=0",
+                  "Pragma": "no-cache",
+              })
+              with urlopen(req, timeout=25) as response:
+                  if response.status != 200:
+                      raise RuntimeError(f"{path}: HTTP {response.status}")
+                  return response.read().decode("utf-8", "replace")
+
+          def digits_only(value):
+              return re.sub(r"\D", "", str(value).translate(DIGITS))
+
+          errors = []
+          for attempt in range(1, 6):
+              errors.clear()
+              try:
+                  feed = json.loads(fetch("/data/market-prices.json"))
+                  home = fetch("/")
+                  prices = fetch("/prices/")
+
+                  if not feed.get("published_date"):
+                      errors.append("price feed has no published_date")
+                  if 'data-price-family="میلگرد"' not in home:
+                      errors.append("live homepage is missing the crawlable price table marker")
+                  if "در حال دریافت" in home:
+                      errors.append("live homepage still contains the old 'در حال دریافت' placeholder")
+                  if "5840794_1788807556_47050c2b07bd3293" not in home:
+                      errors.append("live homepage does not contain the current social-preview image metadata")
+                  if feed.get("published_date") and feed["published_date"] not in prices:
+                      errors.append("live /prices/ date does not match the price feed date")
+
+                  for item in feed.get("rows", []):
+                      family = (item.get("raw") or [""])[0]
+                      price = digits_only(item.get("price", ""))
+                      if not family or not price:
+                          errors.append("price feed contains an incomplete row")
+                          continue
+                      if family not in prices:
+                          errors.append(f"/prices/ is missing price family: {family}")
+                      if price not in digits_only(prices):
+                          errors.append(f"/prices/ does not show feed price for {family}: {item.get('price')}")
+
+                  if not errors:
+                      print(f"PASS: live homepage, price center, and feed agree for {len(feed.get('rows', []))} price families; date={feed['published_date']}.")
+                      raise SystemExit(0)
+              except SystemExit:
+                  raise
+              except Exception as exc:
+                  errors.append(str(exc))
+
+              print(f"Attempt {attempt}/5: " + "; ".join(errors))
+              if attempt < 5:
+                  time.sleep(60)
+
+          raise SystemExit("Live deployment is not synchronized with repository content: " + "; ".join(errors))
+          PY
