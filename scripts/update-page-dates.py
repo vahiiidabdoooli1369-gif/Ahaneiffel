@@ -5,9 +5,9 @@ import re
 from datetime import date
 
 ROOT = Path(__file__).resolve().parents[1]
-ISO_DATE = "2026-10-21"
-PERSIAN_DATE = "۱۴۰۵/۰۷/۲۹"
-ASCII_PERSIAN_DATE = "1405/07/29"
+ISO_DATE = "2026-10-24"
+PERSIAN_DATE = "۱۴۰۵/۰۸/۰۲"
+ASCII_PERSIAN_DATE = "1405/08/02"
 
 changed = []
 for path in ROOT.rglob("*.html"):
@@ -37,6 +37,16 @@ for path in ROOT.rglob("*.html"):
         path.write_text(updated, encoding="utf-8")
         changed.append(str(path.relative_to(ROOT)))
 
-print(f"Updated {len(changed)} HTML files for dateModified / labelled update-date metadata.")
+# Keep sitemap lastmod dates aligned with the HTML pages.
+for path in ROOT.rglob("*.xml"):
+    if any(part in {".git", ".github"} for part in path.parts):
+        continue
+    original = path.read_text(encoding="utf-8")
+    updated = re.sub(r"(<lastmod>)[^<]+(</lastmod>)", lambda m: m.group(1) + ISO_DATE + m.group(2), original)
+    if updated != original:
+        path.write_text(updated, encoding="utf-8")
+        changed.append(str(path.relative_to(ROOT)))
+
+print(f"Updated {len(changed)} HTML/XML files for dateModified / labelled update-date / sitemap lastmod metadata.")
 for item in changed:
     print(item)
