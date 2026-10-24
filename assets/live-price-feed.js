@@ -50,7 +50,8 @@
 
       const priceCell = row.querySelector(".quote");
       if (priceCell) {
-        priceCell.textContent = format(item.price) + " تومان";
+        const unit = item.unit || data.unit || "واحد نامشخص";
+        priceCell.textContent = format(item.price) + " تومان/" + unit;
         priceCell.classList.add("live-price");
         priceCell.setAttribute("data-price-source", "ahaneiffel-market-feed");
         priceCell.title = isFresh

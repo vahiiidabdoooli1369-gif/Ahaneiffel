@@ -1,19 +1,19 @@
 {
-  "source": "User-provided daily prices",
+  "source": "User-provided daily prices for Ahaneiffel",
   "source_type": "manual-user-provided",
   "published_date": "۱۴۰۵/۰۸/۰۲",
   "currency": "تومان",
   "unit": "کیلوگرم",
-  "updated_at_utc": "2026-10-24T00:00:00Z",
+  "updated_at_utc": "2026-10-24T14:00:00Z",
   "price_adjustment_toman_per_unit": 0,
-  "price_adjustment_note": "قیمت‌ها طبق اعلام کاربر هستند؛ ورق شیروانی بر اساس متر مربع است.",
+  "price_adjustment_note": "قیمت‌های پایه اعلام‌شده برای تاریخ ثبت‌شده هستند؛ قیمت نهایی، موجودی، کارخانه، ضخامت/سایز و هزینه حمل باید پیش از سفارش تأیید شود. ورق شیروانی بر اساس متر مربع ثبت شده است.",
   "rows": [
     {
       "raw": [
         "میلگرد",
         "میلگرد آجدار"
       ],
-      "price": 120000
+      "price": 122000
     },
     {
       "raw": [
