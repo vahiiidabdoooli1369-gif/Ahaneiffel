@@ -1,0 +1,28 @@
+name: Market Price Feed Schema Integrity
+
+on:
+  pull_request:
+    paths:
+      - 'data/market-prices.json'
+      - 'scripts/validate_market_prices.py'
+      - 'scripts/update_market_prices.py'
+      - '.github/workflows/market-price-feed-integrity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/market-prices.json'
+      - 'scripts/validate_market_prices.py'
+      - 'scripts/update_market_prices.py'
+      - '.github/workflows/market-price-feed-integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-price-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate public market-price feed
+        run: python3 scripts/validate_market_prices.py
