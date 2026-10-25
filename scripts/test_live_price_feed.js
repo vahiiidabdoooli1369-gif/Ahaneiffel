@@ -52,5 +52,8 @@ async function evaluateFeed(publishedDate, updatedAt) {
 
   const staleTimestamp = await evaluateFeed(today, new Date(now.getTime() - 27 * 60 * 60 * 1000).toISOString());
   assert.equal(staleTimestamp.status, "نیازمند بررسی");
-  console.log("Price-feed freshness tests passed: same-day, previous-day, and stale timestamp.");
+
+  const missingDate = await evaluateFeed("", now.toISOString());
+  assert.equal(missingDate.status, "نیازمند بررسی");
+  console.log("Price-feed freshness tests passed: same-day, previous-day, stale timestamp, and missing publication date.");
 })().catch(error => { console.error(error); process.exitCode = 1; });
