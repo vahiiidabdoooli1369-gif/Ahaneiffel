@@ -58,6 +58,34 @@ jobs:
                   prices = fetch("/prices/")
                   llms = fetch("/llms.txt")
 
+                  # Check representative buying guides after publication, not only in the repository.
+                  guide_paths = [
+                      "/guides/angle-size-selection/",
+                      "/guides/channel-light-vs-heavy/",
+                      "/guides/rebar-12-vs-14/",
+                      "/guides/sheet-3mm-vs-4mm/",
+                  ]
+                  for guide_path in guide_paths:
+                      guide = fetch(guide_path)
+                      title_match = re.search(r"<title[^>]*>([\s\S]*?)</title>", guide, re.I)
+                      canonical_match = re.search(
+                          r"""<link\s+rel=["']canonical["']\s+href=["']([^"']+)["']""",
+                          guide,
+                          re.I,
+                      )
+                      h1_count = len(re.findall(r"<h1\b", guide, re.I))
+                      visible_text = re.sub(r"<[^>]+>", " ", html.unescape(guide))
+                      visible_text = re.sub(r"\s+", " ", visible_text).strip()
+                      if not title_match or not title_match.group(1).strip():
+                          errors.append(f"{guide_path} is missing a title")
+                      expected_canonical = BASE + guide_path
+                      if not canonical_match or canonical_match.group(1).rstrip("/") != expected_canonical.rstrip("/"):
+                          errors.append(f"{guide_path} has a missing or incorrect canonical")
+                      if h1_count != 1:
+                          errors.append(f"{guide_path} must contain exactly one H1; found {h1_count}")
+                      if len(visible_text) < 1200:
+                          errors.append(f"{guide_path} appears incomplete on the live site ({len(visible_text)} visible characters)")
+
                   # Detect stale public business-hours text even after the source is fixed.
                   def has_verified_hours(value):
                       value = html.unescape(value).translate(DIGITS)
