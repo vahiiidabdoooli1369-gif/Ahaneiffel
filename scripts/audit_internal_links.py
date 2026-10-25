@@ -196,6 +196,71 @@ def audit_accessibility_markers(pages):
     return issues
 
 
+
+def audit_metadata_quality(pages):
+    """Report missing or duplicated titles/descriptions and suspicious metadata lengths."""
+    issues = []
+    title_re = re.compile(r"<title\b[^>]*>([\s\S]*?)</title>", re.I)
+    description_re = re.compile(
+        r"""<meta\b(?=[^>]*\bname\s*=\s*["']description["'])(?=[^>]*\bcontent\s*=\s*["'])[^>]*>""",
+        re.I | re.S,
+    )
+    lang_re = re.compile(r"<html\b[^>]*\blang\s*=\s*(['\"])(.*?)\1", re.I | re.S)
+    title_groups = defaultdict(list)
+    description_groups = defaultdict(list)
+
+    for page in pages:
+        text = page.read_text(encoding="utf-8", errors="replace")
+        page_url = public_url(page)
+        titles = [html.unescape(re.sub(r"<[^>]+>", " ", value)).strip() for value in title_re.findall(text)]
+        if not titles:
+            issues.append((page_url, "missing-title", "No title element"))
+        elif len(titles) > 1:
+            issues.append((page_url, "multiple-titles", f"{len(titles)} title elements"))
+        else:
+            title = re.sub(r"\s+", " ", titles[0]).strip()
+            if not title:
+                issues.append((page_url, "empty-title", "Title element is empty"))
+            else:
+                title_groups[title.casefold()].append(page_url)
+                if len(title) < 15:
+                    issues.append((page_url, "short-title", f"{len(title)} characters"))
+                elif len(title) > 70:
+                    issues.append((page_url, "long-title", f"{len(title)} characters"))
+
+        descriptions = []
+        for match in description_re.finditer(text):
+            content_match = re.search(r"""\bcontent\s*=\s*(["'])(.*?)\1""", match.group(0), re.I | re.S)
+            if content_match:
+                descriptions.append(html.unescape(content_match.group(2)).strip())
+        if not descriptions:
+            issues.append((page_url, "missing-meta-description", "No meta description"))
+        elif len(descriptions) > 1:
+            issues.append((page_url, "multiple-meta-descriptions", f"{len(descriptions)} description tags"))
+        else:
+            description = re.sub(r"\s+", " ", descriptions[0]).strip()
+            if not description:
+                issues.append((page_url, "empty-meta-description", "Meta description is empty"))
+            else:
+                description_groups[description.casefold()].append(page_url)
+                if len(description) < 70:
+                    issues.append((page_url, "short-meta-description", f"{len(description)} characters"))
+                elif len(description) > 180:
+                    issues.append((page_url, "long-meta-description", f"{len(description)} characters"))
+
+        if not lang_re.search(text):
+            issues.append((page_url, "missing-html-lang", "HTML root has no lang attribute"))
+
+    for title, urls in title_groups.items():
+        if len(urls) > 1:
+            for page_url in urls:
+                issues.append((page_url, "duplicate-title", f"{len(urls)} pages share title: {title[:100]}"))
+    for description, urls in description_groups.items():
+        if len(urls) > 1:
+            for page_url in urls:
+                issues.append((page_url, "duplicate-meta-description", f"{len(urls)} pages share description: {description[:100]}"))
+    return issues
+
 def audit_sitemaps():
     """Validate sitemap XML, listed local targets, canonical host and duplicates."""
     issues = []
@@ -295,6 +360,7 @@ def main():
     fragment_issues = audit_fragments(pages)
     canonical_issues = audit_canonical_targets(pages)
     accessibility_issues = audit_accessibility_markers(pages)
+    metadata_issues = audit_metadata_quality(pages)
 
     print(f"HTML pages: {len(pages)}")
     print(f"Sitemap URLs audited: {sitemap_url_count}")
@@ -307,6 +373,9 @@ def main():
     print(f"Canonical consistency findings (non-blocking report): {len(canonical_issues)}")
     for page, issue in canonical_issues[:200]:
         print(f"CANONICAL | {page} | {issue}")
+    print(f"Metadata quality findings (non-blocking report): {len(metadata_issues)}")
+    for page, kind, detail in metadata_issues[:300]:
+        print(f"METADATA | {page} | {kind} | {detail}")
     print(f"Accessibility marker findings (non-blocking report): {len(accessibility_issues)}")
     for page, kind, detail in accessibility_issues[:200]:
         print(f"A11Y | {page} | {kind} | {detail}")
