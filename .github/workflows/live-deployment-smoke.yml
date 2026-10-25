@@ -112,6 +112,12 @@ jobs:
                       errors.append("live homepage still contains the old 'در حال دریافت' placeholder")
                   if "5840794_1788807556_47050c2b07bd3293" not in home:
                       errors.append("live homepage does not contain the current social-preview image metadata")
+                  if home.count('<div class="quote-tabs">') != 1:
+                      errors.append("live homepage quote panel should contain exactly one quote-tabs container")
+                  if '<div class="quote-tabs"><div class="quote-tabs">' in home:
+                      errors.append("live homepage quote panel contains an unintended nested quote-tabs wrapper")
+                  if not re.search(r"""<meta\s+name=["']twitter:card["']\s+content=["']summary_large_image["']""", home, re.I):
+                      errors.append("live homepage Twitter card is not configured for a large image preview")
                   if feed.get("published_date") and feed["published_date"] not in prices:
                       errors.append("live /prices/ date does not match the price feed date")
 
