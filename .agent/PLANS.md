@@ -118,3 +118,16 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Finding:** The advanced-guide sitemap already listed the delivery-evidence and data-confidence pages. Adding them again to the general guide sitemap created duplicate URLs and caused the repository's sitemap-integrity workflow to fail.
 - **Change:** Removed those two duplicate entries from sitemap-guides.xml; their existing entries in sitemap-advanced-guides.xml remain authoritative.
 - **Validation:** Cross-sitemap comparison confirmed these were the two duplicate URLs between the guide sitemap files. The new sitemap audit will verify no further duplicate entries remain.
+
+
+## Current execution: canonical self-consistency audit
+
+- **Objective:** Detect canonical problems on indexable HTML pages even when those pages are not present in the XML sitemap.
+- **Current state:** A review found an indexable guide whose canonical exposed an /index.html/ path while internal links used its directory URL. The sitemap audit alone could not catch that page before it was listed.
+- **Constraints:** Treat findings as non-blocking reports initially because some pages may intentionally canonicalize to another URL; do not rewrite canonical URLs automatically.
+- **Files/components in scope:** scripts/audit_internal_links.py.
+- **Implementation steps:** Report missing/multiple canonical tags, non-HTTPS or noncanonical hosts, index.html canonical paths, and indexable pages whose canonical path differs from the public file path.
+- **Validation:** The new report runs alongside existing link, fragment, sitemap, and orphan checks in pull-request CI. Findings require review before making the rule blocking.
+- **Risks:** Pages with intentional canonical consolidation may be reported; decisions must consider noindex and redirect behavior.
+- **Rollback:** Revert the canonical report function if it produces excessive false positives or slows CI materially.
+- **Completion status:** Implemented on review branch; automated checks pending.
