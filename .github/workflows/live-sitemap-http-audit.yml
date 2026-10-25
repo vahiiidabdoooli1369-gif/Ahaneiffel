@@ -1,0 +1,58 @@
+name: Live Sitemap HTTP Audit
+
+on:
+  pull_request:
+    paths:
+      - "scripts/audit_live_sitemap.py"
+      - ".github/workflows/live-sitemap-http-audit.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "23 5 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-sitemap-http-audit
+  cancel-in-progress: true
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile audit script
+        run: python -m py_compile scripts/audit_live_sitemap.py
+
+  live-audit:
+    if: github.event_name != 'pull_request'
+    needs: syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Audit published sitemap URLs
+        id: audit
+        continue-on-error: true
+        run: python scripts/audit_live_sitemap.py --base-url https://ahaneiffel.top --report live-sitemap-http-report.csv
+      - name: Upload HTTP audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-sitemap-http-report
+          path: live-sitemap-http-report.csv
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Fail if live URLs need attention
+        if: steps.audit.outcome == 'failure'
+        run: |
+          echo "The live sitemap audit found HTTP failures or sitemap errors. Download the report artifact and investigate before changing sitemap entries."
+          exit 1
