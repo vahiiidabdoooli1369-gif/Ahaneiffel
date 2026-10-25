@@ -2,6 +2,11 @@ name: SEO Architecture Guard
 on:
   push:
     branches: [main]
+  pull_request:
+    paths:
+      - 'scripts/seo_architecture_guard.py'
+      - 'llms.txt'
+      - '.github/workflows/seo-architecture-guard.yml'
   workflow_dispatch:
 permissions:
   contents: read
