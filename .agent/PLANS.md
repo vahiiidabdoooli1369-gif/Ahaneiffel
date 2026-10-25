@@ -72,3 +72,16 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risks:** More text does not itself guarantee rankings; structured data must stay aligned with visible page content. Safety-related storage advice deliberately avoids generic load/stack limits.
 - **Rollback:** Revert this PR if automated validation detects malformed markup, schema, sitemap targets, or live pages.
 - **Completion status:** Implemented on review branch; automated checks pending.
+
+
+## Current execution: internal fragment-link audit
+
+- **Objective:** Detect broken jump links such as `#specifications` or `/guides/example/#faq` that the existing path-only link audit cannot detect.
+- **Current state:** The internal-link audit checked whether target pages exist but ignored fragment identifiers. A link can therefore point to a valid page and still jump to a nonexistent section.
+- **Constraints:** Do not make fragment findings deployment-blocking until the report has been reviewed for dynamic/JavaScript-generated targets. Existing missing-path and sitemap failures remain blocking.
+- **Files/components in scope:** `scripts/audit_internal_links.py`.
+- **Implementation steps:** Parse HTML `id` attributes and legacy anchor `name` attributes, resolve local paths and URL-encoded fragments, cache target identifiers for performance, and report missing fragments with source page and target.
+- **Validation:** The updated audit will run in the existing pull-request workflow. Findings are intentionally non-blocking for the first reporting pass.
+- **Risks:** Dynamic tabs or scripts may create targets after page load; those require manual review before changing the report to a blocking gate.
+- **Rollback:** Revert the fragment audit function if it produces excessive false positives or materially slows the repository audit.
+- **Completion status:** Implemented on review branch; automated validation pending.
