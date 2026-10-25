@@ -193,3 +193,11 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - Adds CI on pull requests and main-branch changes to the feed, validator, or scraper.
 - Validator is read-only: it does not adjust prices, generate dates, or overwrite source information.
 - Live HTTP status and whether the feed is commercially current remain separate checks; schema validity is not a claim that prices have been verified.
+
+
+## Price-feed missing-date fail-safe (2026-10-25)
+
+- Tightened the freshness rule so a feed with no published_date cannot be presented as current when the browser can determine the Tehran Jalali date.
+- Kept timestamp-only fallback only when Intl Persian-calendar support itself is unavailable.
+- Added a regression test for a recent timestamp with a missing publication date.
+- No price data is edited; the display stays visible and is labelled for review.
