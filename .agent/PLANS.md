@@ -52,3 +52,10 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risks:** Static-site publication may lag behind the repository; a page may fail the live visible-content threshold even if source metadata is correct.
 - **Rollback:** Revert this PR if the new URLs fail the sitemap integrity or live publication checks.
 - **Completion status:** Changes committed on review branch; automated checks pending.
+
+
+### Additional verified navigation cleanup
+
+- **Finding:** `guides/index.html` contained two sections with the same `id="seo-orphan-hub"`; the second repeated the same guide links with English slug labels, creating duplicate IDs and unnecessary duplicate navigation.
+- **Change:** Removed the duplicate English-only section and added Persian links for the three existing guides missing from the localized hub: perforated-sheet hole pattern, scaffolding-pipe thickness, and quote normalization.
+- **Validation:** The target files were verified to exist. HTML integrity and internal-link CI must pass on the updated branch before merge.
