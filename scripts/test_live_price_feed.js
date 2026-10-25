@@ -72,7 +72,7 @@ async function evaluateFeed(publishedDate, updatedAt) {
   const fresh = await evaluateFeed(today, now.toISOString());
   assert.match(fresh.status, /نرخ پایه/);
   assert.match(fresh.title, /تأیید نهایی/);
-  assert.match(fresh.price, /122/);
+  assert.match(fresh.price, /۱۲۲|122/);
 
   const stalePublishedDate = await evaluateFeed(oldDay, now.toISOString());
   assert.equal(stalePublishedDate.status, "نیازمند بررسی");
