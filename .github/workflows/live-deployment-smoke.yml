@@ -61,9 +61,9 @@ jobs:
                   # Detect stale public business-hours text even after the source is fixed.
                   def has_verified_hours(value):
                       value = html.unescape(value).translate(DIGITS)
-                      value = re.sub(r"\\s+", " ", value)
+                      value = re.sub(r"\s+", " ", value)
                       return bool(re.search(
-                          r"ساعت\\s*کاری.{0,80}08:30\\s*(?:الی|تا|[-–])\\s*18:30",
+                          r"ساعت\s*کاری.{0,80}08:30\s*(?:الی|تا|[-–])\s*18:30",
                           value,
                           re.I | re.S,
                       ))
