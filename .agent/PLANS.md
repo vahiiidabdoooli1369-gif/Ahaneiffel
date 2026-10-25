@@ -155,3 +155,14 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Constraints:** Do not fabricate freshness, do not add lastmod to entries that do not have it, and leave unmappable URLs untouched.
 - **Rollback:** Revert the date-sync script/workflow changes if the tests fail or the output rewrites dates unrelated to a page's latest substantive change.
 - **Status:** Implemented on review branch; PR checks and post-merge sync still required.
+
+
+## Current execution: AI retrieval link integrity
+
+- **Finding:** The llms.txt file exposes 70 distinct first-party routes across 92 URL references. The architecture guard checked that llms.txt existed, but did not verify that its listed site URLs mapped to real repository pages.
+- **Change:** Extend the architecture guard to resolve every first-party llms.txt URL to a local HTML, XML, JSON, or text asset; reject missing targets and non-preferred /index.html URLs.
+- **QA:** Add the architecture guard to pull-request checks when llms.txt, its audit script, or its workflow changes.
+- **Constraints:** Repeated references are permitted when they serve different sections; this change validates destinations rather than deleting intentional context. URL decoding is applied before filesystem lookup.
+- **Risk:** Repository route mapping cannot prove a production server returns HTTP 200; live deployment smoke checks remain a separate verification.
+- **Rollback:** Revert the guard and workflow trigger if legitimate route aliases are incorrectly rejected.
+- **Status:** Implemented on review branch; automated checks pending.
