@@ -56,6 +56,22 @@ jobs:
                   feed = json.loads(fetch("/data/market-prices.json"))
                   home = fetch("/")
                   prices = fetch("/prices/")
+                  llms = fetch("/llms.txt")
+
+                  # Detect stale public business-hours text even after the source is fixed.
+                  def has_verified_hours(value):
+                      value = html.unescape(value).translate(DIGITS)
+                      value = re.sub(r"\\s+", " ", value)
+                      return bool(re.search(
+                          r"ساعت\\s*کاری.{0,80}08:30\\s*(?:الی|تا|[-–])\\s*18:30",
+                          value,
+                          re.I | re.S,
+                      ))
+
+                  if not has_verified_hours(prices):
+                      errors.append("/prices/ business hours are missing or differ from 08:30–18:30")
+                  if not has_verified_hours(llms):
+                      errors.append("/llms.txt business hours are missing or differ from 08:30–18:30")
 
                   if not feed.get("published_date"):
                       errors.append("price feed has no published_date")
