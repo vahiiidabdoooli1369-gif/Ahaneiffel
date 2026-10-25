@@ -1,0 +1,25 @@
+name: Date Freshness Integrity
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/update-page-dates.py'
+      - '.github/workflows/update-page-dates.yml'
+      - '.github/workflows/date-freshness-integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-date-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compile date-sync script
+        run: python3 -m py_compile scripts/update-page-dates.py
+      - name: Test Jalali conversion and URL mapping
+        run: python3 scripts/update-page-dates.py --self-test
