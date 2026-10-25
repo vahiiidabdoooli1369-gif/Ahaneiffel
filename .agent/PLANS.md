@@ -166,3 +166,13 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risk:** Repository route mapping cannot prove a production server returns HTTP 200; live deployment smoke checks remain a separate verification.
 - **Rollback:** Revert the guard and workflow trigger if legitimate route aliases are incorrectly rejected.
 - **Status:** Implemented on review branch; automated checks pending.
+
+
+## Current execution: inactive market-price refresh guard
+
+- **Finding:** The scheduled market-price job runs every 30 minutes during configured market hours, but data/market-prices.json is explicitly marked manual-user-provided and the scraper exits without changing it. The workflow installed pandas/lxml/requests before discovering that no scrape should occur.
+- **Change:** Add a dependency-free source-mode check before setup-python and dependency installation. Skip scraping and commits while the owner-provided feed is authoritative; retain scheduled/manual triggers so automation can resume if the source mode is deliberately changed.
+- **Safety:** No market prices, timestamps, or source labels are changed by this workflow edit. The scraper and commit steps run only when the feed is not marked manual-user-provided.
+- **Validation:** A push-triggered workflow run will verify the guard after merge; current manual feed should finish with the explicit safe-skip step.
+- **Rollback:** Revert the workflow if the source-mode guard prevents an intentionally enabled automated source from running.
+- **Status:** Implemented on review branch; workflow validation pending.
