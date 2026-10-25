@@ -64,6 +64,9 @@ jobs:
                       "/guides/channel-light-vs-heavy/",
                       "/guides/rebar-12-vs-14/",
                       "/guides/sheet-3mm-vs-4mm/",
+                      "/guides/iron-order-check/",
+                      "/guides/iron-price-calculation/",
+                      "/guides/iron-shipping-cost/",
                   ]
                   for guide_path in guide_paths:
                       guide = fetch(guide_path)
