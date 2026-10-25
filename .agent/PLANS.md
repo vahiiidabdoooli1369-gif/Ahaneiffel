@@ -176,3 +176,11 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Validation:** A push-triggered workflow run will verify the guard after merge; current manual feed should finish with the explicit safe-skip step.
 - **Rollback:** Revert the workflow if the source-mode guard prevents an intentionally enabled automated source from running.
 - **Status:** Implemented on review branch; workflow validation pending.
+
+
+## Price feed freshness regression correction (2026-10-25)
+
+- Previous-day publication can no longer be labelled fresh solely because its UTC timestamp is within 26 hours; freshness also checks the published Jalali date in Asia/Tehran.
+- Known values remain visible but receive the existing “نیازمند بررسی” status when stale.
+- Added Node regression cases for same-day publication, previous-day publication with a recent timestamp, and a stale timestamp.
+- CI checks JavaScript syntax and behavior. This change does not modify the market-price JSON or any price value.
