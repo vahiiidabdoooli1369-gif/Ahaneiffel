@@ -59,3 +59,16 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Finding:** `guides/index.html` contained two sections with the same `id="seo-orphan-hub"`; the second repeated the same guide links with English slug labels, creating duplicate IDs and unnecessary duplicate navigation.
 - **Change:** Removed the duplicate English-only section and added Persian links for the three existing guides missing from the localized hub: perforated-sheet hole pattern, scaffolding-pipe thickness, and quote normalization.
 - **Validation:** The target files were verified to exist. HTML integrity and internal-link CI must pass on the updated branch before merge.
+
+
+## Current execution: expand operational guides
+
+- **Objective:** Replace short, repetitive operational guidance with practical workflows for order changes, purchase timing, receiving-quantity checks, and storage layout.
+- **Current state:** Four self-canonical, indexable pages contained only a few short paragraphs and overlapping bullet lists. They were already linked from the guide directory but needed more actionable depth.
+- **Constraints:** Preserve canonical URLs, Persian RTL, and existing internal-link relationships. Do not invent delivery lead times, fixed warehouse stack heights, engineering limits, market prices, or supplier availability.
+- **Files/components in scope:** Four guide pages, `sitemap-guides.xml`, and `.github/workflows/live-deployment-smoke.yml`.
+- **Implementation steps:** Add task-oriented procedures, practical checklists and tables, visible FAQs, related links, responsive table wrappers, and valid Article/Breadcrumb structured data; include verified pages in the guide sitemap and live smoke tests.
+- **Validation:** Source changes committed to a review branch. HTML integrity, structured-data integrity, sitemap/internal-link audit, and live deployment smoke checks must pass before merge; production publication remains a separate check.
+- **Risks:** More text does not itself guarantee rankings; structured data must stay aligned with visible page content. Safety-related storage advice deliberately avoids generic load/stack limits.
+- **Rollback:** Revert this PR if automated validation detects malformed markup, schema, sitemap targets, or live pages.
+- **Completion status:** Implemented on review branch; automated checks pending.
