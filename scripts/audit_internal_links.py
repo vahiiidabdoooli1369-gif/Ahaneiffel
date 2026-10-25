@@ -200,12 +200,12 @@ def audit_accessibility_markers(pages):
 def audit_metadata_quality(pages):
     """Report missing or duplicated titles/descriptions and suspicious metadata lengths."""
     issues = []
-    title_re = re.compile(r"<title\\b[^>]*>([\\s\\S]*?)</title>", re.I)
+    title_re = re.compile(r"<title\b[^>]*>([\s\S]*?)</title>", re.I)
     description_re = re.compile(
-        r"""<meta\\b(?=[^>]*\\bname\\s*=\\s*["']description["'])(?=[^>]*\\bcontent\\s*=\\s*["'])[^>]*>""",
+        r"""<meta\b(?=[^>]*\bname\s*=\s*["']description["'])(?=[^>]*\bcontent\s*=\s*["'])[^>]*>""",
         re.I | re.S,
     )
-    lang_re = re.compile(r"<html\\b[^>]*\\blang\\s*=\\s*(['\"])(.*?)\\1", re.I | re.S)
+    lang_re = re.compile(r"<html\b[^>]*\blang\s*=\s*(['\"])(.*?)\1", re.I | re.S)
     title_groups = defaultdict(list)
     description_groups = defaultdict(list)
 
@@ -218,7 +218,7 @@ def audit_metadata_quality(pages):
         elif len(titles) > 1:
             issues.append((page_url, "multiple-titles", f"{len(titles)} title elements"))
         else:
-            title = re.sub(r"\\s+", " ", titles[0]).strip()
+            title = re.sub(r"\s+", " ", titles[0]).strip()
             if not title:
                 issues.append((page_url, "empty-title", "Title element is empty"))
             else:
@@ -230,7 +230,7 @@ def audit_metadata_quality(pages):
 
         descriptions = []
         for match in description_re.finditer(text):
-            content_match = re.search(r"""\\bcontent\\s*=\\s*(["'])(.*?)\\1""", match.group(0), re.I | re.S)
+            content_match = re.search(r"""\bcontent\s*=\s*(["'])(.*?)\1""", match.group(0), re.I | re.S)
             if content_match:
                 descriptions.append(html.unescape(content_match.group(2)).strip())
         if not descriptions:
@@ -238,7 +238,7 @@ def audit_metadata_quality(pages):
         elif len(descriptions) > 1:
             issues.append((page_url, "multiple-meta-descriptions", f"{len(descriptions)} description tags"))
         else:
-            description = re.sub(r"\\s+", " ", descriptions[0]).strip()
+            description = re.sub(r"\s+", " ", descriptions[0]).strip()
             if not description:
                 issues.append((page_url, "empty-meta-description", "Meta description is empty"))
             else:
