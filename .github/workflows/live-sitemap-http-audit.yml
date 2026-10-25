@@ -1,6 +1,10 @@
 name: Live Sitemap HTTP Audit
 
 on:
+  pull_request:
+    paths:
+      - "scripts/audit_live_sitemap.py"
+      - ".github/workflows/live-sitemap-http-audit.yml"
   workflow_dispatch:
   schedule:
     - cron: "23 5 * * 1"
@@ -13,7 +17,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  audit:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile audit script
+        run: python -m py_compile scripts/audit_live_sitemap.py
+
+  live-audit:
+    if: github.event_name != 'pull_request'
+    needs: syntax
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
