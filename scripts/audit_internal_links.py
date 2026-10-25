@@ -8,6 +8,7 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import urlparse, unquote
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE_HOSTS = {"ahaneiffel.top", "www.ahaneiffel.top"}
@@ -90,6 +91,60 @@ def is_indexable(text: str):
     return "noindex" not in m.group(1).lower()
 
 
+def audit_sitemaps():
+    """Validate sitemap XML, listed local targets, canonical host and duplicates."""
+    issues = []
+    seen_urls = set()
+    sitemap_files = sorted(ROOT.glob("sitemap*.xml"))
+    if not sitemap_files:
+        return ["No sitemap*.xml files found"], 0
+
+    ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    for sitemap in sitemap_files:
+        try:
+            root = ET.parse(sitemap).getroot()
+        except (ET.ParseError, OSError) as exc:
+            issues.append(f"{sitemap.relative_to(ROOT)}: invalid XML ({exc})")
+            continue
+
+        if root.tag.endswith("sitemapindex"):
+            locs = [node.text.strip() for node in root.findall("sm:sitemap/sm:loc", ns) if node.text]
+            for loc in locs:
+                parsed = urlparse(loc)
+                if parsed.scheme != "https" or parsed.hostname != "ahaneiffel.top":
+                    issues.append(f"{sitemap.name}: non-canonical sitemap index target {loc}")
+                    continue
+                target = ROOT / parsed.path.lstrip("/")
+                if not target.is_file():
+                    issues.append(f"{sitemap.name}: missing child sitemap {loc}")
+            continue
+
+        for node in root.findall("sm:url/sm:loc", ns):
+            if not node.text:
+                issues.append(f"{sitemap.name}: empty <loc>")
+                continue
+            loc = node.text.strip()
+            parsed = urlparse(loc)
+            if parsed.scheme != "https" or parsed.hostname != "ahaneiffel.top":
+                issues.append(f"{sitemap.name}: non-canonical URL {loc}")
+                continue
+            if loc in seen_urls:
+                issues.append(f"{sitemap.name}: duplicate sitemap URL {loc}")
+            seen_urls.add(loc)
+            path = unquote(parsed.path or "/")
+            target = target_file(path)
+            if target is None:
+                issues.append(f"{sitemap.name}: sitemap URL has no local HTML target {loc}")
+                continue
+            text = target.read_text(encoding="utf-8", errors="replace")
+            if not is_indexable(text):
+                issues.append(f"{sitemap.name}: noindex page listed in sitemap {loc}")
+            canon = canonical_value(text)
+            if canon and canon.rstrip("/") != loc.rstrip("/"):
+                issues.append(f"{sitemap.name}: canonical mismatch for {loc}; page canonical is {canon}")
+    return issues, len(seen_urls)
+
+
 def main():
     pages = list(html_files())
     inbound = Counter()
@@ -131,7 +186,13 @@ def main():
         if is_indexable(text) and inbound[u] == 0 and u != "/":
             orphan.append(u)
 
+    sitemap_issues, sitemap_url_count = audit_sitemaps()
+
     print(f"HTML pages: {len(pages)}")
+    print(f"Sitemap URLs audited: {sitemap_url_count}")
+    print(f"Sitemap integrity issues: {len(sitemap_issues)}")
+    for issue in sitemap_issues[:200]:
+        print(f"SITEMAP | {issue}")
     print(f"Broken internal links: {len(broken)}")
     for src, raw, target in broken[:100]:
         print(f"BROKEN | {src} | {raw} | resolved={target}")

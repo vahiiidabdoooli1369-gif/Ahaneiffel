@@ -67,6 +67,22 @@ jobs:
                       "/guides/iron-order-check/",
                       "/guides/iron-price-calculation/",
                       "/guides/iron-shipping-cost/",
+                    "/guides/angle-equal-unequal/",
+                    "/guides/base-plate-ordering/",
+                    "/guides/beam-site-inspection/",
+                    "/guides/channel-upn-upe/",
+                    "/guides/formwork-strip-selection/",
+                    "/guides/perforated-sheet-hole-pattern/",
+                    "/guides/profile-cutting-planning/",
+                    "/guides/profile-dimensional-control/",
+                    "/guides/rebar-site-inspection/",
+                    "/guides/roofing-sheet-coating/",
+                    "/guides/scaffolding-pipe-thickness/",
+                    "/guides/sheet-cutting-vs-full/",
+                    "/guides/sheet-surface-inspection/",
+                    "/guides/steel-delivery-risk/",
+                    "/guides/steel-dimension-control/",
+                    "/guides/steel-field-checklists/",
                   ]
                   for guide_path in guide_paths:
                       guide = fetch(guide_path)
