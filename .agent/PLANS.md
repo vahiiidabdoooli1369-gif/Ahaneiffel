@@ -39,3 +39,23 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risks:** Existing sitemap entries may expose additional historical inconsistencies; the new checks intentionally fail the audit when a listed URL has no local target or conflicts with indexing signals.
 - **Rollback:** Revert this branch's two commits if the full audit identifies false positives that cannot be resolved safely.
 - **Completion status:** Code and sitemap correction committed to review branch; automated checks pending.
+
+
+## Current execution: guide sitemap coverage batch
+
+- **Objective:** Make selected existing, indexable buyer guides discoverable through the XML sitemap and verify publication after deployment.
+- **Current state:** Four useful project guidance pages existed with self-referencing canonicals but were absent from `sitemap-guides.xml`: order master checklist, project material selection, quote normalization, and steel storage at the worksite.
+- **Constraints:** Include only pages verified to exist, self-canonical, and indexable. Do not add alias/noindex pages or fabricate `lastmod` dates.
+- **Files/components in scope:** `sitemap-guides.xml` and `.github/workflows/live-deployment-smoke.yml`.
+- **Implementation steps:** Add the four canonical URLs without an invented modification date; add live smoke assertions for title, canonical, H1 count, and minimum visible content.
+- **Validation:** Repository metadata verified for each target; final CI and live deployment checks must pass before considering this batch complete in production.
+- **Risks:** Static-site publication may lag behind the repository; a page may fail the live visible-content threshold even if source metadata is correct.
+- **Rollback:** Revert this PR if the new URLs fail the sitemap integrity or live publication checks.
+- **Completion status:** Changes committed on review branch; automated checks pending.
+
+
+### Additional verified navigation cleanup
+
+- **Finding:** `guides/index.html` contained two sections with the same `id="seo-orphan-hub"`; the second repeated the same guide links with English slug labels, creating duplicate IDs and unnecessary duplicate navigation.
+- **Change:** Removed the duplicate English-only section and added Persian links for the three existing guides missing from the localized hub: perforated-sheet hole pattern, scaffolding-pipe thickness, and quote normalization.
+- **Validation:** The target files were verified to exist. HTML integrity and internal-link CI must pass on the updated branch before merge.
