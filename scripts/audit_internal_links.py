@@ -129,6 +129,32 @@ def audit_fragments(pages):
     return issues
 
 
+def audit_canonical_targets(pages):
+    """Report missing, duplicated, malformed, or non-self canonicals on indexable pages."""
+    issues = []
+    for page in pages:
+        text = page.read_text(encoding="utf-8", errors="replace")
+        canonicals = [html.unescape(value).strip() for value in CANON_RE.findall(text)]
+        if not canonicals:
+            issues.append((public_url(page), "missing canonical"))
+            continue
+        if len(canonicals) > 1:
+            issues.append((public_url(page), f"multiple canonical tags ({len(canonicals)})"))
+            continue
+        canonical = canonicals[0]
+        parsed = urlparse(canonical)
+        if parsed.scheme != "https" or parsed.hostname != "ahaneiffel.top":
+            issues.append((public_url(page), f"non-canonical host or scheme: {canonical}"))
+            continue
+        if "/index.html/" in parsed.path or parsed.path.endswith("/index.html"):
+            issues.append((public_url(page), f"canonical exposes index.html path: {canonical}"))
+        if is_indexable(text):
+            expected_path = public_url(page)
+            if parsed.path.rstrip("/") != expected_path.rstrip("/"):
+                issues.append((public_url(page), f"indexable page canonical differs from its public path: {canonical}"))
+    return issues
+
+
 def audit_sitemaps():
     """Validate sitemap XML, listed local targets, canonical host and duplicates."""
     issues = []
@@ -226,6 +252,7 @@ def main():
 
     sitemap_issues, sitemap_url_count = audit_sitemaps()
     fragment_issues = audit_fragments(pages)
+    canonical_issues = audit_canonical_targets(pages)
 
     print(f"HTML pages: {len(pages)}")
     print(f"Sitemap URLs audited: {sitemap_url_count}")
@@ -235,6 +262,9 @@ def main():
     print(f"Broken fragment links (non-blocking report): {len(fragment_issues)}")
     for src, raw, target, fragment in fragment_issues[:200]:
         print(f"FRAGMENT | {src} | {raw} | target={target} | missing_id={fragment}")
+    print(f"Canonical consistency findings (non-blocking report): {len(canonical_issues)}")
+    for page, issue in canonical_issues[:200]:
+        print(f"CANONICAL | {page} | {issue}")
     print(f"Broken internal links: {len(broken)}")
     for src, raw, target in broken[:100]:
         print(f"BROKEN | {src} | {raw} | resolved={target}")
