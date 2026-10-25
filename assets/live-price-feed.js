@@ -9,6 +9,27 @@
     .trim()
     .toLowerCase();
   const format = n => new Intl.NumberFormat("fa-IR").format(Math.round(Number(n)));
+  const normalizeDate = value => String(value || "")
+    .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+    .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+    .replace(/[.\\-]/g, "/")
+    .replace(/\\s+/g, "");
+
+  function todayInTehranJalali() {
+    try {
+      const parts = new Intl.DateTimeFormat("en-US-u-ca-persian-nu-latn", {
+        timeZone: "Asia/Tehran",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+      const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+      if (!values.year || !values.month || !values.day) return "";
+      return values.year + "/" + values.month.padStart(2, "0") + "/" + values.day.padStart(2, "0");
+    } catch (_) {
+      return "";
+    }
+  }
 
   async function run() {
     // Only explicitly marked family-level rows may be updated by this generic feed.
@@ -28,7 +49,10 @@
 
     const updatedAt = Date.parse(data.updated_at_utc || "");
     const age = Date.now() - updatedAt;
-    const isFresh = Number.isFinite(updatedAt) && age >= 0 && age <= STALE_MS;
+    const publishedDate = normalizeDate(data.published_date);
+    const todayDate = todayInTehranJalali();
+    const publicationDateMatchesToday = !publishedDate || !todayDate || publishedDate === todayDate;
+    const isFresh = Number.isFinite(updatedAt) && age >= 0 && age <= STALE_MS && publicationDateMatchesToday;
 
     document.querySelectorAll(".live-price-meta").forEach(el => el.remove());
     const meta = document.createElement("p");
