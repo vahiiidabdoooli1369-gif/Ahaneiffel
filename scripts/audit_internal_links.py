@@ -91,6 +91,44 @@ def is_indexable(text: str):
     return "noindex" not in m.group(1).lower()
 
 
+def audit_fragments(pages):
+    """Report broken in-page and cross-page fragment links without blocking deploys."""
+    issues = []
+    ids_cache = {}
+    id_re = re.compile(r'\\bid\\s*=\\s*(["\\\'])(.*?)\\1', re.I | re.S)
+    name_re = re.compile(r'<a\\b[^>]*\\bname\\s*=\\s*(["\\\'])(.*?)\\1', re.I | re.S)
+
+    def anchors(path):
+        if path not in ids_cache:
+            text = path.read_text(encoding="utf-8", errors="replace")
+            ids_cache[path] = {html.unescape(m.group(2)) for m in id_re.finditer(text)}
+            ids_cache[path].update(html.unescape(m.group(2)) for m in name_re.finditer(text))
+        return ids_cache[path]
+
+    for page in pages:
+        text = page.read_text(encoding="utf-8", errors="replace")
+        for _, raw in HREF_RE.findall(text):
+            raw = html.unescape(raw).strip()
+            parsed = urlparse(raw)
+            fragment = unquote(parsed.fragment)
+            if not fragment or (parsed.netloc and parsed.hostname not in SITE_HOSTS):
+                continue
+            if parsed.scheme and parsed.scheme not in {"http", "https"}:
+                continue
+            if parsed.path:
+                target_path = resolve_target(parsed.path, page)
+                if target_path is None:
+                    continue
+                target = target_file(target_path)
+            else:
+                target = page
+            if target is None:
+                continue  # The broken-path audit reports missing files separately.
+            if fragment not in anchors(target):
+                issues.append((public_url(page), raw, public_url(target), fragment))
+    return issues
+
+
 def audit_sitemaps():
     """Validate sitemap XML, listed local targets, canonical host and duplicates."""
     issues = []
@@ -187,12 +225,16 @@ def main():
             orphan.append(u)
 
     sitemap_issues, sitemap_url_count = audit_sitemaps()
+    fragment_issues = audit_fragments(pages)
 
     print(f"HTML pages: {len(pages)}")
     print(f"Sitemap URLs audited: {sitemap_url_count}")
     print(f"Sitemap integrity issues: {len(sitemap_issues)}")
     for issue in sitemap_issues[:200]:
         print(f"SITEMAP | {issue}")
+    print(f"Broken fragment links (non-blocking report): {len(fragment_issues)}")
+    for src, raw, target, fragment in fragment_issues[:200]:
+        print(f"FRAGMENT | {src} | {raw} | target={target} | missing_id={fragment}")
     print(f"Broken internal links: {len(broken)}")
     for src, raw, target in broken[:100]:
         print(f"BROKEN | {src} | {raw} | resolved={target}")
