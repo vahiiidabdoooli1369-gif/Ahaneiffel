@@ -111,3 +111,10 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risks:** A canonical correction can take time to be reflected in search indexes; repository and production status are tracked separately.
 - **Rollback:** Revert the PR if the canonical or live checks fail.
 - **Completion status:** Implemented on review branch; automated checks pending.
+
+
+### Additional sitemap duplicate repair
+
+- **Finding:** The advanced-guide sitemap already listed the delivery-evidence and data-confidence pages. Adding them again to the general guide sitemap created duplicate URLs and caused the repository's sitemap-integrity workflow to fail.
+- **Change:** Removed those two duplicate entries from sitemap-guides.xml; their existing entries in sitemap-advanced-guides.xml remain authoritative.
+- **Validation:** Cross-sitemap comparison confirmed these were the two duplicate URLs between the guide sitemap files. The new sitemap audit will verify no further duplicate entries remain.
