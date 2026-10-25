@@ -1,12 +1,12 @@
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 import re,sys,xml.etree.ElementTree as ET
 
 ROOT=Path("."); HOST="https://ahaneiffel.top"
 errors=[]; warnings=[]
 
 def file_for_url(u):
-    path=urlparse(u).path
+    path=unquote(urlparse(u).path)
     if path in ("","/"): return ROOT/"index.html"
     path=path.lstrip("/")
     if path.endswith("/"): return ROOT/path/"index.html"
@@ -59,7 +59,31 @@ if (ROOT/"robots.txt").exists():
     rb=(ROOT/"robots.txt").read_text(encoding="utf-8",errors="ignore")
     if "Sitemap: https://ahaneiffel.top/sitemap.xml" not in rb: errors.append("robots.txt sitemap directive missing")
 
-print(f"Architecture guard: {len(html)} HTML files and {len(list(ROOT.glob('sitemap*.xml')))} sitemaps checked")
+
+# 21-23: every first-party URL exposed to AI retrieval must resolve to a repository file
+llms_path=ROOT/"llms.txt"
+llms_reference_count=0
+llms_unique_urls=set()
+if llms_path.exists():
+    llms_text=llms_path.read_text(encoding="utf-8",errors="ignore")
+    llms_urls=re.findall(r"https://ahaneiffel\.top/[^\s<>\]\)]+", llms_text)
+    for raw in llms_urls:
+        u=raw.rstrip(".,;。؛")
+        parsed=urlparse(u)
+        if parsed.scheme != "https" or parsed.netloc != "ahaneiffel.top":
+            errors.append(f"llms.txt: non-canonical first-party URL: {u}")
+            continue
+        llms_reference_count += 1
+        llms_unique_urls.add(u)
+        target=file_for_url(u)
+        if not target.exists():
+            errors.append(f"llms.txt: URL has no matching repository target: {u} -> {target}")
+        if "/index.html" in parsed.path:
+            errors.append(f"llms.txt: non-preferred index.html URL: {u}")
+else:
+    errors.append("llms.txt missing; cannot validate AI retrieval links")
+
+print(f"Architecture guard: {len(html)} HTML files, {len(list(ROOT.glob('sitemap*.xml')))} sitemaps, and {llms_reference_count} llms.txt URL references ({len(llms_unique_urls)} unique) checked")
 if warnings:
     print(f"WARNINGS {len(warnings)}")
     for x in warnings[:100]: print("WARN",x)
