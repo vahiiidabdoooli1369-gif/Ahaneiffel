@@ -146,7 +146,7 @@ def main() -> int:
     for item in results:
         if item.status != 200:
             print(f"URL | {item.status} | {item.url} | final={item.final_url} | {item.note}")
-    bad = [item for item in results if item.status != 200]
+    bad = [item for item in results if item.status != 200 or item.note == "redirected"]
     print(f"CSV report: {args.report}")
     print(f"Result: {len(results) - len(bad)} URLs returned HTTP 200; {len(bad)} need review.")
     # Treat the audit as failed for non-200 URL responses or sitemap collection errors.
