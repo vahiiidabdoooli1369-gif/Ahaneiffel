@@ -184,3 +184,12 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - Known values remain visible but receive the existing “نیازمند بررسی” status when stale.
 - Added Node regression cases for same-day publication, previous-day publication with a recent timestamp, and a stale timestamp.
 - CI checks JavaScript syntax and behavior. This change does not modify the market-price JSON or any price value.
+
+
+## Market-price feed contract validation (2026-10-25)
+
+- Added a dependency-free validator for the published JSON feed.
+- Checks required metadata, Jalali-looking publication-date bounds, timezone-aware ISO timestamp, non-empty rows and aliases, alias collisions across families, finite positive prices, and optional per-row unit correctness.
+- Adds CI on pull requests and main-branch changes to the feed, validator, or scraper.
+- Validator is read-only: it does not adjust prices, generate dates, or overwrite source information.
+- Live HTTP status and whether the feed is commercially current remain separate checks; schema validity is not a claim that prices have been verified.
