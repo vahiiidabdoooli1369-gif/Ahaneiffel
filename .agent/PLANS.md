@@ -166,3 +166,13 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risk:** Repository route mapping cannot prove a production server returns HTTP 200; live deployment smoke checks remain a separate verification.
 - **Rollback:** Revert the guard and workflow trigger if legitimate route aliases are incorrectly rejected.
 - **Status:** Implemented on review branch; automated checks pending.
+
+
+## Current execution: Persian-day price-feed freshness guard
+
+- **Finding:** The live feed used only the UTC timestamp (26-hour window) to decide freshness. A price record could therefore be marked fresh after Tehran had entered a new Persian calendar day if the timestamp was less than 26 hours old.
+- **Change:** Require both a recent timestamp and a published date matching today's Jalali date in the Asia/Tehran time zone before showing the row as current. Old-day prices remain visible but are labelled as needing review; values are not silently changed.
+- **QA:** Add a Node regression test for same-day prices, previous-day publication with a recent timestamp, and a stale timestamp. Run JavaScript syntax validation in pull-request CI.
+- **Constraints:** Do not infer or change prices; do not hide the last known price, just label it for review.
+- **Risk:** Browser calendar/time-zone support may vary; timestamp freshness remains as a fallback if Jalali date formatting is unavailable.
+- **Status:** Implemented on review branch; automated tests pending.
