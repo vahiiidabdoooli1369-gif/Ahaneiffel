@@ -95,8 +95,8 @@ def audit_fragments(pages):
     """Report broken in-page and cross-page fragment links without blocking deploys."""
     issues = []
     ids_cache = {}
-    id_re = re.compile(r'\\bid\\s*=\\s*(["\\\'])(.*?)\\1', re.I | re.S)
-    name_re = re.compile(r'<a\\b[^>]*\\bname\\s*=\\s*(["\\\'])(.*?)\\1', re.I | re.S)
+    id_re = re.compile(r"""\bid\s*=\s*(["'])(.*?)\1""", re.I | re.S)
+    name_re = re.compile(r"""<a\b[^>]*\bname\s*=\s*(["'])(.*?)\1""", re.I | re.S)
 
     def anchors(path):
         if path not in ids_cache:
