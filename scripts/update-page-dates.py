@@ -110,7 +110,7 @@ def replace_page_dates(path, iso_date, jalali_date):
         r'((?:آخرین\s*(?:به‌روزرسانی|بروزرسانی|تغییر)|'
         r'(?:به‌روزرسانی|بروزرسانی)\s*(?:صفحه|محتوا|تاریخ)?|Updated\s*:?)'
         r'\s*(?:[:：\-–]|</[^>]+>\s*)?\s*)'
-        r'(?:۱۴۰۵|1405|2026)[/\-年][۰-۹0-۹\d]{1,2}[/\-月][۰-۹0-۹\d]{1,2}'
+        r'(?:[۰-۹0-9]{4})[/\-年][۰-۹0-9]{1,2}[/\-月][۰-۹0-9]{1,2}'
     )
     updated = re.sub(
         label_pattern,
@@ -164,7 +164,13 @@ def self_test():
         actual = gregorian_to_jalali(value)
         if actual != expected:
             raise AssertionError(f"{value}: expected {expected}, got {actual}")
-    print(f"Date conversion self-test passed ({len(cases)} cases).")
+    if target_for_url("https://ahaneiffel.top/") != ROOT / "index.html":
+        raise AssertionError("Homepage URL did not map to index.html")
+    if target_for_url("https://ahaneiffel.top/guides/steel-inspection-center/") != ROOT / "guides/steel-inspection-center/index.html":
+        raise AssertionError("Directory URL mapping failed")
+    if target_for_url("https://example.com/") is not None:
+        raise AssertionError("External host must not map to a local file")
+    print(f"Date conversion and URL mapping self-test passed ({len(cases) + 3} cases).")
 
 
 def main():
