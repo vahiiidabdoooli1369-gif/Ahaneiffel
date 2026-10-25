@@ -155,6 +155,47 @@ def audit_canonical_targets(pages):
     return issues
 
 
+def audit_accessibility_markers(pages):
+    """Report duplicate IDs, missing image alt attributes, and unnamed links/buttons."""
+    issues = []
+    id_re = re.compile(r"""(?<![\w:-])id\s*=\s*(["'])(.*?)\1""", re.I | re.S)
+    img_re = re.compile(r"""<img\b([^>]*)>""", re.I | re.S)
+    alt_re = re.compile(r"""\balt\s*=\s*(["'])(.*?)\1""", re.I | re.S)
+    link_re = re.compile(r"""<a\b([^>]*)>([\s\S]*?)</a>""", re.I | re.S)
+    button_re = re.compile(r"""<button\b([^>]*)>([\s\S]*?)</button>""", re.I | re.S)
+
+    def attr_value(attrs, name):
+        match = re.search(rf"""\b{re.escape(name)}\s*=\s*(["'])(.*?)\1""", attrs, re.I | re.S)
+        return html.unescape(match.group(2)).strip() if match else ""
+
+    def visible_text(fragment):
+        fragment = re.sub(r"<(script|style)\b[^>]*>[\s\S]*?</\1>", " ", fragment, flags=re.I)
+        return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", fragment))).strip()
+
+    for page in pages:
+        text = page.read_text(encoding="utf-8", errors="replace")
+        ids = [html.unescape(match.group(2)).strip() for match in id_re.finditer(text)]
+        for value, count in Counter(ids).items():
+            if value and count > 1:
+                issues.append((public_url(page), "duplicate-id", f"{value} ({count} occurrences)"))
+
+        for match in img_re.finditer(text):
+            attrs = match.group(1)
+            if not alt_re.search(attrs):
+                issues.append((public_url(page), "image-missing-alt", match.group(0)[:160]))
+
+        for tag_name, pattern in (("link-empty-name", link_re), ("button-empty-name", button_re)):
+            for attrs, inner in pattern.findall(text):
+                if visible_text(inner) or attr_value(attrs, "aria-label") or attr_value(attrs, "title"):
+                    continue
+                if re.search(r"<img\b", inner, re.I):
+                    image_alts = [html.unescape(m.group(2)).strip() for m in alt_re.finditer(inner)]
+                    if any(image_alts):
+                        continue
+                issues.append((public_url(page), tag_name, attrs[:160]))
+    return issues
+
+
 def audit_sitemaps():
     """Validate sitemap XML, listed local targets, canonical host and duplicates."""
     issues = []
@@ -253,6 +294,7 @@ def main():
     sitemap_issues, sitemap_url_count = audit_sitemaps()
     fragment_issues = audit_fragments(pages)
     canonical_issues = audit_canonical_targets(pages)
+    accessibility_issues = audit_accessibility_markers(pages)
 
     print(f"HTML pages: {len(pages)}")
     print(f"Sitemap URLs audited: {sitemap_url_count}")
@@ -265,6 +307,9 @@ def main():
     print(f"Canonical consistency findings (non-blocking report): {len(canonical_issues)}")
     for page, issue in canonical_issues[:200]:
         print(f"CANONICAL | {page} | {issue}")
+    print(f"Accessibility marker findings (non-blocking report): {len(accessibility_issues)}")
+    for page, kind, detail in accessibility_issues[:200]:
+        print(f"A11Y | {page} | {kind} | {detail}")
     print(f"Broken internal links: {len(broken)}")
     for src, raw, target in broken[:100]:
         print(f"BROKEN | {src} | {raw} | resolved={target}")
