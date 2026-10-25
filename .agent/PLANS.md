@@ -131,3 +131,16 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risks:** Pages with intentional canonical consolidation may be reported; decisions must consider noindex and redirect behavior.
 - **Rollback:** Revert the canonical report function if it produces excessive false positives or slows CI materially.
 - **Completion status:** Implemented on review branch; automated checks pending.
+
+
+## Current execution: accessibility marker audit
+
+- **Objective:** Find duplicate HTML IDs, images missing alt attributes, and links/buttons without an accessible name.
+- **Current state:** The guide hub previously contained duplicate section IDs and a duplicate English link block; that specific defect was removed, but there was no repository-wide report for similar patterns.
+- **Constraints:** Report-only at first. Empty alt text can be correct for decorative images, and dynamic controls may need manual review; do not automatically rewrite markup.
+- **Files/components in scope:** scripts/audit_internal_links.py.
+- **Implementation steps:** Scan IDs, image alt attributes, link/button visible names, aria-label and title fallbacks; emit page-specific findings alongside existing link and canonical reports.
+- **Validation:** The audit runs in pull-request CI. Findings are non-blocking until reviewed to avoid treating intentional decorative images as confirmed accessibility failures.
+- **Risks:** Regex-based inspection is a triage tool, not a substitute for keyboard and screen-reader testing.
+- **Rollback:** Revert the report if it causes excessive false positives or materially slows CI.
+- **Completion status:** Implemented on review branch; automated checks pending.
