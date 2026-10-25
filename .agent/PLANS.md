@@ -85,3 +85,16 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risks:** Dynamic tabs or scripts may create targets after page load; those require manual review before changing the report to a blocking gate.
 - **Rollback:** Revert the fragment audit function if it produces excessive false positives or materially slows the repository audit.
 - **Completion status:** Implemented on review branch; automated validation pending.
+
+
+## Current execution: logistics and data-quality guide expansion
+
+- **Objective:** Improve five thin, indexable guides covering loading sequence, stock reservation, unit conversion, delivery evidence, and market-price data confidence.
+- **Current state:** The pages had short summaries and limited checklists; several were already linked from the guide hub but lacked enough practical decision support.
+- **Constraints:** Preserve canonicals and avoid invented current prices, delivery promises, fixed stock reservations, or product-specific weights. Unit examples are explicitly educational; no lastmod dates are fabricated.
+- **Files/components in scope:** Five guide pages, sitemap-guides.xml, and .github/workflows/live-deployment-smoke.yml.
+- **Implementation steps:** Add unique procedures, responsive tables, evidence/checklists, visible FAQs, related links, and structured data where absent; add the expanded indexable pages to sitemap and live smoke checks.
+- **Validation:** Source changes committed on a review branch. HTML, structured-data, sitemap/internal-link and free SEO integrity checks must pass before merge; live publication is checked separately after merge.
+- **Risks:** Content completeness does not guarantee rankings; existing date metadata on pages with prior Article markup is retained, not newly asserted by this batch.
+- **Rollback:** Revert the PR if validation detects schema, HTML, sitemap, or publication regressions.
+- **Completion status:** Implemented on review branch; automated checks pending.
