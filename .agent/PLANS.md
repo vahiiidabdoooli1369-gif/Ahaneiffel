@@ -98,3 +98,16 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - **Risks:** Content completeness does not guarantee rankings; existing date metadata on pages with prior Article markup is retained, not newly asserted by this batch.
 - **Rollback:** Revert the PR if validation detects schema, HTML, sitemap, or publication regressions.
 - **Completion status:** Implemented on review branch; automated checks pending.
+
+
+## Current execution: inspection-center canonical and coverage repair
+
+- **Objective:** Repair an incorrect canonical on the inspection-center guide and make verified inspection/weight guides discoverable in the XML sitemap.
+- **Current state:** The inspection-center page canonical pointed to a path ending in /index.html/, while its public directory URL and internal links used /guides/steel-inspection-center/. The page was also too thin to serve as a useful navigation hub.
+- **Constraints:** Keep the established public URL, use only verified local guide links, and avoid inventing technical limits or product specifications.
+- **Files/components in scope:** The inspection-center page, sitemap-guides.xml, and live deployment smoke checks.
+- **Implementation steps:** Correct the canonical, expand the page into a practical inspection hub with stage-by-stage checklists and FAQs, add valid Article/Breadcrumb data, then add three self-canonical indexable guides to the sitemap and smoke suite.
+- **Validation:** Repository changes committed to review branch; HTML, schema, internal-link, sitemap, and live checks must pass before merge.
+- **Risks:** A canonical correction can take time to be reflected in search indexes; repository and production status are tracked separately.
+- **Rollback:** Revert the PR if the canonical or live checks fail.
+- **Completion status:** Implemented on review branch; automated checks pending.
