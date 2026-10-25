@@ -1,6 +1,11 @@
 name: Refresh market prices
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-market-prices.yml'
+      - 'scripts/update_market_prices.py'
   workflow_dispatch:
   schedule:
     - cron: "*/30 4-16 * * 6,0,1,2,3"
@@ -13,14 +18,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Check whether automated scraping is enabled
+        id: source
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path("data/market-prices.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          manual = data.get("source_type") == "manual-user-provided"
+          should_refresh = "false" if manual else "true"
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"should_refresh={should_refresh}\n")
+          if manual:
+              print("Skipping scraper and dependency installation: owner-provided prices are authoritative.")
+          else:
+              print("Automated source selected; scraper will run.")
+          PY
+      - name: Set up Python
+        if: steps.source.outputs.should_refresh == 'true'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install parser dependencies
+        if: steps.source.outputs.should_refresh == 'true'
         run: python -m pip install --disable-pip-version-check pandas lxml requests
       - name: Fetch latest Ahaneiffel price tables
+        if: steps.source.outputs.should_refresh == 'true'
         run: python scripts/update_market_prices.py
       - name: Commit changed feed
+        if: steps.source.outputs.should_refresh == 'true'
         run: |
           if git diff --quiet -- data/market-prices.json; then
             echo "No price changes"
@@ -31,3 +61,6 @@ jobs:
           git add data/market-prices.json
           git commit -m "chore: refresh market price feed"
           git push
+      - name: Confirm safe manual-source skip
+        if: steps.source.outputs.should_refresh != 'true'
+        run: echo "No prices were scraped or modified."
