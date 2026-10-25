@@ -1,4 +1,4 @@
-name: Update all page and sitemap dates to 1405-08-02
+name: Sync page dates with last content changes
 on:
   push:
     branches: [main]
@@ -12,11 +12,14 @@ jobs:
   update-dates:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repository with history
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set update dates
+          fetch-depth: 0
+      - name: Test Gregorian-to-Jalali date conversion
+        run: python3 scripts/update-page-dates.py --self-test
+      - name: Sync metadata to real content history
         run: python3 scripts/update-page-dates.py
       - name: Commit updated page dates
         run: |
@@ -26,6 +29,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No page date changes needed."
           else
-            git commit -m "Update all page and sitemap dates to 1405/08/02"
+            git commit -m "Sync page dates with last content changes [date-sync]"
             git push
           fi
