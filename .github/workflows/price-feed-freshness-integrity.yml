@@ -1,0 +1,22 @@
+name: Price Feed Freshness Integrity
+
+on:
+  pull_request:
+    paths:
+      - 'assets/live-price-feed.js'
+      - 'scripts/test_live_price_feed.js'
+      - '.github/workflows/price-feed-freshness-integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-price-freshness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: node --check assets/live-price-feed.js
+      - name: Test feed freshness and stale labels
+        run: node scripts/test_live_price_feed.js
