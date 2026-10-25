@@ -49,7 +49,9 @@
     const age = Date.now() - updatedAt;
     const publishedDate = normalizeDate(data.published_date);
     const todayDate = todayInTehranJalali();
-    const dateMatchesToday = !publishedDate || !todayDate || publishedDate === todayDate;
+    // If the browser can calculate Tehran's Jalali date, a missing publication date is not fresh.
+    // If Intl calendar support is unavailable, retain timestamp-only fallback behavior.
+    const dateMatchesToday = !todayDate || (!!publishedDate && publishedDate === todayDate);
     const isFresh = Number.isFinite(updatedAt) && age >= 0 && age <= STALE_MS && dateMatchesToday;
 
     document.querySelectorAll(".live-price-meta").forEach(el => el.remove());
