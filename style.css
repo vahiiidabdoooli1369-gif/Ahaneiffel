@@ -242,3 +242,52 @@
   .visual-hero .hero-buttons a{width:100%;min-height:48px}
   .visual-hero .quote-box{padding:14px}
 }
+
+
+/* AHAN EIFFEL — fixed site-wide industrial background */
+html,body{min-height:100%;background:transparent!important}
+body{position:relative;isolation:isolate;background:transparent!important}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background-image:linear-gradient(rgba(5,20,38,.28),rgba(5,20,38,.28)),url("/75d3d8fd0ee0bed0e271072cde0284d7.jpg");
+  background-repeat:no-repeat;
+  background-position:center center;
+  background-size:cover;
+  transform:translateZ(0);
+}
+/* Keep the photo fixed while the page content scrolls; remove opaque section layers. */
+.modern-header,.nav-line,.category-strip,.benefits,.lower-grid,
+.modern-header~main .section,.modern-header~main .light,
+.products-show,.mini-tools{background:transparent!important}
+.modern-header{background:rgba(7,24,43,.60)!important;border-color:rgba(255,255,255,.18)!important;backdrop-filter:blur(10px)}
+.header-top,.nav-line{background:rgba(7,24,43,.48)!important}
+.header-top .wide>span,.header-icons,.nav-line nav a,.logo small{color:#fff!important}
+.logo strong{color:#fff!important}
+.phone-pill,.header-search{background:rgba(255,255,255,.15)!important;color:#fff!important;border:1px solid rgba(255,255,255,.25)}
+.header-search b{color:#ffad5e!important}
+.category-grid>a,.featured-card,.benefit-row,.price-table-card,.tool-grid a,
+.modern-header~main .card,.modern-header~main .link-grid a{
+ background:rgba(7,25,45,.62)!important;
+ color:#fff!important;border-color:rgba(255,255,255,.23)!important;
+ -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.category-grid b,.featured-card>b,.benefit-row b,.section-title h2,
+.table-head h2,.modern-header~main .card h2,.modern-header~main .card p,
+.modern-header~main .card strong,.modern-header~main .link-grid a{color:#fff!important}
+.category-grid i,.benefit-row strong{background:rgba(255,255,255,.16)!important;color:#ffb36b!important}
+.visual-hero{background:transparent!important;overflow:visible!important}
+.visual-hero:before{display:none!important}
+.visual-hero .hero-inner{background:transparent!important}
+.visual-hero .quote-box{background:rgba(7,25,45,.62)!important}
+.visual-hero .quote-box img{background:transparent!important}
+.site-footer,footer{background:rgba(7,24,43,.82)!important;color:#fff!important}
+.site-footer a,footer a,.site-footer p,footer p,.site-footer b,footer b{color:#fff!important}
+@media(max-width:760px){
+ body::before{background-position:center center;background-size:cover}
+ .category-strip,.benefits,.lower-grid{background:transparent!important}
+ .modern-header{position:relative!important}
+}
