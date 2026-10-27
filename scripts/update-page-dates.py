@@ -157,6 +157,7 @@ def replace_sitemap_lastmods(path, date_for_path):
 def self_test():
     cases = {
         date(2026, 10, 25): "1405/08/03",
+        date(2026, 10, 27): "1405/08/05",
         date(2024, 3, 20): "1403/01/01",
         date(2025, 3, 21): "1404/01/01",
     }
