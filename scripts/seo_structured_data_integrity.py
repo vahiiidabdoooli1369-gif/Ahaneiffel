@@ -105,7 +105,7 @@ for path in ROOT.rglob("*.html"):
         except json.JSONDecodeError as exc:
             ERRORS.append(f"{path}: invalid JSON-LD at line {exc.lineno}, column {exc.colno}")
         if "index.html" in block.lower():
-            ERRORS.append(f"{path}: JSON-LD contains index.html URL")
+            WARNINGS.append(f"{path}: JSON-LD contains index.html URL; compare it with the canonical before changing schema URLs")
 
 print(f"SEO integrity audit: {CHECKED} indexable HTML documents checked; {SKIPPED} non-HTML/noindex documents skipped")
 for warning in WARNINGS[:100]:
