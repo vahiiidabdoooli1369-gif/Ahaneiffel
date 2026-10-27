@@ -492,3 +492,33 @@ body{color:#f7fbff;font-family:Vazirmatn,Tahoma,Arial,sans-serif}
  .featured-card:hover,.category-grid>a:hover{transform:none}
 }
 @media(prefers-reduced-motion:reduce){.featured-card,.category-grid>a{transition:none!important}}
+
+
+/* AE-ANIMATED-CALL-PILL-20261027 */
+.modern-header .phone-pill{
+ position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+ min-height:44px;padding:10px 17px;border-radius:999px;overflow:visible;
+ font-weight:900;letter-spacing:.1px;text-decoration:none;
+ background:linear-gradient(120deg,#ffb15e 0%,#ff851b 42%,#ffd19c 58%,#ff851b 100%);
+ background-size:220% 100%;border:1px solid rgba(255,255,255,.48);
+ box-shadow:0 7px 20px rgba(255,133,27,.34),inset 0 1px 0 rgba(255,255,255,.55);
+ animation:aeCallShine 4.5s ease-in-out infinite,aeCallFloat 3s ease-in-out infinite;
+ transition:transform .22s ease,box-shadow .22s ease,filter .22s ease;
+}
+.modern-header .phone-pill:before{
+ content:"";width:9px;height:9px;flex:0 0 9px;border-radius:50%;
+ background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.2),0 0 14px rgba(255,255,255,.85);
+ animation:aeCallDot 1.8s ease-in-out infinite;
+}
+.modern-header .phone-pill:after{
+ content:"";position:absolute;inset:-5px;border:1px solid rgba(255,165,78,.55);
+ border-radius:inherit;z-index:-1;animation:aeCallRing 2.6s ease-out infinite;pointer-events:none;
+}
+.modern-header .phone-pill:hover{transform:translateY(-2px) scale(1.025);filter:saturate(1.12);box-shadow:0 11px 28px rgba(255,133,27,.48),inset 0 1px 0 rgba(255,255,255,.65)}
+.modern-header .phone-pill:active{transform:scale(.97)}
+@keyframes aeCallShine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes aeCallFloat{0%,100%{translate:0 0}50%{translate:0 -2px}}
+@keyframes aeCallDot{0%,100%{box-shadow:0 0 0 4px rgba(255,255,255,.18),0 0 10px rgba(255,255,255,.6)}50%{box-shadow:0 0 0 6px rgba(255,255,255,.08),0 0 16px rgba(255,255,255,.95)}}
+@keyframes aeCallRing{0%{transform:scale(.96);opacity:.75}75%,100%{transform:scale(1.13);opacity:0}}
+@media(max-width:700px){.modern-header .phone-pill{min-height:42px;padding:9px 12px;gap:7px;box-shadow:0 5px 16px rgba(255,133,27,.3)}}
+@media(prefers-reduced-motion:reduce){.modern-header .phone-pill,.modern-header .phone-pill:before,.modern-header .phone-pill:after{animation:none!important}.modern-header .phone-pill{translate:none}}
