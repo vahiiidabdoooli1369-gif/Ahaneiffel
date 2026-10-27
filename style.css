@@ -65,7 +65,7 @@
   background:
     linear-gradient(90deg,rgba(7,22,42,.91) 0%,rgba(10,35,62,.79) 48%,rgba(10,35,62,.55) 100%),
     linear-gradient(0deg,rgba(7,22,42,.40),rgba(7,22,42,.15)),
-    url("https://raw.githubusercontent.com/vahiiidabdoooli1369-gif/Ahaneiffel/main/75d3d8fd0ee0bed0e271072cde0284d7.jpg") center/cover no-repeat;
+    url("/75d3d8fd0ee0bed0e271072cde0284d7.jpg") center/cover no-repeat;
   border-bottom:1px solid rgba(255,255,255,.18);
 }
 .visual-hero:before{
@@ -146,7 +146,7 @@
     background-position:center center;
     background-image:
       linear-gradient(180deg,rgba(7,22,42,.82) 0%,rgba(10,35,62,.83) 65%,rgba(10,35,62,.91) 100%),
-      url("https://raw.githubusercontent.com/vahiiidabdoooli1369-gif/Ahaneiffel/main/75d3d8fd0ee0bed0e271072cde0284d7.jpg");
+      url("/75d3d8fd0ee0bed0e271072cde0284d7.jpg");
   }
   .visual-hero .answer-first{font-size:13px;padding:12px 13px}
   .visual-hero .button,.visual-hero .btn,.visual-hero .primary,.visual-hero .call-btn{min-height:44px}
