@@ -2,6 +2,8 @@ name: Sync page dates with last content changes
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '30 4 * * *' # Daily at 08:00 Asia/Tehran
   workflow_dispatch:
 permissions:
   contents: write
