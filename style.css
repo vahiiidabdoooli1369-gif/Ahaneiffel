@@ -51,3 +51,106 @@
 .ae-angle-image figcaption{margin-top:8px;font-size:13px;color:#5b6673}
 @media(max-width:760px){.ae-angle-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ae-angle-gallery-card img{height:150px}}
 @media(max-width:380px){.ae-angle-gallery-grid{grid-template-columns:1fr}.ae-angle-gallery-card img{height:210px}}
+
+
+/* =========================================================
+   AHAN EIFFEL — INDUSTRIAL GLASS HOMEPAGE REFRESH
+   Hero background + readable glass buttons/cards
+   ========================================================= */
+.visual-hero{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  color:#fff;
+  background:
+    linear-gradient(90deg,rgba(7,22,42,.91) 0%,rgba(10,35,62,.79) 48%,rgba(10,35,62,.55) 100%),
+    linear-gradient(0deg,rgba(7,22,42,.40),rgba(7,22,42,.15)),
+    url("https://raw.githubusercontent.com/vahiiidabdoooli1369-gif/Ahaneiffel/main/75d3d8fd0ee0bed0e271072cde0284d7.jpg") center/cover no-repeat;
+  border-bottom:1px solid rgba(255,255,255,.18);
+}
+.visual-hero:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:radial-gradient(ellipse at 78% 25%,rgba(255,133,27,.20),transparent 44%);
+  pointer-events:none;
+}
+.visual-hero .hero-inner{position:relative;z-index:1}
+.visual-hero .hero-copy{color:#fff}
+.visual-hero h1,.visual-hero h2,.visual-hero h3,
+.visual-hero .hero-kicker,.visual-hero p,.visual-hero li,
+.visual-hero .answer-first{color:#fff}
+.visual-hero h1{line-height:1.55;text-shadow:0 3px 22px rgba(0,0,0,.32)}
+.visual-hero .answer-first{
+  padding:14px 17px;
+  background:rgba(7,24,43,.66);
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:16px;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 12px 35px rgba(0,0,0,.15);
+}
+.visual-hero .hero-kicker{
+  display:inline-flex;
+  padding:7px 13px;
+  border-radius:999px;
+  background:rgba(255,133,27,.18);
+  border:1px solid rgba(255,173,91,.55);
+  color:#ffe0bd;
+}
+.visual-hero .button,.visual-hero .btn,.visual-hero .primary,
+.visual-hero .call-btn,.visual-hero a.button,.visual-hero a.btn{
+  border:1px solid rgba(255,255,255,.46);
+  background:rgba(255,255,255,.16);
+  color:#fff;
+  box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.22);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  transition:transform .22s ease,background .22s ease,box-shadow .22s ease;
+}
+.visual-hero .button:hover,.visual-hero .btn:hover,.visual-hero .primary:hover,
+.visual-hero .call-btn:hover,.visual-hero a.button:hover,.visual-hero a.btn:hover{
+  background:rgba(255,133,27,.92);
+  color:#fff;
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(0,0,0,.24);
+}
+.button,.btn,.primary,.call-btn,
+.category-grid a,.featured-card,.tool-grid a,
+.link-grid a,.section-title>a,.table-head>a,
+.site-header nav a,.nav-wrap nav a{
+  transition:background .22s ease,color .22s ease,border-color .22s ease,transform .22s ease,box-shadow .22s ease;
+}
+.category-grid a,.featured-card,.tool-grid a,.link-grid a{
+  border:1px solid rgba(20,83,140,.15);
+  box-shadow:0 8px 24px rgba(16,45,82,.07);
+}
+.category-grid a:hover,.featured-card:hover,.tool-grid a:hover,.link-grid a:hover{
+  transform:translateY(-3px);
+  border-color:rgba(255,133,27,.62);
+  box-shadow:0 14px 30px rgba(16,45,82,.13);
+}
+.button:focus-visible,.btn:focus-visible,.primary:focus-visible,
+.call-btn:focus-visible,a:focus-visible,button:focus-visible{
+  outline:3px solid #ff851b;
+  outline-offset:3px;
+}
+.site-header{
+  background:rgba(248,251,255,.88);
+  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(18px);
+}
+@media(max-width:760px){
+  .visual-hero{
+    background-position:center center;
+    background-image:
+      linear-gradient(180deg,rgba(7,22,42,.82) 0%,rgba(10,35,62,.83) 65%,rgba(10,35,62,.91) 100%),
+      url("https://raw.githubusercontent.com/vahiiidabdoooli1369-gif/Ahaneiffel/main/75d3d8fd0ee0bed0e271072cde0284d7.jpg");
+  }
+  .visual-hero .answer-first{font-size:13px;padding:12px 13px}
+  .visual-hero .button,.visual-hero .btn,.visual-hero .primary,.visual-hero .call-btn{min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){
+  .button,.btn,.primary,.call-btn,.category-grid a,.featured-card,.tool-grid a,.link-grid a{transition:none}
+}
