@@ -107,3 +107,15 @@
 66. برای کاهش هم‌نوع‌خواری، قاعده «یک URL مالک اصلی برای هر نیت» و منع ساخت صفحات صرفاً مترادف ثبت شد.
 67. معیارهای موفقیت به داده‌های واقعی GSC (impressions، clicks، CTR، position) و تماس/استعلام متصل شد؛ از ادعای افزایش بازدید بدون داده خودداری شد.
 68. یادآوری: اعتبارسنجی مسیر در مخزن، معادل پاسخ HTTP، ایندکس گوگل یا انتشار روی سایت زنده نیست؛ این موارد باید جداگانه بررسی شوند.
+
+
+## کنترل CI پس از آخرین تغییرات — ۱۴۰۵/۰۸/۰۵
+69. بازخوانی GitHub Actions روی آخرین commit ثبت‌شده در PR #101 با SHA `eacc56b04f993f8be2438d7b0cdb42ece7daee1e` انجام شد.
+70. پنج workflow مرتبط با PR روی همین SHA با نتیجه `success` تمام شدند: HTML Integrity Audit، SEO Structured Data Integrity، SEO Static Release Audit، Internal SEO Link Audit و Ahaneiffel Free SEO Integrity.
+71. لینک اجرای HTML Integrity Audit: https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/actions/runs/40487702314
+72. لینک اجرای SEO Structured Data Integrity: https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/actions/runs/40487702276
+73. لینک اجرای SEO Static Release Audit: https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/actions/runs/40487702231
+74. لینک اجرای Internal SEO Link Audit: https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/actions/runs/40487702170
+75. لینک اجرای Ahaneiffel Free SEO Integrity: https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/actions/runs/40487702169
+76. این نتایج فقط کیفیت کد و فایل‌های همان commit در شاخه PR را تأیید می‌کنند؛ انتشار زنده، پاسخ HTTP همه URLها، ایندکس گوگل یا رشد ترافیک را اثبات نمی‌کنند.
+77. PR #101 همچنان Draft و ادغام‌نشده است؛ انتشار بدون اجازه صریح انجام نمی‌شود.
