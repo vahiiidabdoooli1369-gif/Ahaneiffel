@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sync date metadata to each file's latest substantive Git change, never to today's date."""
+"""Set all public page freshness metadata to the site-approved Jalali date."""
 from datetime import date
 from html import unescape
 from pathlib import Path
@@ -10,6 +10,8 @@ from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE_HOST = "ahaneiffel.top"
+# Update this single value when the site-wide publication date is intentionally changed.
+SITE_DATE = date(2026, 10, 31)
 AUTO_DATE_COMMIT_PATTERNS = (
     "Update all page and sitemap dates",
     "[date-sync]",
@@ -108,7 +110,8 @@ def replace_page_dates(path, iso_date, jalali_date):
     )
     label_pattern = (
         r'((?:آخرین\s*(?:به‌روزرسانی|بروزرسانی|تغییر)|'
-        r'(?:به‌روزرسانی|بروزرسانی)\s*(?:صفحه|محتوا|تاریخ)?|Updated\s*:?)'
+        r'(?:به‌روزرسانی|بروزرسانی)\s*(?:صفحه|محتوا|تاریخ)?|'
+        r'تاریخ\s*(?:اعلام\s*قیمت|بررسی\s*(?:اطلاعات\s*)?صفحه|انتشار|به‌?روزرسانی|آخرین\s*تغییر)|Updated\s*:?)'
         r'\s*(?:[:：\-–]|</[^>]+>\s*)?\s*)'
         r'(?:[۰-۹0-9]{4})[/\-年][۰-۹0-9]{1,2}[/\-月][۰-۹0-9]{1,2}'
     )
@@ -158,6 +161,7 @@ def self_test():
     cases = {
         date(2026, 10, 25): "1405/08/03",
         date(2026, 10, 27): "1405/08/05",
+        date(2026, 10, 31): "1405/08/09",
         date(2024, 3, 20): "1403/01/01",
         date(2025, 3, 21): "1404/01/01",
     }
@@ -179,12 +183,9 @@ def main():
         self_test()
         return
 
-    cache = {}
     def date_for_path(path):
-        key = Path(path).resolve()
-        if key not in cache:
-            cache[key] = last_substantive_change(key)
-        return cache[key]
+        # All pages and sitemap entries use the explicitly requested site-wide date.
+        return SITE_DATE
 
     changed_files = []
     unmapped = []
@@ -208,7 +209,7 @@ def main():
 
     print(
         f"Synced factual last-modified metadata for {len(changed_files)} files "
-        f"using Git content history; no current-date stamping was performed."
+        f"using the approved site-wide date {SITE_DATE.isoformat()} ({gregorian_to_jalali(SITE_DATE)})."
     )
     for item in changed_files:
         print(item)
