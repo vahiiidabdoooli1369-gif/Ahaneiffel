@@ -605,3 +605,72 @@ body:has(.site-header) .site-footer p,
 body:has(.site-header) footer p,
 body:has(.site-header) .site-footer b,
 body:has(.site-header) footer b{color:#607892!important}
+
+
+/* AE-HOTFIX-20261031: scope the industrial photo to the homepage hero only.
+   Inner pages may use .modern-header rather than .site-header, so target every
+   document that does NOT contain the homepage-only .visual-hero section. */
+body:not(:has(.visual-hero)){
+  position:static!important;
+  isolation:auto!important;
+  min-height:100%;
+  color:#17314f!important;
+  background:#fff!important;
+}
+body:not(:has(.visual-hero))::before{
+  content:none!important;
+  display:none!important;
+  background-image:none!important;
+}
+body:not(:has(.visual-hero)) .modern-header,
+body:not(:has(.visual-hero)) .site-header,
+body:not(:has(.visual-hero)) .nav-line,
+body:not(:has(.visual-hero)) .category-strip,
+body:not(:has(.visual-hero)) .benefits,
+body:not(:has(.visual-hero)) .lower-grid,
+body:not(:has(.visual-hero)) main,
+body:not(:has(.visual-hero)) main .section,
+body:not(:has(.visual-hero)) main .light,
+body:not(:has(.visual-hero)) .products-show,
+body:not(:has(.visual-hero)) .mini-tools,
+body:not(:has(.visual-hero)) .article-page{
+  background:#fff!important;
+  color:#17314f!important;
+}
+body:not(:has(.visual-hero)) .modern-header,
+body:not(:has(.visual-hero)) .site-header{
+  border-bottom:1px solid #dce8f6!important;
+  box-shadow:0 5px 22px rgba(27,71,119,.06)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+body:not(:has(.visual-hero)) .modern-header *,
+body:not(:has(.visual-hero)) .site-header *,
+body:not(:has(.visual-hero)) main h1,
+body:not(:has(.visual-hero)) main h2,
+body:not(:has(.visual-hero)) main h3,
+body:not(:has(.visual-hero)) main p,
+body:not(:has(.visual-hero)) main li,
+body:not(:has(.visual-hero)) main label,
+body:not(:has(.visual-hero)) main td,
+body:not(:has(.visual-hero)) main th{
+  color:#17314f;
+}
+body:not(:has(.visual-hero)) .featured-card,
+body:not(:has(.visual-hero)) .category-grid>a,
+body:not(:has(.visual-hero)) .quote-box,
+body:not(:has(.visual-hero)) .price-table-card,
+body:not(:has(.visual-hero)) .mini-tools,
+body:not(:has(.visual-hero)) .card,
+body:not(:has(.visual-hero)) .faq-grid details,
+body:not(:has(.visual-hero)) .link-grid a{
+  background:#fff!important;
+  color:#17314f!important;
+  border-color:#dce8f6!important;
+  box-shadow:0 8px 24px rgba(28,74,125,.07)!important;
+}
+body:not(:has(.visual-hero)) .site-footer,
+body:not(:has(.visual-hero)) footer{
+  background:#f4f8fc!important;
+  color:#38536f!important;
+}
