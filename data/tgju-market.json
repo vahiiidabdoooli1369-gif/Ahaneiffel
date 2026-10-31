@@ -1,0 +1,10 @@
+{
+  "source": "TGJU",
+  "source_urls": {
+    "dollar": "https://www.tgju.org/profile/price_dollar_rl",
+    "metals": "https://www.tgju.org/basemetal"
+  },
+  "updated_at_utc": null,
+  "disclaimer": "تا اجرای موفق دریافت‌کننده خودکار، نرخ منتشر نشده است. پس از دریافت، دلار به تومان و آلومینیوم جهانی به دلار بر تن نمایش داده می‌شود.",
+  "items": []
+}
