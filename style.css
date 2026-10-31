@@ -532,3 +532,76 @@ body{color:#f7fbff;font-family:Vazirmatn,Tahoma,Arial,sans-serif}
  .featured-card:hover,.category-grid>a:hover{transform:none!important}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
+
+
+/* AHAN EIFFEL — keep the industrial photo on the homepage only.
+   Inner pages use a clean, lightweight white canvas. */
+body:has(.site-header){
+  position:static!important;
+  isolation:auto!important;
+  min-height:100%;
+  color:var(--text,#17314f)!important;
+  background:#fff!important;
+}
+body:has(.site-header)::before{display:none!important;content:none!important}
+body:has(.site-header) .site-header{
+  background:rgba(255,255,255,.97)!important;
+  border-bottom:1px solid #dce8f6!important;
+  box-shadow:0 5px 25px rgba(27,71,119,.06)!important;
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+}
+body:has(.site-header) .topbar{background:#fff!important;color:#70819a!important}
+body:has(.site-header) .brand{color:#0d69df!important}
+body:has(.site-header) .site-header nav a,
+body:has(.site-header) .site-header .nav-wrap nav a{color:#425a75!important}
+body:has(.site-header) .site-header nav a:hover{color:#087cff!important;background:#eef6ff!important}
+body:has(.site-header) main,
+body:has(.site-header) .article-page,
+body:has(.site-header) .section,
+body:has(.site-header) .light,
+body:has(.site-header) .category-strip,
+body:has(.site-header) .benefits,
+body:has(.site-header) .lower-grid,
+body:has(.site-header) .products-show,
+body:has(.site-header) .mini-tools{background:#fff!important;color:#17314f!important}
+body:has(.site-header) .card,
+body:has(.site-header) .faq-grid details,
+body:has(.site-header) .link-grid a,
+body:has(.site-header) .link-grid .product,
+body:has(.site-header) .quick-buy-grid a,
+body:has(.site-header) .product,
+body:has(.site-header) .knowledge-grid article,
+body:has(.site-header) .steps>div,
+body:has(.site-header) .features>div,
+body:has(.site-header) .price-matrix>div{
+  background:#fff!important;
+  color:#17314f!important;
+  border-color:#dce8f6!important;
+  box-shadow:0 8px 24px rgba(28,74,125,.07)!important;
+}
+body:has(.site-header) .article-page h1,
+body:has(.site-header) .article-page h2,
+body:has(.site-header) .article-page h3,
+body:has(.site-header) .card h2,
+body:has(.site-header) .section-head h2{color:#163554!important}
+body:has(.site-header) .article-page p,
+body:has(.site-header) .article-page li,
+body:has(.site-header) .card p,
+body:has(.site-header) .faq-grid p{color:#425e7a!important}
+body:has(.site-header) .breadcrumbs,
+body:has(.site-header) .breadcrumb{color:#7b8da2!important}
+body:has(.site-header) .breadcrumbs a,
+body:has(.site-header) .breadcrumb a,
+body:has(.site-header) .card a{color:#0876e8!important}
+body:has(.site-header) .spec{background:#fff!important;color:#17314f!important}
+body:has(.site-header) .spec th{background:#edf6ff!important;color:#126edb!important}
+body:has(.site-header) .spec td{color:#425e7a!important;background:#fff!important}
+body:has(.site-header) .site-footer,
+body:has(.site-header) footer{background:#f4f8fc!important;color:#38536f!important}
+body:has(.site-header) .site-footer a,
+body:has(.site-header) footer a,
+body:has(.site-header) .site-footer p,
+body:has(.site-header) footer p,
+body:has(.site-header) .site-footer b,
+body:has(.site-header) footer b{color:#607892!important}
