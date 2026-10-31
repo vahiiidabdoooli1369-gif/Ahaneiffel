@@ -1,0 +1,60 @@
+name: Bust inner-page stylesheet cache
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ahaneiffel-style-cache-bust
+  cancel-in-progress: true
+
+jobs:
+  refresh-stylesheet-urls:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Add a fresh version to every HTML stylesheet reference
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          changed = []
+          for path in Path('.').rglob('*.html'):
+              if '.git' in path.parts:
+                  continue
+              source = path.read_text(encoding='utf-8')
+              def version(match):
+                  url = match.group(2)
+                  if 'style.css' not in url:
+                      return match.group(0)
+                  url = re.sub(r'([?&])v=[^&"\\']+', '', url)
+                  url += ('&' if '?' in url else '?') + 'v=20261031-2'
+                  return match.group(1) + url + match.group(3)
+              updated = re.sub(r'''(href=["'])([^"']*style\.css(?:\?[^"']*)?)(["'])''', version, source, flags=re.I)
+              if updated != source:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.append(str(path))
+          print(f'Updated stylesheet cache key in {len(changed)} HTML files')
+          print('\\n'.join(changed[:30]))
+          PY
+      - name: Commit refreshed stylesheet references
+        run: |
+          if git diff --quiet; then
+            echo "All stylesheet references already use the current cache key"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.html'
+          git commit -m "Refresh inner-page stylesheet cache keys"
+          git push origin main
