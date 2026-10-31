@@ -674,3 +674,123 @@ body:not(:has(.visual-hero)) footer{
   background:#f4f8fc!important;
   color:#38536f!important;
 }
+
+
+/* AE-READABILITY-PASS-20261031
+   Consistent high-contrast typography and surfaces across every inner page. */
+body:not(:has(.visual-hero)){
+  --ae-ink:#17324d;
+  --ae-muted:#526b84;
+  --ae-link:#086fc5;
+  --ae-border:#d9e4ef;
+  color:var(--ae-ink)!important;
+  background:#f7f9fc!important;
+  font-family:inherit;
+}
+body:not(:has(.visual-hero)) main{
+  color:var(--ae-ink)!important;
+}
+body:not(:has(.visual-hero)) main :is(h1,h2,h3,h4,h5,h6){
+  color:#102f4b!important;
+  font-weight:800;
+  line-height:1.75;
+}
+body:not(:has(.visual-hero)) main :is(p,li,dd,dt,label,small,figcaption){
+  color:var(--ae-muted)!important;
+  line-height:2;
+}
+body:not(:has(.visual-hero)) main strong,
+body:not(:has(.visual-hero)) main b{
+  color:#203e5b!important;
+}
+body:not(:has(.visual-hero)) main a:not(.btn):not(.button){
+  color:var(--ae-link)!important;
+  text-decoration-color:rgba(8,111,197,.35);
+  text-underline-offset:3px;
+}
+body:not(:has(.visual-hero)) main a:not(.btn):not(.button):hover{
+  color:#e87512!important;
+}
+body:not(:has(.visual-hero)) .site-header{
+  background:#fff!important;
+  color:#17324d!important;
+  border-bottom:1px solid var(--ae-border)!important;
+  box-shadow:0 4px 18px rgba(16,47,75,.07)!important;
+}
+body:not(:has(.visual-hero)) .site-header .brand,
+body:not(:has(.visual-hero)) .site-header .brand b{
+  color:#123c60!important;
+}
+body:not(:has(.visual-hero)) .site-header nav a{
+  color:#34536f!important;
+}
+body:not(:has(.visual-hero)) .site-header nav a:hover{
+  color:#086fc5!important;
+  background:#edf5fc!important;
+}
+body:not(:has(.visual-hero)) main :is(.box,.card,.cards article,.knowledge-grid article,.steps>div,.features>div,.price-matrix>div,.link-grid a,.faq-grid details){
+  background:#fff!important;
+  color:#17324d!important;
+  border:1px solid var(--ae-border)!important;
+  border-radius:16px;
+  box-shadow:0 7px 22px rgba(16,47,75,.055)!important;
+}
+body:not(:has(.visual-hero)) main :is(.box,.card,.cards article,.knowledge-grid article) :is(h2,h3,h4){
+  color:#153b5b!important;
+}
+body:not(:has(.visual-hero)) main :is(.box,.card,.cards article,.knowledge-grid article) :is(p,li){
+  color:#526b84!important;
+}
+body:not(:has(.visual-hero)) main :is(.hero,.cta,.price-hero,.quote-box,.price-table-card,.dark-panel){
+  color:#fff!important;
+}
+body:not(:has(.visual-hero)) main :is(.hero,.cta,.price-hero,.quote-box,.price-table-card,.dark-panel) :is(h1,h2,h3,h4,p,li,strong,b,span,label){
+  color:#fff!important;
+}
+body:not(:has(.visual-hero)) main :is(.hero,.cta,.price-hero,.quote-box,.price-table-card,.dark-panel) a:not(.btn):not(.button){
+  color:#ffd09e!important;
+}
+body:not(:has(.visual-hero)) main :is(.hero,.cta,.price-hero,.quote-box,.price-table-card,.dark-panel) .btn,
+body:not(:has(.visual-hero)) main .btn{
+  color:#fff!important;
+  background:linear-gradient(135deg,#e87512,#ff9a35)!important;
+  border:1px solid rgba(255,255,255,.25)!important;
+  font-weight:800;
+}
+body:not(:has(.visual-hero)) main :is(input,select,textarea){
+  color:#17324d!important;
+  background:#fff!important;
+  border:1px solid #c8d7e6!important;
+}
+body:not(:has(.visual-hero)) main table{
+  color:#304e69!important;
+}
+body:not(:has(.visual-hero)) main table th{
+  background:#eaf2f9!important;
+  color:#153b5b!important;
+}
+body:not(:has(.visual-hero)) main table td{
+  color:#425e78!important;
+  background:#fff!important;
+}
+body:not(:has(.visual-hero)) main :is(.breadcrumbs,.breadcrumb){
+  color:#71869a!important;
+}
+body:not(:has(.visual-hero)) main :is(.breadcrumbs,.breadcrumb) a{
+  color:#0874c9!important;
+}
+body:not(:has(.visual-hero)) footer{
+  background:#edf3f8!important;
+  color:#526b84!important;
+  border-top:1px solid var(--ae-border);
+}
+body:not(:has(.visual-hero)) footer a{
+  color:#086fc5!important;
+}
+@media(max-width:700px){
+  body:not(:has(.visual-hero)) main :is(.box,.card,.cards article,.knowledge-grid article){
+    border-radius:13px;
+    box-shadow:0 4px 14px rgba(16,47,75,.045)!important;
+  }
+  body:not(:has(.visual-hero)) main :is(h1,h2){line-height:1.65}
+}
