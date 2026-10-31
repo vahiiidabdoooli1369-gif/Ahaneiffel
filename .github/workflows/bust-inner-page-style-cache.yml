@@ -38,7 +38,7 @@ jobs:
                   if 'style.css' not in url:
                       return match.group(0)
                   url = re.sub(r'([?&])v=[^&"\\']+', '', url)
-                  url += ('&' if '?' in url else '?') + 'v=20261031-2'
+                  url += ('&' if '?' in url else '?') + 'v=20261031-3'
                   return match.group(1) + url + match.group(3)
               updated = re.sub(r'''(href=["'])([^"']*style\.css(?:\?[^"']*)?)(["'])''', version, source, flags=re.I)
               if updated != source:
