@@ -172,24 +172,38 @@ jobs:
                       if quote:
                           home_rows[family] = digits_only(text_only(quote.group(1)))
 
-                  for item in feed.get("rows", []):
-                      aliases = item.get("raw") or [""]
-                      family = aliases[0]
-                      price = digits_only(item.get("price", ""))
-                      if not family or not price:
-                          errors.append("price feed contains an incomplete row")
-                          continue
+                  feed_rows = feed.get("rows", [])
+                  if not feed_rows:
+                      errors.append("price feed contains no product rows")
 
-                      page_row = next((row for row in price_rows if any(alias and alias in row[0] for alias in aliases)), None)
-                      if page_row is None:
-                          errors.append(f"/prices/ is missing price family: {family}")
-                      elif digits_only(page_row[2]) != price:
-                          errors.append(f"/prices/ price mismatch for {family}: feed={item.get('price')}, page={page_row[2]}")
+                  if feed.get("verified_today") is not True:
+                      # Historical feed numbers are intentionally suppressed until a human confirms today's prices.
+                      for item in feed_rows:
+                          aliases = item.get("raw") or [""]
+                          family = aliases[0]
+                          page_row = next((row for row in price_rows if any(alias and alias in row[0] for alias in aliases)), None)
+                          if page_row is None:
+                              errors.append(f"/prices/ is missing price family: {family}")
+                          elif "استعلام" not in page_row[2]:
+                              errors.append(f"/prices/ exposes an unverified numeric price for {family}: {page_row[2]}")
 
-                      home_family = next((name for name in home_rows if name in aliases), None)
-                      if home_family is not None and home_rows[home_family] != price:
-                          errors.append(f"homepage price mismatch for {family}: feed={item.get('price')}, homepage={home_rows[home_family]}")
-
+                      for family, row_html in re.findall(r'<tr\\b[^>]*data-price-family="([^"]+)"[^>]*>([\\s\\S]*?)</tr>', home, re.I):
+                          quote = re.search(r'<td\\b[^>]*class="quote"[^>]*>([\\s\\S]*?)</td>', row_html, re.I)
+                          if not quote or "استعلام" not in text_only(quote.group(1)):
+                              errors.append(f"homepage exposes an unverified price or has no inquiry status for {family}")
+                  else:
+                      for item in feed_rows:
+                          aliases = item.get("raw") or [""]
+                          family = aliases[0]
+                          price = digits_only(item.get("price", ""))
+                          page_row = next((row for row in price_rows if any(alias and alias in row[0] for alias in aliases)), None)
+                          if page_row is None:
+                              errors.append(f"/prices/ is missing price family: {family}")
+                          elif digits_only(page_row[2]) != price:
+                              errors.append(f"/prices/ price mismatch for {family}: feed={item.get('price')}, page={page_row[2]}")
+                          home_family = next((name for name in home_rows if name in aliases), None)
+                          if home_family is not None and home_rows[home_family] != price:
+                              errors.append(f"homepage price mismatch for {family}: feed={item.get('price')}, homepage={home_rows[home_family]}")
                   if not errors:
                       print(f"PASS: live homepage, price center, and feed agree for {len(feed.get('rows', []))} price families; date={feed['published_date']}.")
                       raise SystemExit(0)
