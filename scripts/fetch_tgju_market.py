@@ -52,7 +52,7 @@ def main():
     # TGJU quotes the domestic dollar in rial; publish toman.
     aluminum_usd_ton = next((n for n in aluminum_nums if 500 <= n <= 10000), None)
     if dollar_rial is None or aluminum_usd_ton is None:
-        raise RuntimeError(f"Could not validate TGJU quotes (dollar candidates={dollar_nums}, aluminum candidates={aluminum_nums})")
+        raise RuntimeError(f"Could not validate TGJU quotes (dollar candidate={dollar_rial}, aluminum candidates={aluminum_nums})")
     payload = {
         "source": "TGJU",
         "source_urls": URLS,
