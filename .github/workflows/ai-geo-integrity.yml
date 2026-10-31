@@ -104,12 +104,6 @@ jobs:
           import re
           from pathlib import Path
 
-          digits = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
-
-          def number(value):
-              normalized = str(value).translate(digits)
-              return re.sub(r"\D", "", normalized)
-
           def text_only(value):
               return re.sub(r"<[^>]+>", " ", html.unescape(value)).strip()
 
@@ -126,30 +120,40 @@ jobs:
           if not summary_rows:
               raise SystemExit("Daily price summary table contains no data rows")
 
-          for item in feed.get("rows", []):
-              aliases = item.get("raw", [])
-              family = aliases[0] if aliases else ""
-              row = next((r for r in summary_rows if any(alias and alias in r[0] for alias in aliases)), None)
-              if row is None:
-                  raise SystemExit(f"Price family missing from /prices/: {family}")
-              if number(row[2]) != str(item.get("price", "")):
-                  raise SystemExit(f"Price mismatch for {family}: feed={item.get('price')} page={row[2]}")
-              expected_unit = item.get("unit", feed.get("unit", ""))
-              if expected_unit and expected_unit not in row[1]:
-                  raise SystemExit(f"Unit mismatch for {family}: expected {expected_unit}, page={row[1]}")
-
           homepage = Path("index.html").read_text(encoding="utf-8")
           home_rows = re.findall(r'<tr\b[^>]*data-price-family="([^"]+)"[^>]*>([\s\S]*?)</tr>', homepage, re.I)
-          for family, row_html in home_rows:
-              item = next((x for x in feed.get("rows", []) if family in x.get("raw", [])), None)
-              if item is None:
-                  raise SystemExit(f"Homepage family is not in the price feed: {family}")
-              quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', row_html, re.I)
-              if not quote:
-                  raise SystemExit(f"Homepage price cell missing for {family}")
-              if number(text_only(quote.group(1))) != str(item.get("price", "")):
-                  raise SystemExit(f"Homepage/feed price mismatch for {family}")
-          print(f"Price integrity OK: {len(feed.get('rows', []))} feed rows match /prices/; {len(home_rows)} homepage rows match the feed.")
+
+          if feed.get("verified_today") is not True:
+              for item in feed.get("rows", []):
+                  aliases = item.get("raw", [])
+                  family = aliases[0] if aliases else ""
+                  row = next((r for r in summary_rows if any(alias and alias in r[0] for alias in aliases)), None)
+                  if row is None or "استعلام" not in row[2]:
+                      raise SystemExit(f"Unverified price is not safely suppressed on /prices/: {family}")
+              for family, row_html in home_rows:
+                  quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', row_html, re.I)
+                  if not quote or "استعلام" not in text_only(quote.group(1)):
+                      raise SystemExit(f"Unverified homepage price is not safely suppressed: {family}")
+              print(f"Safe price mode OK: {len(feed.get('rows', []))} unverified price families and {len(home_rows)} homepage rows show inquiry text, not stale numbers.")
+          else:
+              digits = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
+              def number(value):
+                  return re.sub(r"\D", "", str(value).translate(digits))
+              for item in feed.get("rows", []):
+                  aliases = item.get("raw", [])
+                  family = aliases[0] if aliases else ""
+                  row = next((r for r in summary_rows if any(alias and alias in r[0] for alias in aliases)), None)
+                  if row is None or number(row[2]) != str(item.get("price", "")):
+                      raise SystemExit(f"Verified price mismatch for {family}")
+                  expected_unit = item.get("unit", feed.get("unit", ""))
+                  if expected_unit and expected_unit not in row[1]:
+                      raise SystemExit(f"Unit mismatch for {family}: expected {expected_unit}, page={row[1]}")
+              for family, row_html in home_rows:
+                  item = next((x for x in feed.get("rows", []) if family in x.get("raw", [])), None)
+                  quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', row_html, re.I)
+                  if item is None or not quote or number(text_only(quote.group(1))) != str(item.get("price", "")):
+                      raise SystemExit(f"Verified homepage/feed price mismatch: {family}")
+              print(f"Verified price integrity OK: {len(feed.get('rows', []))} feed rows and {len(home_rows)} homepage rows.")
           PY
       - name: Check canonical URL is live in source
         shell: bash
