@@ -6,6 +6,7 @@ from pathlib import Path
 from io import StringIO
 import pandas as pd
 import requests
+from bs4 import BeautifulSoup
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; AhaneiffelMarketBoard/1.0)"}
 URLS = {
@@ -17,11 +18,14 @@ DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "012345678901
 def clean(value):
     return re.sub(r"\s+", " ", str(value).translate(DIGITS)).strip()
 
-def tables(url):
+def fetch_html(url):
     response = requests.get(url, headers=HEADERS, timeout=25)
     response.raise_for_status()
     response.encoding = response.apparent_encoding or "utf-8"
-    return pd.read_html(StringIO(response.text))
+    return response.text
+
+def tables(html):
+    return pd.read_html(StringIO(html))
 
 def row_values(all_tables, label):
     for table in all_tables:
@@ -39,12 +43,13 @@ def row_values(all_tables, label):
     return []
 
 def main():
-    dollar_tables = tables(URLS["dollar"])
-    metal_tables = tables(URLS["metals"])
-    dollar_nums = row_values(dollar_tables, "دلار")
-    aluminum_nums = row_values(metal_tables, "آلومینیوم")
-    # TGJU's domestic dollar profile is quoted in rial; publish toman.
-    dollar_rial = next((n for n in dollar_nums if n >= 100000), None)
+    dollar_html = fetch_html(URLS["dollar"])
+    metal_html = fetch_html(URLS["metals"])
+    dollar_text = clean(BeautifulSoup(dollar_html, "lxml").get_text(" ", strip=True))
+    current = re.search(r"نرخ فعلی\s*:?\s*([0-9][0-9,٬]*)", dollar_text)
+    dollar_rial = float(current.group(1).replace(",", "").replace("٬", "")) if current else None
+    aluminum_nums = row_values(tables(metal_html), "آلومینیوم")
+    # TGJU quotes the domestic dollar in rial; publish toman.
     aluminum_usd_ton = next((n for n in aluminum_nums if 500 <= n <= 10000), None)
     if dollar_rial is None or aluminum_usd_ton is None:
         raise RuntimeError(f"Could not validate TGJU quotes (dollar candidates={dollar_nums}, aluminum candidates={aluminum_nums})")
