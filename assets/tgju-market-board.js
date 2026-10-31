@@ -1,20 +1,24 @@
 (function(){
   "use strict";
-  const host=document.querySelector(".visual-hero");
-  if(!host || document.getElementById("ae-tgju-board")) return;
-  const section=document.createElement("section");
-  section.id="ae-tgju-board";
-  section.className="ae-tgju-board wide";
-  section.setAttribute("aria-label","تابلوی قیمت بازار ارز و فلزات");
-  section.innerHTML='<div class="ae-tgju-head"><div><span>نبض بازار</span><h2>تابلوی آنلاین دلار و فلزات پایه</h2></div><small class="ae-tgju-time">در حال دریافت نرخ‌ها…</small></div><div class="ae-tgju-grid"><article class="ae-tgju-item"><span>دلار آزاد</span><strong data-tgju="usd_irr">—</strong><small>تومان</small></article><article class="ae-tgju-item"><span>آلومینیوم جهانی</span><strong data-tgju="aluminum">—</strong><small>دلار به ازای هر تن</small></article></div><p class="ae-tgju-note">منبع: TGJU · نرخ‌ها ممکن است با تأخیر باشند و قیمت قطعی فروش آهن‌آلات محسوب نمی‌شوند.</p>';
-  host.insertAdjacentElement("afterend",section);
+  if(document.getElementById("ae-tgju-ticker")) return;
+  const footer=document.querySelector("footer");
+  if(!footer) return;
+  const bar=document.createElement("section");
+  bar.id="ae-tgju-ticker";
+  bar.setAttribute("aria-label","نوار قیمت آنلاین دلار و فلزات");
+  bar.innerHTML='<div class="ae-ticker-label"><span class="ae-live-dot"></span>نبض بازار</div><div class="ae-ticker-window"><div class="ae-ticker-track"><span class="ae-ticker-loading">در حال دریافت قیمت‌های بازار…</span></div></div><a class="ae-ticker-source" href="https://www.tgju.org/" target="_blank" rel="noopener noreferrer">منبع: TGJU</a>';
+  footer.parentNode.insertBefore(bar,footer);
   const style=document.createElement("style");
-  style.textContent='#ae-tgju-board{max-width:1200px;margin:24px auto;padding:22px;background:#102b46;color:#fff;border-radius:18px;box-sizing:border-box}#ae-tgju-board .ae-tgju-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}#ae-tgju-board .ae-tgju-head span{color:#ff851b;font-size:13px;font-weight:800}#ae-tgju-board h2{font-size:clamp(18px,3vw,24px);margin:5px 0 14px;color:#fff}#ae-tgju-board small{color:#c9d6e3}#ae-tgju-board .ae-tgju-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#ae-tgju-board .ae-tgju-item{background:#17466b;border:1px solid #41617d;border-radius:13px;padding:16px;display:flex;flex-direction:column;gap:7px;min-width:0}#ae-tgju-board .ae-tgju-item span{font-size:14px;color:#e8f0f7}#ae-tgju-board .ae-tgju-item strong{font-size:clamp(22px,4vw,30px);overflow-wrap:anywhere;color:#fff}#ae-tgju-board .ae-tgju-note{font-size:12px;line-height:1.9;color:#d2deea;margin:12px 0 0}@media(max-width:520px){#ae-tgju-board{margin:16px 12px;padding:16px}#ae-tgju-board .ae-tgju-grid{grid-template-columns:1fr}}';
+  style.textContent='#ae-tgju-ticker{direction:rtl;width:100%;min-height:54px;display:flex;align-items:center;gap:16px;box-sizing:border-box;padding:9px max(14px,calc((100% - 1200px)/2));background:#102b46;color:#fff;border-top:3px solid #ff851b;overflow:hidden;font-family:inherit;position:relative;z-index:20}#ae-tgju-ticker .ae-ticker-label{white-space:nowrap;font-weight:800;color:#ffb15f;display:flex;align-items:center;gap:8px;font-size:13px}#ae-tgju-ticker .ae-live-dot{width:8px;height:8px;background:#36d399;border-radius:50%;box-shadow:0 0 0 4px #36d39925}#ae-tgju-ticker .ae-ticker-window{flex:1;min-width:0;overflow:hidden}#ae-tgju-ticker .ae-ticker-track{display:flex;align-items:center;gap:34px;width:max-content;white-space:nowrap;animation:aeTickerMove 28s linear infinite}#ae-tgju-ticker:hover .ae-ticker-track{animation-play-state:paused}#ae-tgju-ticker .ae-ticker-entry{font-size:13px;color:#e5edf5;display:inline-flex;align-items:center;gap:8px}#ae-tgju-ticker .ae-ticker-entry b{color:#fff;font-size:14px}#ae-tgju-ticker .ae-ticker-entry i{font-style:normal;color:#ffad55;font-size:11px}#ae-tgju-ticker .ae-ticker-sep{color:#ff851b}#ae-tgju-ticker .ae-ticker-source{white-space:nowrap;color:#c5d5e4;text-decoration:none;font-size:11px;border-right:1px solid #49627a;padding-right:12px}#ae-tgju-ticker .ae-ticker-source:hover{color:#ffb15f}@keyframes aeTickerMove{from{transform:translateX(0)}to{transform:translateX(50%)}}@media(max-width:600px){#ae-tgju-ticker{gap:10px;padding:10px 12px;min-height:50px}#ae-tgju-ticker .ae-ticker-label{font-size:11px}#ae-tgju-ticker .ae-ticker-source{font-size:10px;padding-right:8px}#ae-tgju-ticker .ae-ticker-track{gap:22px;animation-duration:22s}}@media(prefers-reduced-motion:reduce){#ae-tgju-ticker .ae-ticker-track{animation:none;transform:none}}';
   document.head.appendChild(style);
-  const fmt=n=>new Intl.NumberFormat("fa-IR",{maximumFractionDigits:2}).format(Number(n));
+  const number=n=>new Intl.NumberFormat("fa-IR",{maximumFractionDigits:2}).format(Number(n));
   fetch("/data/tgju-market.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("feed unavailable");return r.json()}).then(data=>{
-    (data.items||[]).forEach(item=>{const el=section.querySelector('[data-tgju="'+item.id+'"]');if(el)el.textContent=fmt(item.value)});
-    const time=new Date(data.updated_at_utc);
-    section.querySelector(".ae-tgju-time").textContent="آخرین دریافت: "+(isNaN(time)?"نامشخص":time.toLocaleString("fa-IR",{timeZone:"Asia/Tehran"}));
-  }).catch(()=>{section.querySelector(".ae-tgju-time").textContent="دریافت نرخ موقتاً ناموفق بود";});
+    const items=(data.items||[]).filter(x=>Number.isFinite(Number(x.value)));
+    const track=bar.querySelector(".ae-ticker-track");
+    if(!items.length){track.textContent="قیمت‌ها پس از دریافت معتبر از منبع نمایش داده می‌شوند.";return;}
+    const entries=items.map(x=>'<span class="ae-ticker-entry"><span class="ae-ticker-sep">◆</span>'+x.name+' <b>'+number(x.value)+'</b><i>'+x.unit+'</i></span>').join("");
+    track.innerHTML=entries+entries;
+    const stamp=data.updated_at_utc?new Date(data.updated_at_utc):null;
+    if(stamp&&!isNaN(stamp)) bar.setAttribute("aria-label","نوار قیمت آنلاین؛ آخرین دریافت "+stamp.toLocaleString("fa-IR",{timeZone:"Asia/Tehran"}));
+  }).catch(()=>{bar.querySelector(".ae-ticker-track").textContent="دریافت قیمت بازار موقتاً در دسترس نیست.";});
 })();
