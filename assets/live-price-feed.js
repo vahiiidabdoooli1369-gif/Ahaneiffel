@@ -52,7 +52,7 @@
     // If the browser can calculate Tehran's Jalali date, a missing publication date is not fresh.
     // If Intl calendar support is unavailable, retain timestamp-only fallback behavior.
     const dateMatchesToday = !todayDate || (!!publishedDate && publishedDate === todayDate);
-    const isFresh = Number.isFinite(updatedAt) && age >= 0 && age <= STALE_MS && dateMatchesToday;
+    const isFresh = data.verified_today === true && Number.isFinite(updatedAt) && age >= 0 && age <= STALE_MS && dateMatchesToday;
 
     document.querySelectorAll(".live-price-meta").forEach(el => el.remove());
     const meta = document.createElement("p");
@@ -75,8 +75,8 @@
       const priceCell = row.querySelector(".quote");
       if (priceCell) {
         const unit = item.unit || data.unit || "واحد نامشخص";
-        priceCell.textContent = format(item.price) + " تومان/" + unit;
-        priceCell.classList.add("live-price");
+        priceCell.textContent = isFresh ? (format(item.price) + " تومان/" + unit) : "استعلام قیمت";
+        if (isFresh) priceCell.classList.add("live-price"); else priceCell.classList.remove("live-price");
         priceCell.setAttribute("data-price-source", "ahaneiffel-market-feed");
         priceCell.title = isFresh
           ? "قیمت پایه از فید آهن ایفل؛ تأیید نهایی هنگام سفارش"
