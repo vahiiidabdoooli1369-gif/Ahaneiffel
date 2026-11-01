@@ -117,7 +117,7 @@ def evaluate(path):
     add("canonical_host", p.canonical.startswith(BASE), 5, "Canonical should use primary HTTPS host")
     add("html_lang", bool(p.lang), 5, "HTML lang attribute missing")
     add("viewport", p.viewport, 5, "Viewport meta missing")
-    add("content_depth_proxy", p.word_count >= 250, 10, f"Only {p.word_count} visible-text words (human review required)")
+    add("content_depth_proxy", p.word_count >= 250, 5, f"Only {p.word_count} visible-text words (human review required)")
     add("section_structure", p.headings >= 2, 5, "Fewer than two H2/H3 headings detected")
     internal = sum(1 for h in p.links if h.startswith("/") or h.startswith(BASE))
     add("internal_links", internal >= 2, 10, f"Only {internal} internal links detected")
