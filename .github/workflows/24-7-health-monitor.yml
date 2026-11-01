@@ -33,6 +33,16 @@ jobs:
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
 
+      - name: Build page readiness priority report
+        id: page_readiness
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/page_readiness_report.py 2>&1 | tee agent-reports/page-readiness-run.txt
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
       - name: Validate sitemaps and price feed JSON
         id: data_audit
         shell: bash
@@ -70,7 +80,11 @@ jobs:
             echo "- Commit: $GITHUB_SHA"
             echo "- Run: $GITHUB_RUN_ID"
             echo "- HTML audit exit code: ${{ steps.html_audit.outputs.exit_code || 'not completed' }}"
+            echo "- Page readiness report exit code: ${{ steps.page_readiness.outputs.exit_code || 'not completed' }}"
             echo "- Data audit exit code: ${{ steps.data_audit.outputs.exit_code || 'not completed' }}"
+            echo
+            echo "## Page readiness report"
+            cat agent-reports/page-readiness.md 2>/dev/null || true
             echo
             echo "## HTML / SEO audit"
             cat agent-reports/html-integrity.txt 2>/dev/null || true
@@ -95,7 +109,8 @@ jobs:
         run: |
           html="${{ steps.html_audit.outputs.exit_code }}"
           data="${{ steps.data_audit.outputs.exit_code }}"
-          if [[ "$html" != "0" || "$data" != "0" ]]; then
+          readiness="${{ steps.page_readiness.outputs.exit_code }}"
+          if [[ "$html" != "0" || "$data" != "0" || "$readiness" != "0" ]]; then
             echo "One or more audits failed. Download the report artifact for details."
             exit 1
           fi
