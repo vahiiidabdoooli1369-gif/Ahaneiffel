@@ -62,7 +62,7 @@ class PageSignals(HTMLParser):
         elif tag == "a":
             self.links.append(a.get("href", ""))
         elif tag == "img":
-            self.images.append(a.get("alt"))
+            self.images.append("alt" in a)
         elif tag == "link" and "canonical" in (a.get("rel") or "").lower().split():
             self.canonical = a.get("href", "")
         elif tag == "meta":
@@ -121,7 +121,7 @@ def evaluate(path):
     add("section_structure", p.headings >= 2, 5, "Fewer than two H2/H3 headings detected")
     internal = sum(1 for h in p.links if h.startswith("/") or h.startswith(BASE))
     add("internal_links", internal >= 2, 10, f"Only {internal} internal links detected")
-    add("image_alt", all((alt or "").strip() for alt in p.images), 5, "One or more images lack alt text")
+    add("image_alt", all(p.images), 5, "One or more images lack an alt attribute; empty alt is valid for decorative images")
     schema_ok = False
     if p.jsonld:
         try:
