@@ -829,3 +829,88 @@ body:not(:has(.visual-hero)) footer a{
 /* Homepage hero title: make the primary heading white for contrast over the darkened photo. */
 .visual-hero .hero-copy h1{color:#fff!important}
 .visual-hero .hero-copy h1 em{color:var(--ae-orange)!important}
+
+
+/* =========================================================
+   AHAN EIFFEL — SITE-WIDE NAVY & ORANGE DESIGN SYSTEM
+   Shared visual refresh for all indexable pages.
+   ========================================================= */
+:root{
+  --blue:#17466B;--blue2:#102B46;--navy:#102B46;
+  --ae-navy:#102B46;--ae-blue:#17466B;--ae-orange:#FF851B;
+  --text:#20384e;--muted:#687d90;--soft:#f4f7fa;--soft2:#eaf0f5;
+  --border:#dce5ec;--shadow:0 12px 32px rgba(16,43,70,.08);
+  --shadow2:0 20px 48px rgba(16,43,70,.13);
+}
+body{color:#20384e;background:#fff}
+a{transition:color .2s ease,background .2s ease,border-color .2s ease}
+.topbar{background:#102B46;color:#e8f0f7;border:0}
+.topbar a{color:#ffad68}
+.site-header{background:rgba(255,255,255,.96);border-bottom:1px solid #dce5ec;box-shadow:0 7px 24px rgba(16,43,70,.07)}
+.brand,.logo,.logo strong{color:#102B46}
+.brand b,.logo small{color:#FF851B}
+.site-header nav a,.nav-wrap nav a{color:#294760}
+.site-header nav a:first-child,.site-header nav a:hover,.nav-wrap nav a:hover,
+.site-header nav a:focus-visible,.nav-wrap nav a:focus-visible{color:#e96f08;background:#fff3e9}
+.call-btn,.button,.btn,.primary,.blue-btn{
+  background:linear-gradient(135deg,#FF851B,#e96f08);
+  box-shadow:0 9px 22px rgba(255,133,27,.22)
+}
+.call-btn:hover,.button:hover,.btn:hover,.primary:hover,.blue-btn:hover{background:#e96f08;box-shadow:0 13px 28px rgba(255,133,27,.28)}
+.secondary,.white-btn{color:#17466B!important;border-color:#cbd8e2;background:#fff}
+.secondary:hover,.white-btn:hover{background:#fff3e9;border-color:#FF851B;color:#102B46!important}
+.eyebrow,.hero-kicker,.brand-tag,.tag{color:#17466B}
+.eyebrow{border-color:#f3c49f;background:#fff8f2}
+.hero{background:linear-gradient(125deg,#f7f9fb,#eaf0f5);color:#20384e}
+.hero h1,.hero .section-title h2{color:#102B46}
+.hero h1::first-line{color:#102B46}
+.hero p{color:#607487}
+.price-card,.card,.product,.featured-card,.knowledge-grid article,.features article,
+.steps article,.benefit-row,.quote-box,.price-table-card,.box{
+  border-color:#dce5ec;box-shadow:0 9px 26px rgba(16,43,70,.07)
+}
+.price-card>span{background:#fff1e5;color:#d96508}
+.price-card strong,.section-title h2,.section-head h2,.article-page h1,.article-page h2{color:#102B46}
+.price-card>a,.section-title>a,.table-head a,.price-table-card .quote{color:#e96f08}
+.section-title h2{border-color:#FF851B}
+.category-grid>a,.link-grid a,.link-cloud a,.grid a{
+  border-color:#dce5ec;color:#17466B;background:#fff
+}
+.category-grid>a:hover,.link-grid a:hover,.link-cloud a:hover,.grid a:hover{
+  border-color:#FF851B;background:#fff7f0;color:#102B46;transform:translateY(-2px)
+}
+table{border-color:#dce5ec}
+table th,.price-table thead th,.sized-product-table th{
+  background:#102B46!important;color:#fff!important;border-color:#294e6c!important
+}
+table td,.price-table td,.sized-product-table td{color:#304b62;border-color:#e2e9ef}
+table tr:nth-child(even) td{background:#f6f8fa}
+input,select,textarea{border-color:#ccd8e2!important;color:#20384e}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(255,133,27,.3);border-color:#FF851B!important}
+.cta,.price-hero,.dark-panel,.sized-product-hero{
+  background:linear-gradient(125deg,#102B46,#17466B)!important;
+  border-color:#244d6c!important
+}
+.cta :is(h1,h2,h3,p,li,strong,b),.price-hero :is(h1,h2,h3,p,li,strong,b),
+.dark-panel :is(h1,h2,h3,p,li,strong,b),.sized-product-hero :is(h1,h2,h3,p,li,strong,b){color:#fff}
+.cta a:not(.btn):not(.button),.price-hero a:not(.btn):not(.button),
+.dark-panel a:not(.btn):not(.button),.sized-product-hero a:not(.btn):not(.button){color:#ffc18f}
+.breadcrumbs a,.breadcrumb a{color:#d96a0b}
+.note,.spec,.price-data-note{border-inline-start:4px solid #FF851B;background:#fff8f2}
+footer,.site-footer{background:#102B46!important;color:#e5edf4!important;border-top:4px solid #FF851B}
+footer a,.site-footer a{color:#ffc18f!important}
+footer a:hover,.site-footer a:hover{color:#fff!important}
+.copyright{border-color:rgba(255,255,255,.15);color:#c5d2de}
+a:focus-visible,button:focus-visible{outline:3px solid rgba(255,133,27,.6);outline-offset:3px}
+@media(max-width:700px){
+  .site-header>.container,.nav-wrap{gap:8px}
+  .site-header nav,.nav-wrap nav{gap:3px}
+  .site-header nav a,.nav-wrap nav a{padding:7px 8px;font-size:12px}
+  .call-btn,.button,.btn,.primary{min-height:42px}
+  .hero{padding:36px 0 42px}
+  .article-page,.container{max-width:100%}
+  .price-card,.card,.box,.quote-box{border-radius:15px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
