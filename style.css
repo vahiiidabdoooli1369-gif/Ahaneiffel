@@ -253,7 +253,7 @@ body::before{
   inset:0;
   z-index:-1;
   pointer-events:none;
-  background-image:linear-gradient(180deg,rgba(0,0,0,.48) 0%,rgba(3,12,24,.46) 52%,rgba(0,0,0,.50) 100%),url("/75d3d8fd0ee0bed0e271072cde0284d7.jpg");
+  background-image:linear-gradient(180deg,rgba(0,0,0,.70) 0%,rgba(3,12,24,.70) 52%,rgba(0,0,0,.70) 100%),url("/75d3d8fd0ee0bed0e271072cde0284d7.jpg");
   background-repeat:no-repeat;
   background-position:center center;
   background-size:cover;
@@ -826,3 +826,6 @@ body:not(:has(.visual-hero)) footer a{
 .category-grid>a:focus-visible,.featured-card:focus-visible,.header-icons a:focus-visible,.blue-btn:focus-visible,.white-btn:focus-visible{outline:3px solid rgba(255,133,27,.55);outline-offset:3px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:700px){.header-icons{gap:6px}.header-icons a{font-size:10px;padding:6px 8px}.hero-copy h1{font-size:27px}.hero-buttons{display:grid;grid-template-columns:1fr}.hero-buttons a{width:100%}.quote-box{max-width:460px;width:100%;margin-inline:auto}.ae-quick-quote select,.ae-quick-quote input{height:44px}}
+/* Homepage hero title: make the primary heading white for contrast over the darkened photo. */
+.visual-hero .hero-copy h1{color:#fff!important}
+.visual-hero .hero-copy h1 em{color:var(--ae-orange)!important}
