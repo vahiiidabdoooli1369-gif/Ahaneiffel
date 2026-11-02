@@ -1,24 +1,136 @@
 (function(){
   "use strict";
-  if(document.getElementById("ae-tgju-ticker")) return;
-  const footer=document.querySelector("footer");
-  if(!footer) return;
-  const bar=document.createElement("section");
-  bar.id="ae-tgju-ticker";
-  bar.setAttribute("aria-label","نوار قیمت آنلاین دلار و فلزات");
-  bar.innerHTML='<div class="ae-ticker-label"><span class="ae-live-dot"></span>نبض بازار</div><div class="ae-ticker-window"><div class="ae-ticker-track"><span class="ae-ticker-loading">در حال دریافت قیمت‌های بازار…</span></div></div><a class="ae-ticker-source" href="https://www.tgju.org/" target="_blank" rel="noopener noreferrer">منبع: TGJU</a>';
-  footer.parentNode.insertBefore(bar,footer);
-  const style=document.createElement("style");
-  style.textContent='body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))!important}#ae-tgju-ticker{position:fixed;left:0;right:0;bottom:0;z-index:2147483000;box-shadow:0 -5px 22px rgba(0,0,0,.22);direction:rtl;width:100%;min-height:54px;display:flex;align-items:center;gap:16px;box-sizing:border-box;padding:9px max(14px,calc((100% - 1200px)/2));background:#102b46;color:#fff;border-top:3px solid #ff851b;overflow:hidden;font-family:inherit;padding-bottom:calc(9px + env(safe-area-inset-bottom,0px))}#ae-tgju-ticker .ae-ticker-label{white-space:nowrap;font-weight:800;color:#ffb15f;display:flex;align-items:center;gap:8px;font-size:13px}#ae-tgju-ticker .ae-live-dot{width:8px;height:8px;background:#36d399;border-radius:50%;box-shadow:0 0 0 4px #36d39925}#ae-tgju-ticker .ae-ticker-window{flex:1;min-width:0;overflow:hidden}#ae-tgju-ticker .ae-ticker-track{display:flex;align-items:center;gap:34px;width:max-content;white-space:nowrap;animation:aeTickerMove 28s linear infinite}#ae-tgju-ticker:hover .ae-ticker-track{animation-play-state:paused}#ae-tgju-ticker .ae-ticker-entry{font-size:13px;color:#e5edf5;display:inline-flex;align-items:center;gap:8px}#ae-tgju-ticker .ae-ticker-entry b{color:#fff;font-size:14px}#ae-tgju-ticker .ae-ticker-entry i{font-style:normal;color:#ffad55;font-size:11px}#ae-tgju-ticker .ae-ticker-sep{color:#ff851b}#ae-tgju-ticker .ae-ticker-source{white-space:nowrap;color:#c5d5e4;text-decoration:none;font-size:11px;border-right:1px solid #49627a;padding-right:12px}#ae-tgju-ticker .ae-ticker-source:hover{color:#ffb15f}@keyframes aeTickerMove{from{transform:translateX(0)}to{transform:translateX(50%)}}@media(max-width:600px){#ae-tgju-ticker{gap:10px;padding:10px 12px;min-height:54px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}#ae-tgju-ticker .ae-ticker-label{font-size:11px}#ae-tgju-ticker .ae-ticker-source{font-size:10px;padding-right:8px}#ae-tgju-ticker .ae-ticker-track{gap:22px;animation-duration:22s}}@media(prefers-reduced-motion:reduce){#ae-tgju-ticker .ae-ticker-track{animation:none;transform:none}}';
+
+  if (document.getElementById("AE_PRICE_BAR")) return;
+
+  var bar = document.createElement("div");
+  bar.id = "AE_PRICE_BAR";
+  bar.innerHTML =
+    '<div class="ae-price-title">قیمت روز</div>' +
+    '<div id="ae-price-window"><div id="ae-price-track">' +
+    '<span class="ae-loading">در حال دریافت قیمت‌ها...</span>' +
+    '</div></div>';
+
+  document.body.appendChild(bar);
+
+  var style = document.createElement("style");
+  style.textContent = `
+    #AE_PRICE_BAR{
+      position:fixed;bottom:0;left:0;width:100%;height:42px;z-index:2147483000;
+      display:flex;align-items:center;direction:rtl;background:#102B46;
+      border-top:2px solid #FF851B;box-sizing:border-box;overflow:hidden;font-family:inherit
+    }
+    #AE_PRICE_BAR *{box-sizing:border-box}
+    #AE_PRICE_BAR .ae-price-title{
+      flex:0 0 auto;height:100%;display:flex;align-items:center;padding:0 12px;
+      background:#FF851B;color:#102B46;font-size:12px;font-weight:900;white-space:nowrap
+    }
+    #ae-price-window{flex:1;min-width:0;height:100%;overflow:hidden;display:flex;align-items:center}
+    #ae-price-track{
+      display:flex;align-items:center;width:max-content;white-space:nowrap;
+      animation:aePriceMove 20s linear infinite;will-change:transform
+    }
+    #ae-price-track:hover{animation-play-state:paused}
+    #AE_PRICE_BAR .ae-price-item{
+      display:inline-flex;align-items:center;gap:7px;padding:0 14px;height:25px;
+      border-left:1px solid #49627A;font-size:12px
+    }
+    #AE_PRICE_BAR .ae-price-name{color:#fff;font-weight:600}
+    #AE_PRICE_BAR .ae-price-value{color:#FFAB55;font-weight:900;direction:rtl}
+    #AE_PRICE_BAR .ae-loading{color:#fff;font-size:11px;padding:0 12px}
+    @keyframes aePriceMove{from{transform:translateX(0)}to{transform:translateX(50%)}}
+    body{padding-bottom:42px!important}
+    @media(max-width:600px){
+      #AE_PRICE_BAR .ae-price-title{padding:0 9px;font-size:11px}
+      #AE_PRICE_BAR .ae-price-item{padding:0 10px;font-size:11px}
+    }
+    @media(prefers-reduced-motion:reduce){#ae-price-track{animation:none}}
+  `;
   document.head.appendChild(style);
-  const number=n=>new Intl.NumberFormat("fa-IR",{maximumFractionDigits:2}).format(Number(n));
-  fetch("/data/tgju-market.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("feed unavailable");return r.json()}).then(data=>{
-    const items=(data.items||[]).filter(x=>Number.isFinite(Number(x.value)));
-    const track=bar.querySelector(".ae-ticker-track");
-    if(!items.length){track.textContent="قیمت‌ها پس از دریافت معتبر از منبع نمایش داده می‌شوند.";return;}
-    const entries=items.map(x=>'<span class="ae-ticker-entry"><span class="ae-ticker-sep">◆</span>'+x.name+' <b>'+number(x.value)+'</b><i>'+x.unit+'</i></span>').join("");
-    track.innerHTML=entries+entries;
-    const stamp=data.updated_at_utc?new Date(data.updated_at_utc):null;
-    if(stamp&&!isNaN(stamp)) bar.setAttribute("aria-label","نوار قیمت آنلاین؛ آخرین دریافت "+stamp.toLocaleString("fa-IR",{timeZone:"Asia/Tehran"}));
-  }).catch(()=>{bar.querySelector(".ae-ticker-track").textContent="دریافت قیمت بازار موقتاً در دسترس نیست.";});
+
+  var track = document.getElementById("ae-price-track");
+
+  function escapeHTML(value){
+    return String(value).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  window.navasanret = function(data){
+    try{
+      var html = typeof data === "string" ? JSON.parse(data) : data;
+      if(typeof html !== "string") html = String(html || "");
+      var doc = new DOMParser().parseFromString(html,"text/html");
+      var rows = doc.querySelectorAll("tr");
+      var items = [];
+
+      rows.forEach(function(row){
+        var cells = Array.from(row.querySelectorAll("th,td"));
+        if(cells.length < 2) return;
+
+        var texts = cells.map(function(cell){
+          return cell.textContent.trim().replace(/\\s+/g," ");
+        });
+
+        var name = "";
+        var price = "";
+        var table = row.closest("table");
+        var headerCells = table
+          ? Array.from(table.querySelectorAll("tr:first-child th, tr:first-child td"))
+          : [];
+        var priceIndex = headerCells.findIndex(function(cell){
+          return /قیمت|price/i.test(cell.textContent);
+        });
+
+        if(priceIndex >= 0 && cells[priceIndex]){
+          price = texts[priceIndex];
+          name = texts.find(function(t,i){
+            return i !== priceIndex && t &&
+              !/قیمت|تغییر|زمان|تاریخ|درصد|time|date/i.test(t);
+          }) || "";
+        }
+
+        if(!price){
+          var candidates = texts.filter(function(t){
+            return /[0-9۰-۹]/.test(t) &&
+              !/[:：]/.test(t) &&
+              !/درصد|ساعت|دقیقه|امروز|دیروز|time|date/i.test(t);
+          });
+          name = texts.find(function(t){
+            return t && !/[0-9۰-۹]/.test(t) &&
+              !/قیمت|تغییر|زمان|تاریخ|time|date/i.test(t);
+          }) || "";
+          price = candidates.length ? candidates[0] : "";
+        }
+
+        if(name && price && name !== price){
+          items.push({name:name,price:price});
+        }
+      });
+
+      if(!items.length){
+        track.innerHTML = '<span class="ae-loading">قیمت‌ها دریافت نشد؛ خروجی منبع قابل تشخیص نیست.</span>';
+        return;
+      }
+
+      var output = items.map(function(item){
+        return '<span class="ae-price-item">' +
+          '<span class="ae-price-name">' + escapeHTML(item.name) + '</span>' +
+          '<span class="ae-price-value">' + escapeHTML(item.price) + '</span>' +
+          '</span>';
+      }).join("");
+
+      track.innerHTML = output + output;
+    }catch(error){
+      track.innerHTML = '<span class="ae-loading">خطا در دریافت قیمت‌ها</span>';
+    }
+  };
+
+  var source = document.createElement("script");
+  source.src = "https://www.navasan.tech/wp-navasan.php?usd&eur&18ayar&sekkeh&bahar&nim&rob&abshodeh&xau&btc";
+  source.async = true;
+  source.onerror = function(){
+    track.innerHTML = '<span class="ae-loading">اتصال به منبع قیمت موقتاً برقرار نشد.</span>';
+  };
+  document.head.appendChild(source);
 })();
