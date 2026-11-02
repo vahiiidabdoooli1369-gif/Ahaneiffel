@@ -53,11 +53,11 @@ GLOBAL = [
 ]
 
 def clean(value):
-    return re.sub(r"\\s+", " ", str(value).translate(DIGITS)).replace("٬", ",").strip()
+    return re.sub(r"\s+", " ", str(value).translate(DIGITS)).replace("٬", ",").strip()
 
 def number(value):
     text = clean(value).replace(",", "").replace("٫", ".")
-    match = re.search(r"(?<![\\w])([0-9]+(?:\\.[0-9]+)?)", text)
+    match = re.search(r"(?<![\w])([0-9]+(?:\.[0-9]+)?)", text)
     return float(match.group(1)) if match else None
 
 def fetch_tables(url):
