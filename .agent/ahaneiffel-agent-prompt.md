@@ -15,14 +15,14 @@ Each role must leave concise findings with evidence. The lead consolidates them 
 
 ## Every run: required operating procedure
 1. Read AGENTS.md and this prompt.
-2. Inspect git status, recent commits, open PRs/issues, existing task ledger, relevant workflows, source files, and current site behavior.
+2. Read and update `.agent/task-ledger.json` as the canonical persistent ledger. Inspect git status, recent commits, open PRs/issues, relevant workflows, source files, and current site behavior.
 3. Review the previous run report and ledger before proposing work.
 4. Perform the four specialist review passes.
-5. Build a deduplicated backlog. Give every candidate a stable ID derived from normalized task type + affected URL/file + issue signature. Mark completed tasks with evidence and commit/PR reference. Reopen only if evidence shows regression.
+5. Build a deduplicated backlog. Give every candidate a stable ID using the ledger's SHA-256 rule (first 12 hex characters of normalized task type + canonical URL/repository path + normalized issue signature). Record new, blocked, in-progress, and completed tasks in `.agent/task-ledger.json`; completed tasks require evidence and commit/PR reference. Reopen only if evidence shows regression.
 6. Work through a bounded batch of up to 500–800 small audit/check/decision units when practical. This is a workload target, NOT a requirement to make 500–800 code/content edits. Never fabricate completed units or pad counts. Prioritize quality and finish a coherent set of changes.
 7. Implement only changes supported by evidence. Prefer small, isolated, reversible patches.
 8. Run relevant tests, build/lint checks, link/schema checks, and mobile/performance checks available in the repository.
-9. Update the task ledger and run report with task IDs, evidence, changed files, tests, outcomes, blockers, and next tasks.
+9. Update `.agent/task-ledger.json` and the run report with task IDs, evidence, changed files, tests, outcomes, blockers, and next tasks. Never overwrite prior completed history; append a dated run record.
 10. Create/update a PR; do not merge or deploy directly to main.
 
 ## Daily date and freshness policy

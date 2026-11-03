@@ -37,6 +37,17 @@ jobs:
               "checks": [],
               "findings": [],
               "next_task": None,
+              "audit_units_completed": 0,
+              "unit_breakdown": {
+                  "http_availability": 0,
+                  "title": 0,
+                  "h1": 0,
+                  "meta_description": 0,
+                  "canonical": 0,
+                  "robots": 0,
+                  "internal_links": 0,
+                  "jsonld_blocks": 0
+              }
           }
 
           def fetch(url, timeout=20):
@@ -51,6 +62,7 @@ jobs:
                   self.h1 = []
                   self.canonical = None
                   self.robots = None
+                  self.description = None
                   self.jsonlds = []
                   self.links = []
                   self.in_title = False
@@ -65,6 +77,7 @@ jobs:
                       self.in_h1 = True
                   if tag == "link" and a.get("rel") == "canonical": self.canonical = a.get("href")
                   if tag == "meta" and a.get("name","").lower() == "robots": self.robots = a.get("content")
+                  if tag == "meta" and a.get("name","").lower() == "description": self.description = a.get("content")
                   if tag == "script" and a.get("type") == "application/ld+json":
                       self.in_script = True; self.script_buf = []
                   if tag == "a" and a.get("href"): self.links.append(a["href"])
@@ -83,8 +96,17 @@ jobs:
               p = Parser(); p.feed(html)
               out["checks"].append({"name":"homepage","status":status,"final_url":final_url})
               if status != 200: out["findings"].append("Homepage is not returning HTTP 200.")
+              out["unit_breakdown"]["http_availability"] += 1
+              out["unit_breakdown"]["title"] += 1
+              out["unit_breakdown"]["h1"] += 1
+              out["unit_breakdown"]["meta_description"] += 1
+              out["unit_breakdown"]["canonical"] += 1
+              out["unit_breakdown"]["robots"] += 1
+              out["unit_breakdown"]["internal_links"] += 1
+              out["unit_breakdown"]["jsonld_blocks"] += len(p.jsonlds)
               if not p.title: out["findings"].append("Homepage has no title.")
               if len(p.h1) != 1: out["findings"].append(f"Homepage H1 count is {len(p.h1)}; expected exactly 1.")
+              if not p.description: out["findings"].append("Homepage has no meta description.")
               if not p.canonical: out["findings"].append("Homepage has no canonical link.")
               elif urljoin(site,p.canonical).rstrip("/") != site: out["findings"].append(f"Homepage canonical is {urljoin(site,p.canonical)}.")
               if p.robots and "noindex" in p.robots.lower(): out["findings"].append("Homepage contains a noindex directive.")
@@ -94,11 +116,13 @@ jobs:
                   except Exception: bad_json += 1
               if bad_json: out["findings"].append(f"Homepage contains {bad_json} invalid JSON-LD block(s).")
           except Exception as e:
+              out["unit_breakdown"]["http_availability"] += 1
               out["findings"].append("Homepage audit failed: " + str(e))
 
           for path in ["/robots.txt", "/sitemap.xml"]:
               try:
                   status, final_url, body = fetch(site + path)
+                  out["audit_units_completed"] += 1
                   out["checks"].append({"name":path,"status":status,"final_url":final_url})
                   if status != 200: out["findings"].append(f"{path} returned HTTP {status}.")
                   if path == "/robots.txt" and "sitemap:" not in body.lower():
@@ -123,6 +147,15 @@ jobs:
               try:
                   st, final, body = fetch(u, timeout=12)
                   q = Parser(); q.feed(body)
+                  out["unit_breakdown"]["http_availability"] += 1
+                  out["unit_breakdown"]["title"] += 1
+                  out["unit_breakdown"]["h1"] += 1
+                  out["unit_breakdown"]["meta_description"] += 1
+                  out["unit_breakdown"]["canonical"] += 1
+                  out["unit_breakdown"]["robots"] += 1
+                  out["unit_breakdown"]["internal_links"] += 1
+                  out["unit_breakdown"]["jsonld_blocks"] += len(q.jsonlds)
+                  if not q.description: weak.append(f"{u} has no meta description.")
                   title = " ".join(q.title.split())
                   h1_count = len(q.h1)
                   can = urljoin(u, q.canonical) if q.canonical else ""
@@ -140,7 +173,9 @@ jobs:
                   internal = [x for x in q.links if urljoin(u,x).startswith(site)]
                   if len(internal) < 2: weak.append(f"{u} has fewer than 2 detected internal links.")
               except Exception as e:
+                  out["unit_breakdown"]["http_availability"] += 1
                   weak.append(f"{u} could not be audited: {e}")
+          out["audit_units_completed"] = sum(out["unit_breakdown"].values()) + out["audit_units_completed"]
           for key, pages in title_map.items():
               if len(pages) > 1: out["findings"].append("Duplicate title detected on: " + ", ".join(pages[:5]))
           for key, pages in canonical_map.items():
@@ -174,7 +209,11 @@ jobs:
           with open(".agent/audit/report.md","w",encoding="utf-8") as f:
               f.write("# Ahaneiffel Free SEO Agent Audit\n\n")
               f.write(f"Site: {site}\n\n")
-              f.write("## Findings\n")
+              f.write(f"\nAudit/check units completed: {out['audit_units_completed']}\n")
+              f.write("## Unit breakdown\n")
+              for name, count in out["unit_breakdown"].items():
+                  f.write(f"- {name}: {count}\n")
+              f.write("\n## Findings\n")
               if out["findings"]:
                   for x in out["findings"]: f.write(f"- {x}\n")
               else:
