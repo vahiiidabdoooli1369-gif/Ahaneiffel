@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "site_scope": "https://ahaneiffel.top",
+  "task_id_rule": "first 12 hex characters of SHA-256 over normalized_task_type|canonical_url_or_repo_path|normalized_issue_signature",
+  "statuses": ["new", "in_progress", "blocked", "completed"],
+  "tasks": [],
+  "runs": [],
+  "guardrails": {
+    "never_duplicate_completed_task_without_regression_evidence": true,
+    "never_claim_unperformed_audit_units": true,
+    "never_modify_prices_without_same_day_verification": true,
+    "never_advance_content_review_dates_without_substantive_review": true,
+    "never_deploy_directly_from_agent": true
+  }
+}
