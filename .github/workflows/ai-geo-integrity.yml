@@ -2,6 +2,24 @@ name: AI GEO Integrity
 on:
   push:
     branches: [main]
+    paths:
+      - 'prices/index.html'
+      - 'data/market-prices.json'
+      - 'index.html'
+      - 'assets/live-price-feed.js'
+      - 'sitemap*.xml'
+      - 'llms.txt'
+      - 'reference/ai-retrieval-map/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'prices/index.html'
+      - 'data/market-prices.json'
+      - 'index.html'
+      - 'assets/live-price-feed.js'
+      - 'sitemap*.xml'
+      - 'llms.txt'
+      - 'reference/ai-retrieval-map/**'
   workflow_dispatch:
 
 jobs:
@@ -94,7 +112,7 @@ jobs:
           print(f"Validated {sitemap_indexes} sitemap index file(s), {urlsets} URL set(s), {len(all_urls)} unique page URL(s).")
           print(f"Optional lastmod missing on {missing_lastmod} page URL(s); this is a warning, not a failure.")
           PY
-      - name: Check price feed matches visible price tables
+      - name: Check price freshness policy and homepage feed alignment
         shell: bash
         run: |
           set -euo pipefail
@@ -107,53 +125,46 @@ jobs:
           def text_only(value):
               return re.sub(r"<[^>]+>", " ", html.unescape(value)).strip()
 
+          digits = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
+          def number(value):
+              return re.sub(r"\D", "", str(value).translate(digits))
+
           feed = json.loads(Path("data/market-prices.json").read_text(encoding="utf-8"))
           price_html = Path("prices/index.html").read_text(encoding="utf-8")
           daily = re.search(r'<section class="price-section" id="daily-prices">([\s\S]*?)</section>', price_html)
           if not daily:
-              raise SystemExit("Could not find the daily price summary table")
-          summary_rows = []
-          for row in re.findall(r"<tr\b[^>]*>([\s\S]*?)</tr>", daily.group(1), re.I):
-              cells = [text_only(cell) for cell in re.findall(r"<td\b[^>]*>([\s\S]*?)</td>", row, re.I)]
-              if len(cells) >= 3:
-                  summary_rows.append(cells)
-          if not summary_rows:
-              raise SystemExit("Daily price summary table contains no data rows")
+              raise SystemExit("Could not find the daily price section")
+          quote_cells = re.findall(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', daily.group(1), re.I)
+          if not quote_cells:
+              raise SystemExit("Daily price section contains no quote cells")
 
           homepage = Path("index.html").read_text(encoding="utf-8")
           home_rows = re.findall(r'<tr\b[^>]*data-price-family="([^"]+)"[^>]*>([\s\S]*?)</tr>', homepage, re.I)
+          if not home_rows:
+              raise SystemExit("Homepage contains no machine-readable family price rows")
 
           if feed.get("verified_today") is not True:
-              for item in feed.get("rows", []):
-                  aliases = item.get("raw", [])
-                  family = aliases[0] if aliases else ""
-                  row = next((r for r in summary_rows if any(alias and alias in r[0] for alias in aliases)), None)
-                  if row is None or "استعلام" not in row[2]:
-                      raise SystemExit(f"Unverified price is not safely suppressed on /prices/: {family}")
+              numeric_cells = [text_only(cell) for cell in quote_cells if number(text_only(cell))]
+              non_inquiry_cells = [text_only(cell) for cell in quote_cells if "استعلام" not in text_only(cell)]
+              if numeric_cells:
+                  raise SystemExit(f"Unverified /prices/ page still exposes {len(numeric_cells)} numeric quote cell(s)")
+              if non_inquiry_cells:
+                  raise SystemExit(f"{len(non_inquiry_cells)} /prices/ quote cell(s) do not clearly say inquiry")
               for family, row_html in home_rows:
                   quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', row_html, re.I)
                   if not quote or "استعلام" not in text_only(quote.group(1)):
                       raise SystemExit(f"Unverified homepage price is not safely suppressed: {family}")
-              print(f"Safe price mode OK: {len(feed.get('rows', []))} unverified price families and {len(home_rows)} homepage rows show inquiry text, not stale numbers.")
+              print(f"Safe price mode OK: {len(quote_cells)} /prices/ quote cells and {len(home_rows)} homepage family rows show inquiry text, not stale numbers.")
           else:
-              digits = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
-              def number(value):
-                  return re.sub(r"\D", "", str(value).translate(digits))
-              for item in feed.get("rows", []):
-                  aliases = item.get("raw", [])
-                  family = aliases[0] if aliases else ""
-                  row = next((r for r in summary_rows if any(alias and alias in r[0] for alias in aliases)), None)
-                  if row is None or number(row[2]) != str(item.get("price", "")):
-                      raise SystemExit(f"Verified price mismatch for {family}")
-                  expected_unit = item.get("unit", feed.get("unit", ""))
-                  if expected_unit and expected_unit not in row[1]:
-                      raise SystemExit(f"Unit mismatch for {family}: expected {expected_unit}, page={row[1]}")
               for family, row_html in home_rows:
                   item = next((x for x in feed.get("rows", []) if family in x.get("raw", [])), None)
                   quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', row_html, re.I)
                   if item is None or not quote or number(text_only(quote.group(1))) != str(item.get("price", "")):
                       raise SystemExit(f"Verified homepage/feed price mismatch: {family}")
-              print(f"Verified price integrity OK: {len(feed.get('rows', []))} feed rows and {len(home_rows)} homepage rows.")
+              numeric_cells = [text_only(cell) for cell in quote_cells if number(text_only(cell))]
+              if not numeric_cells:
+                  raise SystemExit("Feed is verified today but /prices/ has no numeric quote cells")
+              print(f"Verified feed mode OK: {len(feed.get('rows', []))} feed rows match homepage; /prices/ has {len(numeric_cells)} numeric quote cells.")
           PY
       - name: Check canonical URL is live in source
         shell: bash

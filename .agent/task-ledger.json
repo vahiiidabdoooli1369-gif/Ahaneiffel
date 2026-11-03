@@ -12,7 +12,7 @@
     {
       "id": "5e07d017c64c",
       "task": "Resolve unverified numeric price display consistency between homepage and /prices/",
-      "status": "blocked",
+      "status": "in_progress",
       "priority": "critical",
       "evidence": [
         "GitHub Actions run 41723745370 failed at Check price feed matches visible price tables",
@@ -20,7 +20,8 @@
         "The /prices/ daily section still contains numeric price values dated ۱۴۰۵/۰۸/۱۰"
       ],
       "blocked_reason": "No same-day verified price source is available in the repository. Do not mark the feed verified or invent prices. Safest remediation is to suppress unverified numeric values or obtain a genuine same-day verification.",
-      "next_action": "Reconcile all price tables with the existing unverified-price policy; keep historical date labels truthful and never claim today's verification."
+      "next_action": "Validate that every price row on /prices/ is inquiry-only while verified_today=false; merge only if price and SEO integrity checks pass.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/111"
     }
   ],
   "runs": [],
