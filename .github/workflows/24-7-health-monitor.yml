@@ -1,0 +1,116 @@
+name: Ahaneiffel 24x7 Health Monitor
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ahaneiffel-24x7-health-monitor
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare report
+        run: mkdir -p agent-reports
+
+      - name: Run HTML and technical SEO audit
+        id: html_audit
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/static_html_integrity_audit.py 2>&1 | tee agent-reports/html-integrity.txt
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build page readiness priority report
+        id: page_readiness
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/page_readiness_report.py 2>&1 | tee agent-reports/page-readiness-run.txt
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Validate sitemaps and price feed JSON
+        id: data_audit
+        shell: bash
+        run: |
+          set +e
+          python3 - <<'PY' 2>&1 | tee agent-reports/data-integrity.txt
+          import json
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          for path in sorted(Path(".").glob("sitemap*.xml")):
+              ET.parse(path)
+              print(f"PASS XML: {path}")
+
+          feed = json.loads(Path("data/market-prices.json").read_text(encoding="utf-8"))
+          if not isinstance(feed.get("rows"), list):
+              raise SystemExit("FAIL: market price rows must be a list")
+          if feed.get("verified_today") is True:
+              print("INFO: price feed is marked verified_today; human review of source evidence is still required.")
+          else:
+              print("PASS: unverified prices remain clearly marked and must not be treated as today's confirmed prices.")
+          print(f"PASS JSON: {len(feed['rows'])} price families parsed")
+          PY
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build status summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "# Ahaneiffel automated health report"
+            echo
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Run: $GITHUB_RUN_ID"
+            echo "- HTML audit exit code: ${{ steps.html_audit.outputs.exit_code || 'not completed' }}"
+            echo "- Page readiness report exit code: ${{ steps.page_readiness.outputs.exit_code || 'not completed' }}"
+            echo "- Data audit exit code: ${{ steps.data_audit.outputs.exit_code || 'not completed' }}"
+            echo
+            echo "## Page readiness report"
+            cat agent-reports/page-readiness.md 2>/dev/null || true
+            echo
+            echo "## HTML / SEO audit"
+            cat agent-reports/html-integrity.txt 2>/dev/null || true
+            echo
+            echo "## Sitemap / feed validation"
+            cat agent-reports/data-integrity.txt 2>/dev/null || true
+          } > agent-reports/summary.md
+          cat agent-reports/summary.md
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ahaneiffel-health-report-${{ github.run_id }}
+          path: agent-reports/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Fail run when an audit detects blocking issues
+        if: always()
+        shell: bash
+        run: |
+          html="${{ steps.html_audit.outputs.exit_code }}"
+          data="${{ steps.data_audit.outputs.exit_code }}"
+          readiness="${{ steps.page_readiness.outputs.exit_code }}"
+          if [[ "$html" != "0" || "$data" != "0" || "$readiness" != "0" ]]; then
+            echo "One or more audits failed. Download the report artifact for details."
+            exit 1
+          fi
