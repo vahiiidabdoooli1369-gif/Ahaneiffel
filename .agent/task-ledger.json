@@ -37,10 +37,11 @@
       "evidence": [
         "Date-sync run 41725125251 changed prices/index.html and sitemap-core.xml back to 2026-10-31 after a real page update",
         "scripts/update-page-dates.py contained hard-coded SITE_DATE and ignored its existing last_substantive_change helper",
-        "UTC commit date must be converted to Asia/Tehran before Jalali date calculation"
+        "UTC commit date must be converted to Asia/Tehran before Jalali date calculation",
+        "The first repair exposed a second bug: git log --grep=[date-sync] treated square brackets as a regex character class and incorrectly skipped genuine commits; latest run 41725923422 wrote 2026-09-22 to prices/index.html and sitemap-core.xml."
       ],
-      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/112",
-      "next_action": "Pass date-sync PR checks, merge, then verify the next date-sync run uses each page's own content history."
+      "pull_request": "pending",
+      "next_action": "Apply --fixed-strings to git log exclusions, rerun the date sync, and verify the price page resolves to 2026-11-04 in Tehran time."
     }
   ],
   "runs": [],
