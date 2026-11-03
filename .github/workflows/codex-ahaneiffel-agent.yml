@@ -1,9 +1,9 @@
 name: Ahaneiffel Autonomous SEO Agent
 
 on:
-  # Scheduled execution is disabled because codex-action uses OpenAI API billing.
-  # Manual dispatch remains available when API quota is configured.
   workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
 
 permissions:
   contents: write
@@ -34,8 +34,21 @@ jobs:
           git checkout -b "$BRANCH"
           echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
 
-      - name: Run Codex
+      - name: Check AI agent credentials
+        id: credentials
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -n "$OPENAI_API_KEY" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::OPENAI_API_KEY is not configured. The scheduled audit workflow can still run, but autonomous Codex implementation is skipped."
+          fi
+
+      - name: Run four-role Codex team
         id: codex
+        if: steps.credentials.outputs.configured == 'true'
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
@@ -47,6 +60,7 @@ jobs:
 
       - name: Check for changes
         id: changes
+        if: steps.credentials.outputs.configured == 'true'
         run: |
           if git status --porcelain --untracked-files=all | grep -v '^?? \.agent/codex-last-run\.txt$' | grep -q .; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -55,26 +69,30 @@ jobs:
           fi
 
       - name: Commit changes
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.credentials.outputs.configured == 'true' && steps.changes.outputs.changed == 'true'
         run: |
           git add -A ':!.agent/codex-last-run.txt'
-          git commit -m "chore(agent): autonomous SEO maintenance"
+          git commit -m "chore(agent): autonomous four-role SEO maintenance"
 
       - name: Push branch
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.credentials.outputs.configured == 'true' && steps.changes.outputs.changed == 'true'
         run: git push origin "${{ steps.branch.outputs.name }}"
 
       - name: Open pull request
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.credentials.outputs.configured == 'true' && steps.changes.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh pr create \
             --base main \
             --head "${{ steps.branch.outputs.name }}" \
-            --title "chore(agent): autonomous SEO maintenance" \
+            --title "chore(agent): autonomous four-role SEO maintenance" \
             --body-file .agent/codex-last-run.txt
 
       - name: No-op report
-        if: steps.changes.outputs.changed == 'false'
-        run: echo "Codex found no safe change worth committing."
+        if: steps.credentials.outputs.configured == 'true' && steps.changes.outputs.changed == 'false'
+        run: echo "The agent found no safe change worth committing."
+
+      - name: AI agent unavailable
+        if: steps.credentials.outputs.configured == 'false'
+        run: echo "Autonomous code changes were skipped because OPENAI_API_KEY is not configured. The separate free audit workflow remains scheduled every six hours."
