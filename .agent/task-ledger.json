@@ -12,7 +12,7 @@
     {
       "id": "5e07d017c64c",
       "task": "Resolve unverified numeric price display consistency between homepage and /prices/",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "critical",
       "evidence": [
         "GitHub Actions run 41723745370 failed at Check price feed matches visible price tables",
@@ -20,8 +20,27 @@
         "The /prices/ daily section still contains numeric price values dated ۱۴۰۵/۰۸/۱۰"
       ],
       "blocked_reason": "No same-day verified price source is available in the repository. Do not mark the feed verified or invent prices. Safest remediation is to suppress unverified numeric values or obtain a genuine same-day verification.",
-      "next_action": "Validate that every price row on /prices/ is inquiry-only while verified_today=false; merge only if price and SEO integrity checks pass.",
-      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/111"
+      "next_action": "Wait for same-day verified price source before restoring numeric prices.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/111",
+      "completed_evidence": [
+        "PR #111 merged as commit 900901d936ba8953e09607b6df1703757cc2204f",
+        "AI GEO Integrity push run 41725124753 completed successfully",
+        "Verified main has 147 quote cells, 0 numeric quote cells, and all 147 show inquiry text"
+      ],
+      "completed_at_tehran": "۱۴۰۵/۰۸/۱۳"
+    },
+    {
+      "id": "203733ecf921",
+      "task": "Fix date-sync automation so it never overwrites factual page modification dates with a fixed site-wide date",
+      "status": "in_progress",
+      "priority": "high",
+      "evidence": [
+        "Date-sync run 41725125251 changed prices/index.html and sitemap-core.xml back to 2026-10-31 after a real page update",
+        "scripts/update-page-dates.py contained hard-coded SITE_DATE and ignored its existing last_substantive_change helper",
+        "UTC commit date must be converted to Asia/Tehran before Jalali date calculation"
+      ],
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/112",
+      "next_action": "Pass date-sync PR checks, merge, then verify the next date-sync run uses each page's own content history."
     }
   ],
   "runs": [],
