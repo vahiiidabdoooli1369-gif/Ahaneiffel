@@ -33,7 +33,8 @@ jobs:
           import json, os, re, subprocess, urllib.request
           from html.parser import HTMLParser
           from urllib.parse import urljoin, urlparse
-          from scripts.sitemap_crawl import collect_sitemap_page_urls
+          sys.path.insert(0, os.path.join(os.getcwd(), "scripts"))
+          from sitemap_crawl import collect_sitemap_page_urls
 
           site = os.environ["SITE_URL"].rstrip("/")
           out = {
