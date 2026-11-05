@@ -42,9 +42,33 @@
       ],
       "pull_request": "pending",
       "next_action": "Apply --fixed-strings to git log exclusions, rerun the date sync, and verify the price page resolves to 2026-11-04 in Tehran time."
+    },
+    {
+      "id": "48ad7afaed1d",
+      "task": "Fix six-hour free SEO audit to recursively crawl actual page URLs from sitemap index instead of treating child sitemap XML files as HTML pages",
+      "status": "in_progress",
+      "priority": "high",
+      "evidence": [
+        "Scheduled free audit run 41982195885 completed only 101 units and reported 13 URLs checked.",
+        "Artifact ahaneiffel-free-seo-audit showed sitemap-core.xml, sitemap-products.xml and other child sitemap XML documents were incorrectly evaluated for title, H1, description, canonical and internal links.",
+        "The live sitemap.xml is a sitemapindex that points to child sitemap files; the previous crawler did not resolve those child files."
+      ],
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/115",
+      "next_action": "After PR #115 is merged, verify the next scheduled run crawls up to 80 actual HTML page URLs and records at least 500 genuine audit units when 80 pages are reachable."
     }
   ],
-  "runs": [],
+  "runs": [
+    {
+      "run_id": "41982195885",
+      "date_tehran": "۱۴۰۵/۰۸/۱۴",
+      "workflow": "Ahaneiffel Free SEO Agent - Audit Queue",
+      "audit_units_completed": 101,
+      "sitemap_page_urls_checked": 13,
+      "result": "success_with_false_positive_findings",
+      "root_cause_task": "48ad7afaed1d",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/115"
+    }
+  ],
   "guardrails": {
     "never_duplicate_completed_task_without_regression_evidence": true,
     "never_claim_unperformed_audit_units": true,
