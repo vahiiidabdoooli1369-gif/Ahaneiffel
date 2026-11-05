@@ -1,5 +1,5 @@
 """Offline regression tests for sitemap-index traversal."""
-from scripts.sitemap_crawl import collect_sitemap_page_urls
+from sitemap_crawl import collect_sitemap_page_urls
 
 
 DOCS = {
