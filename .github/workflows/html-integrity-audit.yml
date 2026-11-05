@@ -13,5 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Test sitemap index crawler
+        run: python3 scripts/test_sitemap_crawl.py
       - name: Run HTML integrity audit
         run: python3 scripts/static_html_integrity_audit.py
