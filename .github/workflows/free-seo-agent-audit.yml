@@ -44,7 +44,7 @@ jobs:
               "audit_units_completed": 0,
               "unit_breakdown": {
                   "http_availability": 0,
-              "sitemap_xml": 0,
+                  "sitemap_xml": 0,
                   "title": 0,
                   "h1": 0,
                   "meta_description": 0,
