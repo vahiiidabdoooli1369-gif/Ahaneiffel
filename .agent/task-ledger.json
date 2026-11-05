@@ -67,6 +67,18 @@
       "result": "success_with_false_positive_findings",
       "root_cause_task": "48ad7afaed1d",
       "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/115"
+    },
+    {
+      "run_id": "41982208009",
+      "date_tehran": "۱۴۰۵/۰۸/۱۴",
+      "workflow": "Ahaneiffel Free SEO Integrity",
+      "audit_units_completed": 13925,
+      "html_documents_checked": 557,
+      "rules_per_document": 25,
+      "warnings_reported": 158,
+      "blocking_errors": 0,
+      "result": "success",
+      "note": "Static HTML/SEO integrity audit passed. Warnings require triage; noindex and meta-refresh warnings may be intentional on redirect or utility pages and must not be mass-edited."
     }
   ],
   "guardrails": {
