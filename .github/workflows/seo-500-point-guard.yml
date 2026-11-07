@@ -2,6 +2,8 @@ name: SEO 500 Point Guard
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Test internal-link URL normalization
+        run: python3 .github/scripts/seo_500_point_guard.py --self-test
       - name: Run 500+ point audit
         run: python3 .github/scripts/seo_500_point_guard.py
       - name: Upload SEO audit

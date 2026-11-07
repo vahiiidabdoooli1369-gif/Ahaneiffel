@@ -27,6 +27,18 @@ jobs:
       - name: Test SEO metadata audit regression cases
         run: python3 scripts/test_metadata_audit.py
 
+      - name: Test 500-point internal-link URL normalization
+        run: python3 .github/scripts/seo_500_point_guard.py --self-test
+
+      - name: Generate 500-point SEO audit report
+        run: python3 .github/scripts/seo_500_point_guard.py
+
+      - name: Upload 500-point SEO audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-500-point-pr-report
+          path: seo-500-point-report.md
+
       - name: Audit internal links, canonicals and orphan pages
         run: python3 scripts/audit_internal_links.py
         # Audit the exact commit that triggered this workflow; do not race a later push to main.

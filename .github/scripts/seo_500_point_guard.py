@@ -18,7 +18,7 @@ CHECK_NAMES = [
     "description_length_80_180", "single_canonical",
     "canonical_on_expected_host", "canonical_trailing_slash", "exactly_one_h1",
     "at_least_3_internal_links", "at_least_3_unique_internal_links",
-    "links_unique_ratio_75pct", "all_images_have_alt", "jsonld_valid",
+    "all_images_have_alt", "jsonld_valid",
     "homepage_breadcrumb_schema", "max_one_webpage_schema",
     "no_productgroup_schema", "not_noindex"
 ]
@@ -98,6 +98,43 @@ def redirect_info(path, html, parser):
                  and target_path == canonical_path)
     return {"target": target, "resolved_target": target_url, "canonical": canonical_url, "valid": valid}
 
+def normalized_internal_links(parser, page_url):
+    """Resolve relative hrefs and count only distinct same-site page destinations."""
+    internal = []
+    allowed_hosts = {"ahaneiffel.top", "www.ahaneiffel.top"}
+    for href in parser.links:
+        href = href.strip()
+        if not href or href.startswith("#"):
+            continue
+        resolved = urljoin(page_url, href)
+        parsed = urlparse(resolved)
+        if parsed.scheme not in {"http", "https"} or (parsed.hostname or "").lower() not in allowed_hosts:
+            continue
+        # Query strings and fragments do not create a different content page.
+        path = re.sub(r"/{2,}", "/", parsed.path or "/").rstrip("/") or "/"
+        internal.append(path)
+    return internal
+
+
+def self_test():
+    parser = parse_page(
+        '<a href="angle/">نبشی</a>'
+        '<a href="../prices/">قیمت</a>'
+        '<a href="/products/angle/">نبشی</a>'
+        '<a href="https://ahaneiffel.top/prices/?utm_source=test#table">قیمت</a>'
+        '<a href="https://example.com/">خارجی</a>'
+        '<a href="#faq">سوالات</a>'
+        '<a href="tel:+989125143831">تماس</a>'
+    )
+    actual = normalized_internal_links(parser, "https://ahaneiffel.top/products/")
+    expected = ["/products/angle", "/prices", "/products/angle", "/prices"]
+    if actual != expected:
+        raise AssertionError(f"Relative/internal link normalization failed: {actual!r}")
+    if len(set(actual)) != 2:
+        raise AssertionError(f"Expected two unique internal destinations, got {len(set(actual))}")
+    print("Relative, root-relative, absolute, external, fragment and tel-link tests passed (7 cases).")
+
+
 def checks(path, html, p):
     canon = canonical_urls(p)
     desc = [
@@ -125,7 +162,12 @@ def checks(path, html, p):
                 invalid += 1
         except Exception:
             invalid += 1
-    internal = [x for x in p.links if x.startswith("/") or x.startswith(BASE)]
+    if canon:
+        page_url = canon[0]
+    else:
+        parent = path.parent.as_posix().strip("./")
+        page_url = BASE + ("/" + parent + "/" if parent else "/")
+    internal = normalized_internal_links(p, page_url)
     unique_internal = len(set(internal))
     is_homepage = path == ROOT / "index.html"
     tests = [
@@ -144,7 +186,6 @@ def checks(path, html, p):
         urlparse(canon[0]).netloc == urlparse(BASE).netloc if canon else False,
         urlparse(canon[0]).path.endswith("/") if canon else False,
         p.h1 == 1, len(internal) >= 3, unique_internal >= 3,
-        len(set(p.links)) >= len(p.links) * 0.75 if p.links else False,
         all(img.get("alt") is not None for img in p.images),
         invalid == 0,
         ("BreadcrumbList" in schemas) if is_homepage else True,
@@ -157,6 +198,10 @@ def checks(path, html, p):
         "schemas": schemas, "invalid_jsonld": invalid, "canon": canon[:1],
         "h1": p.h1, "unique_internal": unique_internal, "failed_checks": failed
     }
+
+if "--self-test" in sys.argv:
+    self_test()
+    sys.exit(0)
 
 total = 0
 passed = 0
@@ -183,6 +228,9 @@ report = ROOT / "seo-500-point-report.md"
 with report.open("w", encoding="utf-8") as f:
     f.write("# Ahaneiffel 500+ Point SEO Guard\n\n")
     f.write(f"- HTML files discovered: **{len(pages)}**\n- Redirect stubs separately audited: **{len(redirect_rows)}**\n- Content pages audited: **{len(rows)}**\n- Checks executed on content pages: **{total}**\n- Passed: **{passed}**\n- Failed: **{total-passed}**\n- Critical content pages: **{len(critical)}**\n\n")
+    f.write("## Methodology notes\n\n")
+    f.write("- Relative, root-relative and absolute same-site links are resolved against each page canonical URL. External, fragment-only and telephone links are excluded from internal page-link counts.\n")
+    f.write("- Repeated links in common navigation and footer areas are not treated as a ranking defect; no arbitrary unique-link percentage threshold is applied.\n\n")
     f.write("## Failed checks by category (content pages only)\n\n|Check|Failures|\n|---|---:|\n")
     for name, count in failure_counts.most_common():
         f.write(f"|{name}|{count}|\n")
