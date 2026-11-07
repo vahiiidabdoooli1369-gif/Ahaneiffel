@@ -32,7 +32,7 @@
     {
       "id": "203733ecf921",
       "task": "Fix date-sync automation so it never overwrites factual page modification dates with a fixed site-wide date",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "high",
       "evidence": [
         "Date-sync run 41725125251 changed prices/index.html and sitemap-core.xml back to 2026-10-31 after a real page update",
@@ -41,7 +41,13 @@
         "The first repair exposed a second bug: git log --grep=[date-sync] treated square brackets as a regex character class and incorrectly skipped genuine commits; latest run 41725923422 wrote 2026-09-22 to prices/index.html and sitemap-core.xml."
       ],
       "pull_request": "pending",
-      "next_action": "Apply --fixed-strings to git log exclusions, rerun the date sync, and verify the price page resolves to 2026-11-04 in Tehran time."
+      "next_action": "Monitor future date-sync runs for regressions; update dates only after a substantive page change.",
+      "completed_evidence": [
+        "scripts/update-page-dates.py includes --fixed-strings for both automation commit exclusions, preventing [date-sync] from being treated as a regular expression.",
+        "Scheduled run 42367382861 completed successfully on 2026-11-07; the 10-case Jalali/timezone/URL self-test passed.",
+        "The same run reported zero files requiring metadata changes, so no page dates or sitemap lastmods were rewritten."
+      ],
+      "completed_at_tehran": "۱۴۰۵/۰۸/۱۶"
     },
     {
       "id": "013a2a831fed",
@@ -53,10 +59,26 @@
         "Job log reports: Could not restrict access to /run/dbus/system_bus_socket while using safety-strategy drop-sudo",
         "The OpenAI codex-action documentation provides unprivileged-user mode and a GitHub-hosted runner setup pattern using a dedicated account and shared workspace group",
         "Remediation submitted for review in PR #118; no direct merge or production deployment performed.",
-        "PR #118 checks completed successfully on the updated branch: HTML Integrity Audit, Ahaneiffel Free SEO Integrity, Internal SEO Link Audit, and SEO Structured Data Integrity (run IDs 42379441610, 42379441588, 42379441587, 42379441572)."
+        "PR #118 checks completed successfully on the updated branch: HTML Integrity Audit, Ahaneiffel Free SEO Integrity, Internal SEO Link Audit, and SEO Structured Data Integrity (run IDs 42379441610, 42379441588, 42379441587, 42379441572).",
+        "PR #118 merged into main as af45fb752350fe907b9ac965811c4ce608a672b7 on 2026-11-07; PR integrity checks passed. End-to-end scheduled Codex execution still awaits its next six-hour run."
       ],
-      "next_action": "After PR #118 is reviewed and merged, verify the next scheduled/manual Codex run reaches the prompt, creates a change report, and opens a PR. Do not mark complete before that end-to-end run succeeds.",
+      "next_action": "Verify the next scheduled run reaches the four-role prompt, writes a truthful run report, and opens a PR only for safe changes; keep in progress until that end-to-end run succeeds.",
       "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/118"
+    },
+    {
+      "id": "524dc43bde4f",
+      "task": "Correct the 500-point SEO audit so relative same-site links are counted as internal destinations",
+      "status": "in_progress",
+      "priority": "high",
+      "evidence": [
+        "SEO 500 Point Guard run 42379536528 audited 534 content pages and reported 283 pages below three internal links and 280 below three unique internal links.",
+        "Inspection of .github/scripts/seo_500_point_guard.py showed that it only counted href values starting with / or the absolute BASE URL, incorrectly excluding normal relative links such as products/angle/ and ../prices/.",
+        "The audit's relative-link normalization is being repaired with explicit unit tests for relative, root-relative, absolute same-site, external, fragment-only and telephone links.",
+        "PR run 42379865473 passed all five PR workflows: HTML Integrity Audit, SEO Structured Data Integrity, Internal SEO Link Audit, SEO 500 Point Guard and Ahaneiffel Free SEO Integrity.",
+        "Corrected audit report: 13,789/13,884 checks passed, 95 failures, zero critical pages. The previous report's 884 failures fell to 95 after resolving relative links and removing the arbitrary repeated-link ratio."
+      ],
+      "next_action": "After PR review/merge, triage the 39 short meta descriptions, 22 short titles, 15 noindex pages (distinguish intentional aliases/search from accidental noindex), 5 duplicate WebPage schemas, 4 low-link content pages, 3 malformed HTML endings and 2 ProductGroup warnings. Do not mass-edit or index intentional utility/alias pages.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/119"
     }
   ],
   "runs": [
@@ -76,6 +98,23 @@
       "fabricated_work_units": 0,
       "blockers": [
         "The updated Codex action has not run end-to-end yet; its next scheduled/manual run must be verified after merge."
+      ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۱۶",
+      "result": "PR checks passed; corrected 500-point audit reports 95 non-critical findings and zero critical pages",
+      "checks": [
+        "Inspected 500-point SEO report artifact from run 42379536528",
+        "Identified relative-href classification bug in audit implementation",
+        "Prepared normalization patch and regression tests in branch fix/seo-audit-relative-internal-links-2026-11-07",
+        "Self-test passed for relative/root-relative/absolute same-site, external, fragment and tel links",
+        "Corrected 500-point audit: 13,789 passed / 13,884 total; 95 findings; 0 critical pages",
+        "All five PR checks passed on commit 619e20e82741ffc7c21eec72393a5796cc983c1d"
+      ],
+      "completed_units": 5,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "PR #119 is awaiting review/merge; remaining audit findings require page-by-page triage, not blanket edits."
       ]
     }
   ],
