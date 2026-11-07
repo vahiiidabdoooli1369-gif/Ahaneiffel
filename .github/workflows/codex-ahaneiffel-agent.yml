@@ -35,7 +35,6 @@ jobs:
           echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
 
       - name: Prepare dedicated unprivileged Codex user
-        if: always()
         shell: bash
         run: |
           set -euo pipefail
