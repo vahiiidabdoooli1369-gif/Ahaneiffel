@@ -42,9 +42,37 @@
       ],
       "pull_request": "pending",
       "next_action": "Apply --fixed-strings to git log exclusions, rerun the date sync, and verify the price page resolves to 2026-11-04 in Tehran time."
+    },
+    {
+      "id": "013a2a831fed",
+      "task": "Restore six-hour Codex agent runs by using a dedicated unprivileged runner account",
+      "status": "in_progress",
+      "priority": "critical",
+      "evidence": [
+        "Scheduled GitHub Actions run 42375326227 failed at Run four-role Codex team on 2026-11-07T13:05:08Z",
+        "Job log reports: Could not restrict access to /run/dbus/system_bus_socket while using safety-strategy drop-sudo",
+        "The OpenAI codex-action documentation provides unprivileged-user mode and a GitHub-hosted runner setup pattern using a dedicated account and shared workspace group"
+      ],
+      "next_action": "Run the updated workflow on GitHub Actions; inspect Codex step and PR creation, then close only after a successful run.",
+      "pull_request": "pending"
     }
   ],
-  "runs": [],
+  "runs": [
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۱۶",
+      "result": "diagnostic-and-repair-started",
+      "checks": [
+        "Inspected latest scheduled autonomous-agent run and fetched its job logs",
+        "Confirmed Codex action failed before executing the SEO prompt",
+        "Prepared isolated branch with a dedicated unprivileged Codex user configuration"
+      ],
+      "completed_units": 3,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "Updated workflow has not yet been executed; successful Codex run remains unverified."
+      ]
+    }
+  ],
   "guardrails": {
     "never_duplicate_completed_task_without_regression_evidence": true,
     "never_claim_unperformed_audit_units": true,
