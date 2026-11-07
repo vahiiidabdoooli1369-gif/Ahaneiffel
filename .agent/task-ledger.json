@@ -51,10 +51,11 @@
       "evidence": [
         "Scheduled GitHub Actions run 42375326227 failed at Run four-role Codex team on 2026-11-07T13:05:08Z",
         "Job log reports: Could not restrict access to /run/dbus/system_bus_socket while using safety-strategy drop-sudo",
-        "The OpenAI codex-action documentation provides unprivileged-user mode and a GitHub-hosted runner setup pattern using a dedicated account and shared workspace group"
+        "The OpenAI codex-action documentation provides unprivileged-user mode and a GitHub-hosted runner setup pattern using a dedicated account and shared workspace group",
+        "Remediation submitted for review in PR #118; no direct merge or production deployment performed."
       ],
       "next_action": "Run the updated workflow on GitHub Actions; inspect Codex step and PR creation, then close only after a successful run.",
-      "pull_request": "pending"
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/118"
     }
   ],
   "runs": [
