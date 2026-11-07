@@ -98,6 +98,43 @@ def redirect_info(path, html, parser):
                  and target_path == canonical_path)
     return {"target": target, "resolved_target": target_url, "canonical": canonical_url, "valid": valid}
 
+def normalized_internal_links(parser, page_url):
+    """Resolve relative hrefs and count only distinct same-site page destinations."""
+    internal = []
+    allowed_hosts = {"ahaneiffel.top", "www.ahaneiffel.top"}
+    for href in parser.links:
+        href = href.strip()
+        if not href or href.startswith("#"):
+            continue
+        resolved = urljoin(page_url, href)
+        parsed = urlparse(resolved)
+        if parsed.scheme not in {"http", "https"} or (parsed.hostname or "").lower() not in allowed_hosts:
+            continue
+        # Query strings and fragments do not create a different content page.
+        path = re.sub(r"/{2,}", "/", parsed.path or "/").rstrip("/") or "/"
+        internal.append(path)
+    return internal
+
+
+def self_test():
+    parser = parse_page(
+        '<a href="products/angle/">نبشی</a>'
+        '<a href="../prices/">قیمت</a>'
+        '<a href="/products/angle/">نبشی</a>'
+        '<a href="https://ahaneiffel.top/prices/?utm_source=test#table">قیمت</a>'
+        '<a href="https://example.com/">خارجی</a>'
+        '<a href="#faq">سوالات</a>'
+        '<a href="tel:+989125143831">تماس</a>'
+    )
+    actual = normalized_internal_links(parser, "https://ahaneiffel.top/products/")
+    expected = ["/products/angle", "/prices", "/products/angle", "/prices"]
+    if actual != expected:
+        raise AssertionError(f"Relative/internal link normalization failed: {actual!r}")
+    if len(set(actual)) != 2:
+        raise AssertionError(f"Expected two unique internal destinations, got {len(set(actual))}")
+    print("Relative, root-relative, absolute, external, fragment and tel-link tests passed (7 cases).")
+
+
 def checks(path, html, p):
     canon = canonical_urls(p)
     desc = [
@@ -125,7 +162,12 @@ def checks(path, html, p):
                 invalid += 1
         except Exception:
             invalid += 1
-    internal = [x for x in p.links if x.startswith("/") or x.startswith(BASE)]
+    if canon:
+        page_url = canon[0]
+    else:
+        parent = path.parent.as_posix().strip("./")
+        page_url = BASE + ("/" + parent + "/" if parent else "/")
+    internal = normalized_internal_links(p, page_url)
     unique_internal = len(set(internal))
     is_homepage = path == ROOT / "index.html"
     tests = [
@@ -157,6 +199,10 @@ def checks(path, html, p):
         "schemas": schemas, "invalid_jsonld": invalid, "canon": canon[:1],
         "h1": p.h1, "unique_internal": unique_internal, "failed_checks": failed
     }
+
+if "--self-test" in sys.argv:
+    self_test()
+    sys.exit(0)
 
 total = 0
 passed = 0
