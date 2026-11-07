@@ -18,7 +18,7 @@ CHECK_NAMES = [
     "description_length_80_180", "single_canonical",
     "canonical_on_expected_host", "canonical_trailing_slash", "exactly_one_h1",
     "at_least_3_internal_links", "at_least_3_unique_internal_links",
-    "links_unique_ratio_75pct", "all_images_have_alt", "jsonld_valid",
+    "all_images_have_alt", "jsonld_valid",
     "homepage_breadcrumb_schema", "max_one_webpage_schema",
     "no_productgroup_schema", "not_noindex"
 ]
@@ -186,7 +186,6 @@ def checks(path, html, p):
         urlparse(canon[0]).netloc == urlparse(BASE).netloc if canon else False,
         urlparse(canon[0]).path.endswith("/") if canon else False,
         p.h1 == 1, len(internal) >= 3, unique_internal >= 3,
-        len(set(p.links)) >= len(p.links) * 0.75 if p.links else False,
         all(img.get("alt") is not None for img in p.images),
         invalid == 0,
         ("BreadcrumbList" in schemas) if is_homepage else True,
@@ -229,6 +228,9 @@ report = ROOT / "seo-500-point-report.md"
 with report.open("w", encoding="utf-8") as f:
     f.write("# Ahaneiffel 500+ Point SEO Guard\n\n")
     f.write(f"- HTML files discovered: **{len(pages)}**\n- Redirect stubs separately audited: **{len(redirect_rows)}**\n- Content pages audited: **{len(rows)}**\n- Checks executed on content pages: **{total}**\n- Passed: **{passed}**\n- Failed: **{total-passed}**\n- Critical content pages: **{len(critical)}**\n\n")
+    f.write("## Methodology notes\n\n")
+    f.write("- Relative, root-relative and absolute same-site links are resolved against each page canonical URL. External, fragment-only and telephone links are excluded from internal page-link counts.\n")
+    f.write("- Repeated links in common navigation and footer areas are not treated as a ranking defect; no arbitrary unique-link percentage threshold is applied.\n\n")
     f.write("## Failed checks by category (content pages only)\n\n|Check|Failures|\n|---|---:|\n")
     for name, count in failure_counts.most_common():
         f.write(f"|{name}|{count}|\n")
