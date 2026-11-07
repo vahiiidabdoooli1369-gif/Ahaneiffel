@@ -118,7 +118,7 @@ def normalized_internal_links(parser, page_url):
 
 def self_test():
     parser = parse_page(
-        '<a href="products/angle/">نبشی</a>'
+        '<a href="angle/">نبشی</a>'
         '<a href="../prices/">قیمت</a>'
         '<a href="/products/angle/">نبشی</a>'
         '<a href="https://ahaneiffel.top/prices/?utm_source=test#table">قیمت</a>'
