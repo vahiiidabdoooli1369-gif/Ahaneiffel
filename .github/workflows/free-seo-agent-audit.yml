@@ -20,6 +20,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Test sitemap index crawler
+        run: python3 scripts/test_sitemap_crawl.py
+
       - name: Audit live site and repository
         env:
           SITE_URL: https://ahaneiffel.top
@@ -30,6 +33,8 @@ jobs:
           import json, os, re, subprocess, urllib.request
           from html.parser import HTMLParser
           from urllib.parse import urljoin, urlparse
+          sys.path.insert(0, os.path.join(os.getcwd(), "scripts"))
+          from sitemap_crawl import collect_sitemap_page_urls
 
           site = os.environ["SITE_URL"].rstrip("/")
           out = {
@@ -40,6 +45,7 @@ jobs:
               "audit_units_completed": 0,
               "unit_breakdown": {
                   "http_availability": 0,
+                  "sitemap_xml": 0,
                   "title": 0,
                   "h1": 0,
                   "meta_description": 0,
@@ -122,25 +128,27 @@ jobs:
           for path in ["/robots.txt", "/sitemap.xml"]:
               try:
                   status, final_url, body = fetch(site + path)
-                  out["audit_units_completed"] += 1
+                  out["unit_breakdown"]["http_availability"] += 1
                   out["checks"].append({"name":path,"status":status,"final_url":final_url})
                   if status != 200: out["findings"].append(f"{path} returned HTTP {status}.")
-                  if path == "/robots.txt" and "sitemap:" not in body.lower():
-                      out["findings"].append("robots.txt does not advertise a sitemap.")
+                  if path == "/robots.txt":
+                      out["unit_breakdown"]["robots"] += 1
+                      if "sitemap:" not in body.lower():
+                          out["findings"].append("robots.txt does not advertise a sitemap.")
                   if path == "/sitemap.xml" and "<urlset" not in body.lower() and "<sitemapindex" not in body.lower():
                       out["findings"].append("sitemap.xml does not look like a valid sitemap document.")
               except Exception as e:
+                  out["unit_breakdown"]["http_availability"] += 1
                   out["findings"].append(f"{path} audit failed: {e}")
 
-          # Crawl a bounded sample of sitemap URLs. This is read-only and skips external URLs.
-          urls = []
-          try:
-              _, _, sm = fetch(site + "/sitemap.xml", timeout=20)
-              urls = re.findall(r"<loc>\s*(.*?)\s*</loc>", sm, flags=re.I|re.S)
-              urls = [u.strip() for u in urls if u.strip().startswith(site)]
-          except Exception:
-              pass
-          urls = list(dict.fromkeys(urls))[:80]
+          # sitemap.xml is normally a sitemap index, not a page URL list.
+          # Resolve child sitemap files recursively, then crawl up to 80 actual page URLs.
+          urls, sitemap_files_checked, sitemap_errors = collect_sitemap_page_urls(
+              fetch, site, max_pages=80, max_sitemaps=50
+          )
+          out["unit_breakdown"]["sitemap_xml"] += sitemap_files_checked
+          out["findings"].extend(sitemap_errors)
+
           title_map, canonical_map = {}, {}
           weak = []
           for u in urls:
