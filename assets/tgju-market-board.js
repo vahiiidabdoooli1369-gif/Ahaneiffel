@@ -126,11 +126,27 @@
     }
   };
 
-  var source = document.createElement("script");
-  source.src = "https://www.navasan.tech/wp-navasan.php?usd&eur&18ayar&sekkeh&bahar&nim&rob&abshodeh&xau&btc";
-  source.async = true;
-  source.onerror = function(){
-    track.innerHTML = '<span class="ae-loading">اتصال به منبع قیمت موقتاً برقرار نشد.</span>';
-  };
-  document.head.appendChild(source);
+  function loadMarketSource(){
+    var source = document.createElement("script");
+    source.src = "https://www.navasan.tech/wp-navasan.php?usd&eur&18ayar&sekkeh&bahar&nim&rob&abshodeh&xau&btc";
+    source.async = true;
+    source.onerror = function(){
+      track.innerHTML = '<span class="ae-loading">اتصال به منبع قیمت موقتاً برقرار نشد.</span>';
+    };
+    document.head.appendChild(source);
+  }
+
+  // Keep the third-party market request out of the initial page-render window.
+  function scheduleMarketSource(){
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(loadMarketSource, { timeout: 2500 });
+    } else {
+      window.setTimeout(loadMarketSource, 1200);
+    }
+  }
+  if (document.readyState === "complete") {
+    scheduleMarketSource();
+  } else {
+    window.addEventListener("load", scheduleMarketSource, { once: true });
+  }
 })();
