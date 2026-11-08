@@ -67,14 +67,22 @@
 
 ## نقشه‌های سایت و منابع ساختاریافته
 
+نقشه سایت اصلی، فهرست کامل نقشه‌های فرعی را معرفی می‌کند. برای کشف URLهای هر بخش، نقشه مرتبط را بررسی کنید:
+
 - [نقشه سایت اصلی](https://ahaneiffel.top/sitemap.xml)
-- [نقشه محصولات](https://ahaneiffel.top/sitemap-products.xml)
-- [نقشه راهنماها](https://ahaneiffel.top/sitemap-guides.xml)
-- [نقشه دانشنامه](https://ahaneiffel.top/sitemap-knowledge.xml)
-- [نقشه ابزارها](https://ahaneiffel.top/sitemap-tools.xml)
-- [نقشه خدمات](https://ahaneiffel.top/sitemap-services.xml)
-- [نقشه برندها](https://ahaneiffel.top/sitemap-brands.xml)
-- [نقشه صفحات محلی](https://ahaneiffel.top/sitemap-local.xml)
+- [صفحات اصلی](https://ahaneiffel.top/sitemap-core.xml)
+- [محصولات](https://ahaneiffel.top/sitemap-products.xml)
+- [راهنماها](https://ahaneiffel.top/sitemap-guides.xml)
+- [راهنماهای پیشرفته](https://ahaneiffel.top/sitemap-advanced-guides.xml)
+- [صفحات محلی](https://ahaneiffel.top/sitemap-local.xml)
+- [منابع و مراجع](https://ahaneiffel.top/sitemap-reference.xml)
+- [ابزارها و محاسبه‌گرها](https://ahaneiffel.top/sitemap-tools.xml)
+- [خدمات](https://ahaneiffel.top/sitemap-services.xml)
+- [برندها](https://ahaneiffel.top/sitemap-brands.xml)
+- [بازار و داده‌های بازار](https://ahaneiffel.top/sitemap-market.xml)
+- [صفحات قیمت](https://ahaneiffel.top/sitemap-prices.xml)
+- [دانشنامه](https://ahaneiffel.top/sitemap-knowledge.xml)
+- [محتوای محلی و جغرافیایی](https://ahaneiffel.top/sitemap-geo.xml)
 - [مرجع بازیابی اطلاعات برای هوش مصنوعی](https://ahaneiffel.top/reference/ai-retrieval-map/)
 
 ## اصول استفاده از محتوا
