@@ -1007,3 +1007,14 @@ a:focus-visible,button:focus-visible{outline:3px solid rgba(255,133,27,.6);outli
 @media(max-width:760px){
   .visual-hero{background-image:none!important;background:#f3f8ff!important}
 }
+
+
+/* 2026-11-11: remove the remaining fixed full-page background photo. */
+body::before{
+  content:none!important;
+  display:none!important;
+  background-image:none!important;
+}
+html,body{
+  background-color:#fff!important;
+}
