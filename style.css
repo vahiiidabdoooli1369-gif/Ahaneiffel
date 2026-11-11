@@ -1036,3 +1036,36 @@ html,body{
   backdrop-filter:none!important;
   padding:0!important;
 }
+
+
+/* 2026-11-11 final homepage correction: remove every hero glass/photo layer
+   and force the requested heading and quote-tab colors. */
+.visual-hero,
+.visual-hero::before,
+.visual-hero::after,
+.visual-hero .hero-inner,
+.visual-hero .hero-copy,
+.visual-hero .hero-copy .answer-first{
+  background-image:none!important;
+}
+.visual-hero::before,
+.visual-hero::after{content:none!important;display:none!important}
+.visual-hero{background:#f3f8ff!important}
+.visual-hero .hero-copy h1,
+.visual-hero .hero-copy h1:first-line{color:#000!important;text-shadow:none!important}
+.visual-hero .hero-copy h1 em{color:#17466B!important}
+.visual-hero .hero-copy .answer-first{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  outline:0!important;
+  padding:0!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.visual-hero .quote-tabs b,
+.visual-hero .quote-tabs b strong,
+.visual-hero .quote-tabs b *{
+  color:#fff!important;
+}
