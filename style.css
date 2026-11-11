@@ -83,13 +83,13 @@
 .visual-hero .answer-first{color:#fff}
 .visual-hero h1{line-height:1.55;text-shadow:0 3px 22px rgba(0,0,0,.32)}
 .visual-hero .answer-first{
-  padding:14px 17px;
-  background:rgba(7,24,43,.66);
-  border:1px solid rgba(255,255,255,.24);
-  border-radius:16px;
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  box-shadow:0 12px 35px rgba(0,0,0,.15);
+  padding:0;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  box-shadow:none;
 }
 .visual-hero .hero-kicker{
   display:inline-flex;
