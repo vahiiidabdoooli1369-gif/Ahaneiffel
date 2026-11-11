@@ -1018,3 +1018,6 @@ body::before{
 html,body{
   background-color:#fff!important;
 }
+
+/* Homepage hero heading: first line in black */
+.visual-hero .hero-copy h1{color:#000!important}
