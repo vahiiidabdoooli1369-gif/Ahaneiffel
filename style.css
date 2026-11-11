@@ -958,3 +958,52 @@ a:focus-visible,button:focus-visible{outline:3px solid rgba(255,133,27,.6);outli
  .article-page :is(.card,.box,.note,.spec,.cta),.product-page :is(.card,.box,.note,.spec,.cta){border-radius:14px}
 }
 @media(max-width:440px){.tools-grid{grid-template-columns:1fr}.tools-hero{border-radius:17px}}
+
+
+/* 2026-11-11: remove the heavy homepage background photo; keep a light, fast hero. */
+.visual-hero{
+  background-image:none!important;
+  background:#f3f8ff!important;
+  color:#173657!important;
+  border-bottom:1px solid #dce8f7!important;
+}
+.visual-hero .hero-copy,
+.visual-hero h1,.visual-hero h2,.visual-hero h3,
+.visual-hero .hero-kicker,.visual-hero p,.visual-hero li,
+.visual-hero .answer-first{color:#173657!important;text-shadow:none!important}
+.visual-hero .hero-kicker{
+  background:#fff!important;
+  border:1px solid #dce8f7!important;
+  color:#17466b!important;
+}
+.visual-hero .answer-first{
+  background:#fff!important;
+  border:1px solid #dce8f7!important;
+  box-shadow:0 8px 24px rgba(16,45,82,.07)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.visual-hero .hero-buttons a,
+.visual-hero .hero-buttons .blue-btn,
+.visual-hero .hero-buttons .white-btn,
+.visual-hero .quote-box .blue-btn,
+.visual-hero .quote-box a{
+  text-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.visual-hero .quote-box{
+  background:#fff!important;
+  color:#173657!important;
+  border:1px solid #dce8f7!important;
+  box-shadow:0 10px 28px rgba(16,45,82,.09)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.visual-hero .quote-box label,
+.visual-hero .quote-box span,
+.visual-hero .quote-box b,
+.visual-hero .quote-box p{color:#173657!important}
+@media(max-width:760px){
+  .visual-hero{background-image:none!important;background:#f3f8ff!important}
+}
