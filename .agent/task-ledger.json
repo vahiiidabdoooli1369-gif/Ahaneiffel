@@ -86,6 +86,19 @@
         "All five PR workflows passed."
       ],
       "completed_at_tehran": "۱۴۰۵/۰۸/۱۶"
+    },
+    {
+      "id": "1399dc087096",
+      "task": "Shorten six overlength Persian SEO title tags identified by the 500-point audit",
+      "status": "in_progress",
+      "priority": "medium",
+      "evidence": [
+        "Latest 500-point audit run 42869681316 reported title_length_10_75 findings.",
+        "Six content pages had title tags of 76–79 characters; all six were rewritten to 46–60 characters.",
+        "Changes are isolated in branch seo/fix-six-overlength-titles-20261110 and await PR checks."
+      ],
+      "next_action": "Run HTML and SEO integrity checks; confirm the six title tags pass the title-length rule before merging.",
+      "pull_request": "pending"
     }
   ],
   "runs": [
@@ -122,6 +135,21 @@
       "fabricated_work_units": 0,
       "blockers": [
         "PR #119 is awaiting review/merge; remaining audit findings require page-by-page triage, not blanket edits."
+      ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۱۹",
+      "result": "Six audited title tags shortened in an isolated branch; awaiting automated checks and review.",
+      "checks": [
+        "Reviewed the latest SEO 500 Point Guard log rather than repeating the completed full audit.",
+        "Selected six actual title_length_10_75 findings and preserved page-specific search intent.",
+        "Updated only the six title elements; meta descriptions, schema and page body were not changed.",
+        "New title lengths: 46, 48, 52, 56, 57 and 60 characters."
+      ],
+      "completed_units": 6,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "Automated PR checks pending."
       ]
     }
   ],
