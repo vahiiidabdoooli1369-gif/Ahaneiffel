@@ -5,127 +5,127 @@
     "local_markets": "https://www.tgju.org/local-markets",
     "metals": "https://www.tgju.org/basemetal"
   },
-  "updated_at_utc": "2026-11-15T09:40:48.205568+00:00",
+  "updated_at_utc": "2026-11-15T16:35:34.607920+00:00",
   "disclaimer": "قیمت‌ها از جداول عمومی TGJU گردآوری شده‌اند و ممکن است با تأخیر باشند. نرخ‌های داخلی ریالی به تومان تبدیل شده‌اند؛ برخی دارایی‌های جهانی با واحد دلار نمایش داده می‌شوند. این داده‌ها قیمت قطعی فروش آهن‌آلات نیستند.",
   "items": [
     {
       "id": "usd_irr",
       "name": "دلار آزاد",
-      "value": 266900,
+      "value": 265900,
       "unit": "تومان"
     },
     {
       "id": "eur_irr",
       "name": "یورو",
-      "value": 294800,
+      "value": 293580,
       "unit": "تومان"
     },
     {
       "id": "aed_irr",
       "name": "درهم امارات",
-      "value": 73001,
+      "value": 72699,
       "unit": "تومان"
     },
     {
       "id": "gbp_irr",
       "name": "پوند انگلیس",
-      "value": 352800,
+      "value": 351330,
       "unit": "تومان"
     },
     {
       "id": "try_irr",
       "name": "لیر ترکیه",
-      "value": 5310,
+      "value": 5290,
       "unit": "تومان"
     },
     {
       "id": "chf_irr",
       "name": "فرانک سوئیس",
-      "value": 318410,
+      "value": 317090,
       "unit": "تومان"
     },
     {
       "id": "cny_irr",
       "name": "یوان چین",
-      "value": 40020,
+      "value": 39860,
       "unit": "تومان"
     },
     {
       "id": "kwd_irr",
       "name": "دینار کویت",
-      "value": 858320,
+      "value": 854750,
       "unit": "تومان"
     },
     {
       "id": "sar_irr",
       "name": "ریال عربستان",
-      "value": 71153,
+      "value": 70857,
       "unit": "تومان"
     },
     {
       "id": "rub_irr",
       "name": "روبل روسیه",
-      "value": 3234,
+      "value": 3217,
       "unit": "تومان"
     },
     {
       "id": "gold18",
       "name": "طلای ۱۸ عیار",
-      "value": 24650700,
+      "value": 24545200,
       "unit": "تومان / گرم"
     },
     {
       "id": "gold24",
       "name": "طلای ۲۴ عیار",
-      "value": 32867300,
+      "value": 32726600,
       "unit": "تومان / گرم"
     },
     {
       "id": "gold_used",
       "name": "طلای دست دوم",
-      "value": 24322035,
+      "value": 24217943,
       "unit": "تومان / گرم"
     },
     {
       "id": "gold_mithqal",
       "name": "مثقال طلا",
-      "value": 106777000,
+      "value": 106325000,
       "unit": "تومان"
     },
     {
       "id": "coin_emami",
       "name": "سکه امامی",
-      "value": 250910000,
+      "value": 249830000,
       "unit": "تومان"
     },
     {
       "id": "coin_bahar",
       "name": "سکه بهار آزادی",
-      "value": 242990000,
+      "value": 241945000,
       "unit": "تومان"
     },
     {
       "id": "coin_half",
       "name": "نیم سکه",
-      "value": 132290000,
+      "value": 131910000,
       "unit": "تومان"
     },
     {
       "id": "coin_quarter",
       "name": "ربع سکه",
-      "value": 71690000,
+      "value": 71000000,
       "unit": "تومان"
     },
     {
       "id": "silver_gram",
       "name": "گرم نقره ۹۹۹",
-      "value": 431500,
+      "value": 432530,
       "unit": "تومان / گرم"
     },
     {
       "id": "tether",
       "name": "تتر",
-      "value": 268688,
+      "value": 269208,
       "unit": "تومان"
     },
     {
@@ -155,43 +155,43 @@
     {
       "id": "bitcoin",
       "name": "بیت کوین",
-      "value": 6572.234,
+      "value": 6437.136,
       "unit": "تومان"
     },
     {
       "id": "ethereum",
       "name": "اتریوم",
-      "value": 491847790.0,
+      "value": 491957050.0,
       "unit": "تومان"
     },
     {
       "id": "ripple",
       "name": "ریپل",
-      "value": 260270.0,
+      "value": 257690.0,
       "unit": "تومان"
     },
     {
       "id": "bnb",
       "name": "بایننس کوین",
-      "value": 160356880.0,
+      "value": 159135420.0,
       "unit": "تومان"
     },
     {
       "id": "tron",
       "name": "ترون",
-      "value": 82670.0,
+      "value": 82020.0,
       "unit": "تومان"
     },
     {
       "id": "stellar",
       "name": "استلار",
-      "value": 37510.0,
+      "value": 37420.0,
       "unit": "تومان"
     },
     {
       "id": "bitcoin_cash",
       "name": "بیت کوین کش",
-      "value": 56035300.0,
+      "value": 56130290.0,
       "unit": "تومان"
     },
     {
