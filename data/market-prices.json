@@ -1,10 +1,10 @@
 {
   "source": "User-provided daily prices for Ahaneiffel",
   "source_type": "manual-user-provided",
-  "published_date": "۱۴۰۵/۰۸/۰۹",
+  "published_date": "۱۴۰۵/۰۸/۲۴",
   "currency": "تومان",
   "unit": "کیلوگرم",
-  "updated_at_utc": "2026-10-31T00:00:00Z",
+  "updated_at_utc": "2026-11-15T00:00:00Z",
   "price_adjustment_toman_per_unit": 0,
   "price_adjustment_note": "این ارقام نرخ پایه تاریخی/مرجع هستند و تأیید قیمت روز یا موجودی محسوب نمی‌شوند. تا زمانی که قیمت‌ها برای همان روز توسط کارشناس تأیید نشده‌اند، در صفحه‌ها به‌صورت عددی نمایش داده نمی‌شوند. قیمت نهایی با توجه به سایز، ضخامت، کارخانه، موجودی و هزینه حمل پیش از سفارش تأیید شود.",
   "rows": [
