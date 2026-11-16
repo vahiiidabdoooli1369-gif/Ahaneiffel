@@ -30,8 +30,11 @@
 <div class="field"><label for="unload">شرایط تخلیه</label><select id="unload"><option>نیاز به هماهنگی تخلیه دارد</option><option>محل تخلیه آماده است</option><option>اطلاعات نامشخص</option></select></div>
 <div class="field full"><label for="spec">سایز / ضخامت / برند / مشخصات</label><input id="spec" placeholder="مثلاً میلگرد 16، ذوب آهن اصفهان"></div>
 <div class="field full"><label for="notes">توضیحات حمل</label><textarea id="notes" rows="4" placeholder="محدودیت ورود خودرو، ساعت تخلیه، جرثقیل و هر نکته مهم"></textarea></div>
+<div class="field"><label for="totalWeight">وزن کل بار (تن)</label><input id="totalWeight" type="number" min="0.01" step="0.01" inputmode="decimal" aria-describedby="tripHelp" placeholder="مثلاً 18"></div>
+<div class="field"><label for="vehicleCapacity">ظرفیت قابل بارگیری هر سرویس (تن)</label><input id="vehicleCapacity" type="number" min="0.01" step="0.01" inputmode="decimal" aria-describedby="tripHelp" placeholder="طبق اعلام باربری"></div>
+<div class="field full"><p id="tripHelp">برای برآورد، وزن کل را از سفارش یا باسکول و ظرفیت هر سرویس را از باربری یا مشخصات خودرو وارد کنید. ابزار نوع خودرو یا ظرفیت آن را حدس نمی‌زند.</p><div id="tripEstimate" class="result" role="status" aria-live="polite" aria-atomic="true">برای برآورد حداقل تعداد سرویس، هر دو مقدار وزن کل و ظرفیت هر سرویس را وارد کنید.</div></div>
 </div>
-<div class="actions"><button class="primary-btn" onclick="makeText()">ساخت متن استعلام حمل</button><button class="secondary-btn" onclick="copyText()">کپی متن</button></div><div id="result" class="result" aria-live="polite">بعد از تکمیل اطلاعات، روی «ساخت متن استعلام حمل» بزنید.</div>
+<div class="actions"><button class="primary-btn" type="button" onclick="makeText()">ساخت متن استعلام حمل</button><button class="secondary-btn" type="button" onclick="copyText()">کپی متن</button></div><div id="result" class="result" aria-live="polite">بعد از تکمیل اطلاعات، روی «ساخت متن استعلام حمل» بزنید.</div>
 <div class="actions"><a class="primary" id="wa" href="https://wa.me/989125143831" target="_blank" rel="noopener">ارسال در واتساپ</a><a class="secondary" href="tel:+989125143831">تماس با کارشناس</a></div>
 </section>
 <section class="section light"><div class="section-head"><span>کنترل حمل</span><h2>چه اطلاعاتی روی هزینه و اجرای حمل اثر دارد؟</h2></div><div class="cards"><article class="card"><h3>وزن و ابعاد بار</h3><p>تناژ، تعداد شاخه یا برگ، طول بار و نحوه چیدمان باید مشخص باشد.</p></article><article class="card"><h3>مقصد و مسیر</h3><p>شهر، منطقه، محدودیت ورود خودرو و شرایط مسیر می تواند روی برنامه حمل اثر بگذارد.</p></article><article class="card"><h3>تخلیه</h3><p>وجود جرثقیل، فضای تخلیه و ساعت مجاز ورود را از ابتدا اعلام کنید.</p></article></div></section>
@@ -39,8 +42,30 @@
 </main>
 <script>
 function val(id){return document.getElementById(id).value.trim()}
-function makeText(){const t=`درخواست بررسی حمل آهن آلات - آهن ایفل\nمحصول: ${val('product')}\nمقدار: ${val('amount')} ${val('unit')}\nسایز/مشخصات: ${val('spec')}\nمقصد: ${val('destination')}\nزمان موردنیاز: ${val('date')}\nشرایط تخلیه: ${val('unload')}\nتوضیحات: ${val('notes')}\n\nلطفاً قیمت کالا، موجودی و هزینه/شرایط حمل را بر اساس اطلاعات واقعی سفارش اعلام کنید.`;document.getElementById('result').textContent=t;document.getElementById('wa').href='https://wa.me/989125143831?text='+encodeURIComponent(t)}
+function formatFa(value){return value.toLocaleString('fa-IR',{maximumFractionDigits:2})}
+function calculateTrips(){
+ const weightRaw=val('totalWeight'),capacityRaw=val('vehicleCapacity'),output=document.getElementById('tripEstimate');
+ if(!weightRaw&&!capacityRaw){output.textContent='برای برآورد حداقل تعداد سرویس، هر دو مقدار وزن کل و ظرفیت هر سرویس را وارد کنید.';return {status:'empty'};}
+ if(!weightRaw||!capacityRaw){const message='برای محاسبه تعداد سرویس، هم وزن کل بار و هم ظرفیت هر سرویس را وارد کنید.';output.textContent=message;return {status:'incomplete',message};}
+ const weight=Number(weightRaw),capacity=Number(capacityRaw);
+ if(!Number.isFinite(weight)||!Number.isFinite(capacity)||weight<=0||capacity<=0){const message='وزن کل و ظرفیت هر سرویس باید عددی بزرگ‌تر از صفر باشند.';output.textContent=message;return {status:'invalid',message};}
+ const trips=Math.ceil(weight/capacity);
+ if(!Number.isSafeInteger(trips)||trips<1){const message='مقادیر واردشده برای محاسبه تعداد سرویس معتبر نیستند.';output.textContent=message;return {status:'invalid',message};}
+ const message='حداقل تعداد سرویس بر اساس ظرفیت وزنی واردشده: '+formatFa(trips)+' سرویس. این فقط برآورد وزنی است؛ طول و ابعاد بار، محدودیت محور، مسیر و مقررات حمل ممکن است تعداد واقعی سرویس را بیشتر کند.';
+ output.textContent=message;
+ return {status:'valid',weight,capacity,trips};
+}
+function makeText(){
+ const estimate=calculateTrips();
+ if(estimate.status==='incomplete'||estimate.status==='invalid'){document.getElementById('result').textContent=estimate.message;return;}
+ const tripLine=estimate.status==='valid'?'\nبرآورد اولیه حمل بر اساس وزن: حداقل '+formatFa(estimate.trips)+' سرویس | وزن کل: '+formatFa(estimate.weight)+' تن | ظرفیت اعلام‌شده هر سرویس: '+formatFa(estimate.capacity)+' تن\nتوجه: این عدد فقط بر اساس ظرفیت وزنی است و جایگزین تأیید باربری درباره ابعاد بار، محدودیت مسیر و مقررات حمل نیست.':'';
+ const t=`درخواست بررسی حمل آهن آلات - آهن ایفل\nمحصول: ${val('product')}\nمقدار: ${val('amount')} ${val('unit')}\nسایز/مشخصات: ${val('spec')}\nمقصد: ${val('destination')}\nزمان موردنیاز: ${val('date')}\nشرایط تخلیه: ${val('unload')}\nتوضیحات: ${val('notes')}${tripLine}\n\nلطفاً قیمت کالا، موجودی و هزینه/شرایط حمل را بر اساس اطلاعات واقعی سفارش اعلام کنید.`;
+ document.getElementById('result').textContent=t;
+ document.getElementById('wa').href='https://wa.me/989125143831?text='+encodeURIComponent(t);
+}
 async function copyText(){const t=document.getElementById('result').textContent;if(!t||t.includes('بعد از تکمیل'))return;try{await navigator.clipboard.writeText(t);alert('متن کپی شد.')}catch(e){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();document.execCommand('copy');x.remove();alert('متن کپی شد.')}}
+document.getElementById('totalWeight').addEventListener('input',calculateTrips);
+document.getElementById('vehicleCapacity').addEventListener('input',calculateTrips);
 </script>
 </body>
 </html>
