@@ -57,7 +57,7 @@ function calculateTrips(){
 }
 function makeText(){
  const estimate=calculateTrips();
- if(estimate.status==='incomplete'||estimate.status==='invalid'){document.getElementById('result').textContent=estimate.message;return;}
+ if(estimate.status==='incomplete'||estimate.status==='invalid'){document.getElementById('result').textContent=estimate.message;document.getElementById('wa').href='https://wa.me/989125143831';return;}
  const tripLine=estimate.status==='valid'?'\nبرآورد اولیه حمل بر اساس وزن: حداقل '+formatFa(estimate.trips)+' سرویس | وزن کل: '+formatFa(estimate.weight)+' تن | ظرفیت اعلام‌شده هر سرویس: '+formatFa(estimate.capacity)+' تن\nتوجه: این عدد فقط بر اساس ظرفیت وزنی است و جایگزین تأیید باربری درباره ابعاد بار، محدودیت مسیر و مقررات حمل نیست.':'';
  const t=`درخواست بررسی حمل آهن آلات - آهن ایفل\nمحصول: ${val('product')}\nمقدار: ${val('amount')} ${val('unit')}\nسایز/مشخصات: ${val('spec')}\nمقصد: ${val('destination')}\nزمان موردنیاز: ${val('date')}\nشرایط تخلیه: ${val('unload')}\nتوضیحات: ${val('notes')}${tripLine}\n\nلطفاً قیمت کالا، موجودی و هزینه/شرایط حمل را بر اساس اطلاعات واقعی سفارش اعلام کنید.`;
  document.getElementById('result').textContent=t;
