@@ -1,0 +1,400 @@
+{
+  "brand": "آهن ایفل",
+  "category": "تیرآهن",
+  "published_date": "۱۴۰۵/۰۸/۲۶",
+  "published_date_iso": "2026-11-17",
+  "currency": "تومان",
+  "source": "فهرست قیمت ارسالی کاربر از آهن آنلاین",
+  "source_type": "user-provided-market-reference",
+  "note": "قیمت‌ها عیناً از اطلاعات ارسالی کاربر ثبت شده‌اند. ردیف فایکو سایز ۱۸ با تاریخ ۱۴۰۵/۰۸/۲۳ و قیمت ۸٬۰۰۰٬۰۰۰ تومان در این فایل آرشیوی جدا نگه داشته شده و جزو قیمت‌های ۲۶ آبان نیست. واحدهای کیلوگرم و شاخه جداگانه‌اند. قیمت و موجودی نهایی باید پیش از سفارش تأیید شوند.",
+  "rows": [
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۲",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۴",
+      "delivery": "کارخانه",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۴",
+      "delivery": "بنگاه اصفهان",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۶",
+      "delivery": "کارخانه",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۶",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۶",
+      "delivery": "بنگاه اصفهان",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۸",
+      "delivery": "کارخانه",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۸",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۱۸",
+      "delivery": "بنگاه اصفهان",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۰",
+      "delivery": "کارخانه",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۰",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۰",
+      "delivery": "بنگاه اصفهان",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۲",
+      "delivery": "کارخانه",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۲",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۲",
+      "delivery": "بنگاه اصفهان",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۴",
+      "delivery": "کارخانه",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۴",
+      "delivery": "بنگاه اصفهان",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۷",
+      "delivery": "کارخانه",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۷",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۲۷",
+      "delivery": "بنگاه اصفهان",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۳۰",
+      "delivery": "کارخانه",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۳۰",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ذوب‌آهن اصفهان",
+      "size": "۳۰",
+      "delivery": "بنگاه اصفهان",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "فایکو",
+      "size": "۲۲",
+      "delivery": "بنگاه تهران",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "فایکو",
+      "size": "۲۰",
+      "delivery": "بنگاه تهران",
+      "unit": "کیلوگرم",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "فایکو",
+      "size": "۱۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "فایکو",
+      "size": "۱۶",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "فایکو",
+      "size": "۲۰",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "فایکو",
+      "size": "۲۲",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "فایکو",
+      "size": "۲۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "آریان فولاد",
+      "size": "۲۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "آریان فولاد",
+      "size": "۲۲",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "آریان فولاد",
+      "size": "۲۰",
+      "delivery": "کارخانه",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "اهواز",
+      "size": "۱۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "یزد",
+      "size": "۱۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "یزد",
+      "size": "۱۶",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "یزد",
+      "size": "۱۸",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "یزد",
+      "size": "۲۰",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "یزد",
+      "size": "۲۲",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "یزد",
+      "size": "۲۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "ماهان",
+      "size": "۱۸",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "کرمانشاه",
+      "size": "۱۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "اطلس",
+      "size": "۱۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "خیام سپهر فولاد نیشابور",
+      "size": "۱۶",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    },
+    {
+      "brand": "خیام سپهر فولاد نیشابور",
+      "size": "۱۴",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": null,
+      "price_toman": null
+    }
+  ],
+  "archived_rows": [
+    {
+      "brand": "فایکو",
+      "size": "۱۸",
+      "delivery": "بنگاه تهران",
+      "unit": "شاخه",
+      "weight_kg": 205,
+      "price_toman": 8000000,
+      "source_date": "۱۴۰۵/۰۸/۲۳",
+      "status": "archived-not-current"
+    }
+  ]
+}
