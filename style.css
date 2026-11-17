@@ -1242,3 +1242,19 @@ body:not(.home-page) main :is(.button,.btn,.primary,.call-btn,.blue-btn,.white-b
     font-size: 15px;
   }
 }
+
+
+/* Keep custom inner-page hero sections readable with the black-text system. */
+body:not(.home-page) main :is(.beam-hero,.rebar-hero,.product-hero,.page-hero,.article-hero) {
+  color: #111 !important;
+  background: #f4f6f8 !important;
+  background-image: none !important;
+  border-color: #e5e7eb !important;
+}
+body:not(.home-page) main :is(.beam-hero,.rebar-hero,.product-hero,.page-hero,.article-hero) :is(h1,h2,h3,h4,p,span,strong,b,small,a,.crumbs,.eyebrow) {
+  color: #111 !important;
+}
+body:not(.home-page) main :is(.beam-hero,.rebar-hero,.product-hero,.page-hero,.article-hero) :is(.hero-tags span,.crumbs) {
+  background: #eef1f4 !important;
+  border-color: #d9dee5 !important;
+}
