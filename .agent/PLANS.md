@@ -201,3 +201,16 @@ Keep plans factual and update them as discoveries change the approach. Do not in
 - Kept timestamp-only fallback only when Intl Persian-calendar support itself is unavailable.
 - Added a regression test for a recent timestamp with a missing publication date.
 - No price data is edited; the display stays visible and is labelled for review.
+
+
+## Dedicated channel size 26 lightweight buying page
+
+- **Objective:** Cover the specific commercial query for selling/buying lightweight channel size 26 with a distinct, crawlable landing page connected to the channel hub.
+- **Current state:** The channel hub linked sizes 8–18; no size-26 page existed in the repository or product sitemap.
+- **Constraints:** Do not invent exact weight, flange width, web/flange thickness, stock, mill, or current price. Distinguish product families (such as UPN/UPE); structural suitability remains subject to project engineering.
+- **Files/components in scope:** products/channel/26/index.html, products/channel/index.html, sitemap-products.xml.
+- **Implementation steps:** Publish a self-canonical Persian RTL buying guide, add hub navigation, and add the verified local route to the product sitemap without fabricated lastmod.
+- **Validation:** Check HTML structure, canonical, metadata, JSON-LD parsing, internal links, sitemap XML, and confirm no unsupported numeric specifications or prices.
+- **Risks:** Product naming and specifications must be confirmed against the exact mill/standard before a numeric weight table is added.
+- **Rollback:** Revert the three-file PR if validation or deployment smoke checks fail.
+- **Completion status:** Implemented on review branch; automated checks and deployment pending.
