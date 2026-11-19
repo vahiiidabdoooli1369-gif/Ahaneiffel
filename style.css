@@ -1456,3 +1456,126 @@ body.home-page{color:var(--ae-ink);background:#fff}
 
 .ae-skip-link{position:fixed;top:8px;right:8px;z-index:99999;transform:translateY(-160%);padding:10px 16px;background:#FF851B;color:#102B46!important;border-radius:8px;font-weight:900;box-shadow:0 5px 18px rgba(16,43,70,.18)}
 .ae-skip-link:focus{transform:translateY(0);outline:3px solid #102B46;outline-offset:2px}
+
+
+/* AHAN EIFEL — PREMIUM INNER-PAGE DESIGN SYSTEM — 2026-11-19
+   Calm white canvas, navy structure, steel-blue navigation and orange actions. */
+:root{
+  --ae-navy:#102B46;--ae-blue:#17466B;--ae-orange:#FF851B;
+  --ae-ink:#172b3d;--ae-muted:#64788b;--ae-line:#dce5ec;
+  --ae-surface:#f5f8fa;--ae-white:#fff;
+}
+body:not(.home-page){background:#fff;color:var(--ae-ink)}
+body:not(.home-page) .site-header{
+  position:sticky;top:0;z-index:1000;background:#fff!important;
+  border-bottom:1px solid #dce5ec!important;
+  box-shadow:0 6px 24px rgba(16,43,70,.065)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+body:not(.home-page) .site-header .brand,
+body:not(.home-page) .site-header .brand b{color:#102B46!important}
+body:not(.home-page) .site-header nav a{
+  color:#294760!important;border-radius:9px;padding:9px 12px;
+  font-weight:750;transition:background .18s ease,color .18s ease;
+}
+body:not(.home-page) .site-header nav a:hover,
+body:not(.home-page) .site-header nav a:focus-visible{
+  color:#102B46!important;background:#fff2e7!important;
+}
+body:not(.home-page) .site-header .call-btn,
+body:not(.home-page) main :is(.button,.btn,.primary,.blue-btn,.call-btn){
+  background:#FF851B!important;color:#102B46!important;
+  border:1px solid #FF851B!important;border-radius:10px!important;
+  box-shadow:0 6px 16px rgba(255,133,27,.16)!important;
+  font-weight:900;text-decoration:none!important;
+}
+body:not(.home-page) main :is(.button,.btn,.primary,.blue-btn,.call-btn):hover{
+  background:#ed740d!important;border-color:#ed740d!important;
+  color:#102B46!important;transform:translateY(-1px);
+}
+body:not(.home-page) main h1{
+  color:#102B46!important;font-weight:900;letter-spacing:-.35px;
+  line-height:1.5!important;font-size:clamp(27px,3.6vw,42px);
+}
+body:not(.home-page) main h2{
+  color:#102B46!important;font-weight:850;line-height:1.55;
+  border-right:3px solid #FF851B;padding-right:12px;
+  margin-top:30px;margin-bottom:14px;
+}
+body:not(.home-page) main h3{color:#17466B!important;font-weight:850;line-height:1.6}
+body:not(.home-page) main p,
+body:not(.home-page) main li{color:#40576a!important;line-height:2}
+body:not(.home-page) main a:not(.button):not(.btn):not(.primary):not(.call-btn):not(.blue-btn):not(.white-btn){
+  color:#17466B!important;text-decoration-color:#c7d4df;
+  text-underline-offset:3px;
+}
+body:not(.home-page) main a:hover{color:#d96a0b!important}
+body:not(.home-page) main :is(.card,.quick,.product,.notice,.note,.table-wrap,.price-table-card,.faq-grid details,.knowledge-grid article,.spec){
+  background:#fff!important;border:1px solid #dce5ec!important;
+  border-radius:14px;box-shadow:0 7px 24px rgba(16,43,70,.055)!important;
+}
+body:not(.home-page) main :is(.note,.notice,.price-data-note){
+  background:#fff8f1!important;border-right:3px solid #FF851B!important;
+  color:#40576a!important;padding:14px 16px;
+}
+body:not(.home-page) main :is(.price-hero,.visual-hero,.hero,.cta,.dark-panel,.sized-product-hero){
+  background:#102B46!important;color:#fff!important;
+  border-color:#102B46!important;border-radius:0;
+}
+body:not(.home-page) main :is(.price-hero,.visual-hero,.hero,.cta,.dark-panel,.sized-product-hero) :is(h1,h2,h3,h4,p,li,span,strong,b,small){
+  color:#fff!important;
+}
+body:not(.home-page) main :is(.price-hero,.visual-hero,.hero,.cta,.dark-panel,.sized-product-hero) h2{
+  border-color:#FF851B!important;
+}
+body:not(.home-page) main :is(.breadcrumbs,.breadcrumb){
+  color:#738496!important;padding-block:14px;
+}
+body:not(.home-page) main :is(.breadcrumbs,.breadcrumb) a{color:#d96a0b!important}
+body:not(.home-page) main :is(table,.price-table,.spec){
+  width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;
+  border:1px solid #dce5ec!important;border-radius:12px;background:#fff;
+}
+body:not(.home-page) main :is(table th,.price-table th,.spec th){
+  background:#102B46!important;color:#fff!important;
+  border-color:#294a66!important;padding:12px 14px;font-weight:850;
+}
+body:not(.home-page) main :is(table td,.price-table td,.spec td){
+  color:#304b62!important;padding:11px 14px;border-color:#e6edf2!important;
+}
+body:not(.home-page) main table tr:nth-child(even) td{background:#f7f9fb!important}
+body:not(.home-page) main :is(.table-wrap,.table-responsive){
+  max-width:100%;overflow-x:auto;border-radius:12px;
+  -webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;
+}
+body:not(.home-page) main :is(.link-grid a,.link-cloud a,.quick-buy-grid a){
+  background:#fff!important;border:1px solid #dce5ec!important;
+  color:#17466B!important;border-radius:11px!important;
+  box-shadow:none!important;transition:transform .18s ease,border-color .18s ease;
+}
+body:not(.home-page) main :is(.link-grid a,.link-cloud a,.quick-buy-grid a):hover{
+  border-color:#FF851B!important;background:#fff8f1!important;
+  color:#102B46!important;transform:translateY(-2px);
+}
+body:not(.home-page) footer,
+body:not(.home-page) .site-footer{
+  background:#102B46!important;color:#e6edf3!important;
+  border-top:4px solid #FF851B!important;
+}
+body:not(.home-page) footer :is(p,b,strong,h2,h3),
+body:not(.home-page) .site-footer :is(p,b,strong,h2,h3){color:#fff!important}
+body:not(.home-page) footer a,
+body:not(.home-page) .site-footer a{color:#ffc18f!important}
+@media(max-width:760px){
+  body:not(.home-page) .site-header>.container,
+  body:not(.home-page) .site-header .nav-wrap{gap:8px;flex-wrap:wrap;padding-block:10px}
+  body:not(.home-page) .site-header nav{width:100%;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  body:not(.home-page) .site-header nav::-webkit-scrollbar{display:none}
+  body:not(.home-page) .site-header nav a{white-space:nowrap;font-size:12px;padding:8px 10px}
+  body:not(.home-page) main :is(.container,.wide){width:94%;max-width:100%}
+  body:not(.home-page) main :is(.table-wrap,.table-responsive){margin-inline:0}
+  body:not(.home-page) main :is(h1,h2){overflow-wrap:anywhere}
+}
+@media(prefers-reduced-motion:reduce){
+  body:not(.home-page) *,body:not(.home-page) *::before,body:not(.home-page) *::after{transition:none!important}
+}
