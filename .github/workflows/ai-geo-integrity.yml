@@ -151,8 +151,8 @@ jobs:
                   value = text_only(cell)
                   if number(value):
                       numeric_cells.append(value)
-                      dated = re.search(r'data-price-date=["\']1405-08-27["\']', attrs)
-                      historical = re.search(r'data-price-status=["\']historical["\']', attrs)
+                      dated = 'data-price-date="1405-08-27"' in attrs
+                      historical = 'data-price-status="historical"' in attrs
                       if not dated or not historical:
                           invalid_numeric_cells.append(value)
                   elif not ("استعلام" in value or "تماس" in value or "مشاهده نرخ" in value):
