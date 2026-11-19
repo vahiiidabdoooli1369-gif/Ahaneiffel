@@ -22,12 +22,18 @@ jobs:
           fetch-depth: 0
       - name: Test audit logic
         run: python3 scripts/audit_page_dates.py --self-test
-      - name: Compile audit script
-        run: python3 -m py_compile scripts/audit_page_dates.py
+      - name: Run regression tests
+        run: python3 -m unittest scripts/test_audit_page_dates.py scripts/test_page_date_review_queue.py -v
+      - name: Compile audit scripts
+        run: python3 -m py_compile scripts/audit_page_dates.py scripts/build_page_date_review_queue.py
       - name: Generate page date coverage report
         run: python3 scripts/audit_page_dates.py --output artifacts/page-date-audit.json
-      - name: Upload report
+      - name: Build prioritized human-review queue
+        run: python3 scripts/build_page_date_review_queue.py --input artifacts/page-date-audit.json --output artifacts/page-date-review-queue.json
+      - name: Upload report and review queue
         uses: actions/upload-artifact@v4
         with:
           name: page-date-coverage-report
-          path: artifacts/page-date-audit.json
+          path: |
+            artifacts/page-date-audit.json
+            artifacts/page-date-review-queue.json
