@@ -144,17 +144,28 @@ jobs:
               raise SystemExit("Homepage contains no machine-readable family price rows")
 
           if feed.get("verified_today") is not True:
-              numeric_cells = [text_only(cell) for cell in quote_cells if number(text_only(cell))]
-              non_inquiry_cells = [text_only(cell) for cell in quote_cells if "استعلام" not in text_only(cell)]
-              if numeric_cells:
-                  raise SystemExit(f"Unverified /prices/ page still exposes {len(numeric_cells)} numeric quote cell(s)")
-              if non_inquiry_cells:
-                  raise SystemExit(f"{len(non_inquiry_cells)} /prices/ quote cell(s) do not clearly say inquiry")
+              numeric_quote_cells = re.findall(r'<td\b([^>]*class="quote"[^>]*)>([\s\S]*?)</td>', daily.group(1), re.I)
+              numeric_cells = []
+              invalid_numeric_cells = []
+              for attrs, cell in numeric_quote_cells:
+                  value = text_only(cell)
+                  if number(value):
+                      numeric_cells.append(value)
+                      dated = 'data-price-date="1405-08-27"' in attrs
+                      historical = 'data-price-status="historical"' in attrs
+                      if not dated or not historical:
+                          invalid_numeric_cells.append(value)
+                  elif not ("استعلام" in value or "تماس" in value or "مشاهده نرخ" in value):
+                      raise SystemExit(f"Unlabelled non-numeric quote cell: {value}")
+              if invalid_numeric_cells:
+                  raise SystemExit(f"{len(invalid_numeric_cells)} numeric quote cell(s) lack an explicit historical date and status")
+              if numeric_cells and "۲۷ آبان ۱۴۰۵" not in text_only(daily.group(1)):
+                  raise SystemExit("Historical numeric quotes are missing a visible 27 Aban 1405 date label")
               for family, row_html in home_rows:
                   quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\S]*?)</td>', row_html, re.I)
                   if not quote or "استعلام" not in text_only(quote.group(1)):
                       raise SystemExit(f"Unverified homepage price is not safely suppressed: {family}")
-              print(f"Safe price mode OK: {len(quote_cells)} /prices/ quote cells and {len(home_rows)} homepage family rows show inquiry text, not stale numbers.")
+              print(f"Safe price mode OK: {len(numeric_cells)} explicitly dated historical quotes; homepage family rows remain inquiry-only.")
           else:
               for family, row_html in home_rows:
                   item = next((x for x in feed.get("rows", []) if family in x.get("raw", [])), None)
