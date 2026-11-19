@@ -1,3 +1,4 @@
+"""Regression coverage for prioritized review queue classification."""
 import importlib.util, unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
