@@ -11,7 +11,7 @@ def classify(path: str) -> tuple[int,str]:
         return 1,"قیمت و استعلام"
     if p.startswith("products/"):
         depth=len(p.split("/"))
-        return (2 if depth<=2 else 3),("صفحه مادر محصول" if depth<=2 else "صفحه محصول")
+        return (2 if depth<=3 else 3),("صفحه مادر محصول" if depth<=2 else "صفحه محصول")
     if p in {"rebar/index.html","beam/index.html","profile/index.html","angle/index.html","channel/index.html"}:
         return 2,"هاب محصول"
     if p.startswith(("guides/","knowledge/")):
