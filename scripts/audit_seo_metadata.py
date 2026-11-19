@@ -47,7 +47,8 @@ def inspect(path: Path) -> dict:
     if len(descriptions)>1: issues.append("multiple-description-tags")
     if parser.h1_count==0: issues.append("missing-h1")
     elif parser.h1_count>1: issues.append("multiple-h1")
-    if len(parser.canonical)>1: issues.append("multiple-canonical-tags")
+    if not parser.canonical: issues.append("missing-canonical")
+    elif len(parser.canonical)>1: issues.append("multiple-canonical-tags")
     if parser.canonical and not parser.canonical[0].startswith(("https://","http://")):
         issues.append("non-absolute-canonical")
     return {"path":path.relative_to(ROOT).as_posix(),"title":title,"title_length":len(title),
@@ -76,8 +77,8 @@ def self_test():
     p.feed('<title>عنوان مناسب برای صفحه آهن</title><meta name="description" content="شرح کامل این صفحه برای خریدار آهن و مشخصات محصول"><h1>عنوان</h1><link rel="canonical" href="https://example.com/a">')
     assert p.title=="عنوان مناسب برای صفحه آهن"
     assert len(p.description)==1 and p.h1_count==1 and len(p.canonical)==1
-    row={"title":"x","description":"y","h1_count":0,"canonical":[]}
-    assert len(inspect_sample(row))==3
+    row={"title":"x","description":"y","h1_count":0,"canonical_count":0}
+    assert len(inspect_sample(row))==4
     print("SEO metadata audit self-test passed (5 assertions).")
 
 def inspect_sample(row):
@@ -85,6 +86,7 @@ def inspect_sample(row):
     if len(row["title"])<25: issues.append("title-too-short")
     if len(row["description"])<70: issues.append("description-too-short")
     if row["h1_count"]==0: issues.append("missing-h1")
+    if row.get("canonical_count",0)==0: issues.append("missing-canonical")
     return issues
 
 def main():
