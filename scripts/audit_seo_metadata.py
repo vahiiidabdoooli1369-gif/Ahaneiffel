@@ -96,7 +96,7 @@ def main():
     pages=sorted(p for p in ROOT.rglob("*.html") if not any(x in SKIP for x in p.parts))
     report=audit(pages)
     out=Path(args.output); out.parent.mkdir(parents=True,exist_ok=True)
-    out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(f"HTML pages audited: {report['page_count']}")
     print(f"Pages with SEO metadata findings: {report['pages_with_findings']}")
     for key,value in report["issue_counts"].items(): print(f"{key}: {value}")
