@@ -16,7 +16,7 @@ class SeoMetadataTests(unittest.TestCase):
         self.assertEqual(p.canonical,["https://example.com/"])
     def test_missing_and_length_flags(self):
         row=MODULE.inspect_sample({"title":"x","description":"y","h1_count":0,"canonical":[]})
-        self.assertEqual(set(row),{"title-too-short","description-too-short","missing-h1"})
+        self.assertEqual(set(row),{"title-too-short","description-too-short","missing-h1","missing-canonical"})
     def test_duplicate_detection(self):
         a={"path":"a.html","title":"Same title","description":"Same description","issues":[]}
         b={"path":"b.html","title":"Same title","description":"Different description","issues":[]}
