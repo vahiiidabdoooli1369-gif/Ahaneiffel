@@ -35,7 +35,7 @@ jobs:
       - name: Run regression tests
         run: python3 -m unittest scripts/test_audit_page_dates.py scripts/test_page_date_review_queue.py -v
       - name: Compile audit scripts
-        run: python3 -m py_compile scripts/audit_page_dates.py scripts/build_page_date_review_queue.py
+        run: python3 -m py_compile scripts/audit_page_dates.py scripts/build_page_date_review_queue.py scripts/audit_seo_metadata.py
       - name: Generate page date coverage report
         run: python3 scripts/audit_page_dates.py --output artifacts/page-date-audit.json
       - name: Build prioritized human-review queue
