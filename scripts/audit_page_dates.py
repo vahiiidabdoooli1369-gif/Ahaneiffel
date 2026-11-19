@@ -13,7 +13,7 @@ PERSIAN_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
 ISO_RE = re.compile(r'"dateModified"\s*:\s*"([^"]+)"', re.I)
 META_RE = re.compile(r'<meta\b(?=[^>]*(?:name|property)=["\'](?:dateModified|article:modified_time|last-modified)["\'])(?=[^>]*content=["\']([^"\']+)["\'])[^>]*>', re.I)
 VISIBLE_RE = re.compile(
-    r'(?:آخرین\s*(?:به[\s‌]*روزرسانی|بروزرسانی)|(?:به[\s‌]*روزرسانی|بروزرسانی)\s*(?:صفحه|محتوا|تاریخ)?|تاریخ\s*(?:آخرین\s*تغییر|به[\s‌]*روزرسانی)|Updated\s*:?)'
+    r'(?:آخرین\s*(?:بازبینی(?:\s+محتوای\s+این\s+صفحه)?|به[\s‌]*روزرسانی|بروزرسانی)|(?:به[\s‌]*روزرسانی|بروزرسانی)\s*(?:صفحه|محتوا|تاریخ)?|تاریخ\s*(?:آخرین\s*تغییر|بازبینی|به[\s‌]*روزرسانی)|Updated\s*:?)'
     r'\s*(?:[:：\-–]\s*)?(?:</[^>]+>\s*)?([۰-۹0-9]{4})[/\-年]([۰-۹0-9]{1,2})[/\-月]([۰-۹0-9]{1,2})',
     re.I,
 )
@@ -98,7 +98,7 @@ def main():
     counts={}
     for row in rows:
         for issue in row["issues"]: counts[issue]=counts.get(issue,0)+1
-    report={"generated_at_utc":datetime.now().astimezone().isoformat(),"page_count":len(rows),"issue_counts":counts,"pages":rows}
+    report={"generated_at_utc":datetime.now(ZoneInfo("UTC")).isoformat(),"page_count":len(rows),"issue_counts":counts,"pages":rows}
     output=Path(args.output)
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
