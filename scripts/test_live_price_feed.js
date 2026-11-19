@@ -48,7 +48,7 @@ async function evaluateFeed(publishedDate, updatedAt, price = 122000) {
 
   const staleDate = await evaluateFeed(oldDay, now.toISOString());
   assert.equal(staleDate.status, "نیازمند بررسی");
-  assert.match(staleDate.title, /نیازمند بررسی/);
+  assert.match(staleDate.title, /استعلام/);
   assert.match(staleDate.meta, /قیمت‌ها نیازمند بررسی هستند/);
 
   const staleTimestamp = await evaluateFeed(today, new Date(now.getTime() - 27 * 60 * 60 * 1000).toISOString());
