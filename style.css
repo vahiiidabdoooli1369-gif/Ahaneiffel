@@ -1453,3 +1453,6 @@ body.home-page{color:var(--ae-ink);background:#fff}
 @media(prefers-reduced-motion:reduce){
   .home-page *, .home-page *::before, .home-page *::after{scroll-behavior:auto!important;transition:none!important}
 }
+
+.ae-skip-link{position:fixed;top:8px;right:8px;z-index:99999;transform:translateY(-160%);padding:10px 16px;background:#FF851B;color:#102B46!important;border-radius:8px;font-weight:900;box-shadow:0 5px 18px rgba(16,43,70,.18)}
+.ae-skip-link:focus{transform:translateY(0);outline:3px solid #102B46;outline-offset:2px}
