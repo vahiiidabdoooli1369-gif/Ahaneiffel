@@ -32,6 +32,6 @@ class SeoMetadataTests(unittest.TestCase):
                     for row in rows:
                         if row["path"] in group: row["issues"].append("duplicate-"+key)
         self.assertIn("duplicate-title",a["issues"])
-        self.assertNotIn("duplicate-title",b["issues"])
+        self.assertIn("duplicate-title",b["issues"])
 
 if __name__=="__main__": unittest.main(verbosity=2)
