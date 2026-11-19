@@ -4,6 +4,8 @@ on:
     paths:
       - '**/*.html'
       - 'scripts/audit_page_dates.py'
+      - 'scripts/audit_seo_metadata.py'
+      - 'scripts/test_audit_seo_metadata.py'
       - 'scripts/test_audit_page_dates.py'
       - 'scripts/build_page_date_review_queue.py'
       - 'scripts/test_page_date_review_queue.py'
