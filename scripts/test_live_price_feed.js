@@ -11,8 +11,8 @@ function jalaliDate(date) {
   return values.year + "/" + values.month.padStart(2, "0") + "/" + values.day.padStart(2, "0");
 }
 
-async function evaluateFeed(publishedDate, updatedAt) {
-  const priceCell = { textContent: "", title: "", classList: { add() {} }, setAttribute() {} };
+async function evaluateFeed(publishedDate, updatedAt, price = 122000) {
+  const priceCell = { textContent: "", title: "", classList: { add() {}, remove() {} }, setAttribute() {} };
   const status = { textContent: "" };
   const row = {
     getAttribute(name) { return name === "data-price-family" ? "میلگرد" : ""; },
@@ -26,7 +26,8 @@ async function evaluateFeed(publishedDate, updatedAt) {
   };
   const data = {
     published_date: publishedDate, updated_at_utc: updatedAt, currency: "تومان", unit: "کیلوگرم",
-    rows: [{ raw: ["میلگرد", "میلگرد آجدار"], price: 122000 }]
+    verified_today: true,
+    rows: [{ raw: ["میلگرد", "میلگرد آجدار"], price }]
   };
   vm.runInNewContext(source, {
     document, fetch: async () => ({ ok: true, json: async () => data }),
@@ -47,7 +48,7 @@ async function evaluateFeed(publishedDate, updatedAt) {
 
   const staleDate = await evaluateFeed(oldDay, now.toISOString());
   assert.equal(staleDate.status, "نیازمند بررسی");
-  assert.match(staleDate.title, /نیازمند بررسی/);
+  assert.match(staleDate.title, /استعلام/);
   assert.match(staleDate.meta, /قیمت‌ها نیازمند بررسی هستند/);
 
   const staleTimestamp = await evaluateFeed(today, new Date(now.getTime() - 27 * 60 * 60 * 1000).toISOString());
@@ -55,5 +56,9 @@ async function evaluateFeed(publishedDate, updatedAt) {
 
   const missingDate = await evaluateFeed("", now.toISOString());
   assert.equal(missingDate.status, "نیازمند بررسی");
+
+  const missingPrice = await evaluateFeed(today, now.toISOString(), null);
+  assert.equal(missingPrice.status, "نیازمند بررسی");
+  assert.equal(missingPrice.price, "استعلام قیمت");
   console.log("Price-feed freshness tests passed: same-day, previous-day, stale timestamp, and missing publication date.");
 })().catch(error => { console.error(error); process.exitCode = 1; });

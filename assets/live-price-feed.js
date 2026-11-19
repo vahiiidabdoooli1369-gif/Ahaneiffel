@@ -73,18 +73,20 @@
       if (!item) return;
 
       const priceCell = row.querySelector(".quote");
+      const hasPrice = Number.isFinite(Number(item.price)) && Number(item.price) > 0;
+      const showNumericPrice = isFresh && hasPrice;
       if (priceCell) {
         const unit = item.unit || data.unit || "واحد نامشخص";
-        priceCell.textContent = isFresh ? (format(item.price) + " تومان/" + unit) : "استعلام قیمت";
-        if (isFresh) priceCell.classList.add("live-price"); else priceCell.classList.remove("live-price");
+        priceCell.textContent = showNumericPrice ? (format(item.price) + " تومان/" + unit) : "استعلام قیمت";
+        if (showNumericPrice) priceCell.classList.add("live-price"); else priceCell.classList.remove("live-price");
         priceCell.setAttribute("data-price-source", "ahaneiffel-market-feed");
-        priceCell.title = isFresh
+        priceCell.title = showNumericPrice
           ? "قیمت پایه از فید آهن ایفل؛ تأیید نهایی هنگام سفارش"
-          : "آخرین قیمت پایه ثبت‌شده؛ زمان به‌روزرسانی نیازمند بررسی است";
+          : (item.reference_label || "قیمت تأییدشده برای این گروه موجود نیست؛ استعلام بگیرید");
       }
 
       const status = row.querySelector("[data-price-status], .flat, .up, .down");
-      if (status) status.textContent = isFresh
+      if (status) status.textContent = showNumericPrice
         ? "نرخ پایه؛ تأیید نهایی هنگام سفارش"
         : "نیازمند بررسی";
     });
