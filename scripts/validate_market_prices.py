@@ -86,8 +86,11 @@ def validate(data):
                 fail(f"{prefix} has no usable aliases")
 
         price = row.get("price")
-        if isinstance(price, bool) or not isinstance(price, (int, float)) or not math.isfinite(price) or price <= 0:
-            fail(f"{prefix}.price must be a finite positive number")
+        if price is None:
+            if row.get("status") != "inquiry" or not isinstance(row.get("reference_label"), str) or not row.get("reference_label", "").strip():
+                fail(f"{prefix}.price may be null only for an explicitly labelled inquiry row")
+        elif isinstance(price, bool) or not isinstance(price, (int, float)) or not math.isfinite(price) or price <= 0:
+            fail(f"{prefix}.price must be a finite positive number or a labelled inquiry null")
 
         if "unit" in row and (not isinstance(row["unit"], str) or not row["unit"].strip()):
             fail(f"{prefix}.unit must be a non-empty string when supplied")
