@@ -188,7 +188,7 @@ jobs:
                               errors.append(f"/prices/ is missing price family: {family}")
 
                       numeric_quote_cells = re.findall(
-                          r'<td\\b([^>]*class="quote"[^>]*)>([\\s\\S]*?)</td>',
+                          r'<td\b([^>]*class="quote"[^>]*)>([\s\\S]*?)</td>',
                           daily_html,
                           re.I,
                       )
@@ -202,8 +202,8 @@ jobs:
                           elif not any(label in value for label in ("استعلام", "تماس", "مشاهده نرخ")):
                               errors.append(f"Unlabelled price status in /prices/: {value}")
 
-                      for family, row_html in re.findall(r'<tr\\b[^>]*data-price-family="([^"]+)"[^>]*>([\\s\\S]*?)</tr>', home, re.I):
-                          quote = re.search(r'<td\\b[^>]*class="quote"[^>]*>([\\s\\S]*?)</td>', row_html, re.I)
+                      for family, row_html in re.findall(r'<tr\b[^>]*data-price-family="([^"]+)"[^>]*>([\s\\S]*?)</tr>', home, re.I):
+                          quote = re.search(r'<td\b[^>]*class="quote"[^>]*>([\s\\S]*?)</td>', row_html, re.I)
                           if not quote or "استعلام" not in text_only(quote.group(1)):
                               errors.append(f"homepage exposes an unverified price or has no inquiry status for {family}")
                   else:
