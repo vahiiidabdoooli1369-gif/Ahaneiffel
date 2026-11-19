@@ -95,6 +95,17 @@ def target_for_url(url):
     return None
 
 
+def page_date_label_pattern():
+    """Recognize Persian update labels with joined, half-space, or ordinary spacing."""
+    return (
+        r'((?:آخرین\\s*(?:به[\\s‌]*روزرسانی|بروزرسانی)|'
+        r'(?:به[\\s‌]*روزرسانی|بروزرسانی)\\s*(?:صفحه|محتوا|تاریخ)?|'
+        r'تاریخ\\s*(?:آخرین\\s*تغییر|به[\\s‌]*روزرسانی)|Updated\\s*:?)'
+        r'\\s*(?:[:：\\-–]|</[^>]+>\\s*)?\\s*)'
+        r'(?:[۰-۹0-9]{4})[/\\-年][۰-۹0-9]{1,2}[/\\-月][۰-۹0-9]{1,2}'
+    )
+
+
 def replace_page_dates(path, iso_date, jalali_date):
     original = path.read_text(encoding="utf-8")
     updated = re.sub(
@@ -108,15 +119,8 @@ def replace_page_dates(path, iso_date, jalali_date):
         updated,
         flags=re.I,
     )
-    label_pattern = (
-        r'((?:آخرین\s*(?:به‌روزرسانی|بروزرسانی|تغییر)|'
-        r'(?:به‌روزرسانی|بروزرسانی)\s*(?:صفحه|محتوا|تاریخ)?|'
-        r'تاریخ\s*(?:آخرین\s*تغییر|به‌?روزرسانی)|Updated\s*:?)'
-        r'\s*(?:[:：\-–]|</[^>]+>\s*)?\s*)'
-        r'(?:[۰-۹0-9]{4})[/\-年][۰-۹0-9]{1,2}[/\-月][۰-۹0-9]{1,2}'
-    )
     updated = re.sub(
-        label_pattern,
+        page_date_label_pattern(),
         lambda m: m.group(1) + jalali_date.translate(PERSIAN_DIGITS),
         updated,
         flags=re.I,
@@ -170,6 +174,15 @@ def self_test():
         actual = gregorian_to_jalali(value)
         if actual != expected:
             raise AssertionError(f"{value}: expected {expected}, got {actual}")
+    sample = "آخرین به روزرسانی:</strong> ۱۴۰۵/۰۷/۰۶"
+    updated_sample = re.sub(
+        page_date_label_pattern(),
+        lambda m: m.group(1) + "۱۴۰۵/۰۸/۲۸",
+        sample,
+        flags=re.I,
+    )
+    if updated_sample != "آخرین به روزرسانی:</strong> ۱۴۰۵/۰۸/۲۸":
+        raise AssertionError(f"Persian spaced date label was not updated: {updated_sample}")
     if target_for_url("https://ahaneiffel.top/") != ROOT / "index.html":
         raise AssertionError("Homepage URL did not map to index.html")
     if target_for_url("https://ahaneiffel.top/guides/steel-inspection-center/") != ROOT / "guides/steel-inspection-center/index.html":
