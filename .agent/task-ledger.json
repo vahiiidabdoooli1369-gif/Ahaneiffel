@@ -113,7 +113,7 @@
     {
       "id": "b777b965b535",
       "task": "Prevent numeric price quote cells from appearing without an explicit publication date and historical/verified status",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "high",
       "evidence": [
         "Read-only inspection of prices/index.html found 150 quote cells, including 70 numeric quote cells.",
@@ -122,7 +122,29 @@
         "Verified status additionally requires data-price-verified=true and a non-empty data-price-source.",
         "Added four regression tests and integrated the audit report into the page-date coverage workflow."
       ],
-      "next_action": "Confirm the new CI run passes and review the generated price-display-audit.json artifact before closing stage 17.",
+      "next_action": "Continue with stage 18: inspect shared price messaging across headers, quote cards and footers; preserve the rule that historical rates are never presented as current.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161",
+      "completed_evidence": [
+        "Price display audit workflow run 44881882699 passed and produced price-display-audit.json.",
+        "The artifact audited 71 price-related HTML pages, 499 quote cells and 387 numeric quote cells, with zero findings.",
+        "All 275 numeric quote cells on prices/rebar/index.html now carry data-price-date=1405-08-27 and data-price-status=historical; numeric values were not changed.",
+        "The ambiguous market-date heading was aligned from 26 to 27 Aban based on the page's explicit data date and repeated manufacturer date notes.",
+        "The page's factual content-review date and dateModified metadata were updated to 1405/08/30 and 2026-11-21 after the substantive review.",
+        "All seven PR workflows passed: Page date coverage audit, Ahaneiffel Free SEO Integrity, date sync, Internal SEO Link Audit, HTML Integrity Audit, SEO 500 Point Guard and SEO Structured Data Integrity."
+      ],
+      "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
+    },
+    {
+      "id": "12f3f8d23a77",
+      "task": "Standardize price and inquiry messaging across site headers, quote cards, and footers without implying unverified rates are current",
+      "status": "in_progress",
+      "priority": "high",
+      "evidence": [
+        "Roadmap stage 18 is next after completion of the price-display integrity audit.",
+        "The central price feed is manual-user-provided with verified_today=false; inquiry wording must remain explicit until same-day confirmation.",
+        "Historical price cells are now labelled with their data date and historical status."
+      ],
+      "next_action": "Inspect shared header/footer scripts and representative price templates; identify inconsistent or misleading current-price claims before proposing a minimal patch.",
       "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161"
     }
   ],
@@ -192,6 +214,21 @@
       "blockers": [
         "Price-display CI validation and artifact review are pending."
       ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Stage 17 price display integrity completed; zero unlabelled numeric quote cells across 71 price-related pages",
+      "checks": [
+        "Price display audit initially found 275 numeric quote cells without explicit date/status on prices/rebar/index.html.",
+        "Resolved the 26/27 Aban conflict by aligning the stale heading with the repeated 27 Aban market-date evidence.",
+        "Tagged all 275 affected numeric cells as historical with data date 1405-08-27; no numeric prices were changed.",
+        "Updated the reviewed page's last content review date and structured dateModified to 1405-08-30 / 2026-11-21.",
+        "Final price audit artifact: 71 pages, 499 quote cells, 387 numeric quote cells, zero findings.",
+        "All seven PR workflows passed on commit e9e629a6b1c62401f3aa72a9861e3856c3cf6779."
+      ],
+      "completed_units": 2,
+      "fabricated_work_units": 0,
+      "blockers": []
     }
   ],
   "guardrails": {
