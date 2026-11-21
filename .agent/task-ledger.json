@@ -52,8 +52,8 @@
     {
       "id": "013a2a831fed",
       "task": "Restore six-hour Codex agent runs by using a dedicated unprivileged runner account",
-      "status": "in_progress",
-      "priority": "critical",
+      "status": "blocked",
+      "priority": "high",
       "evidence": [
         "Scheduled GitHub Actions run 42375326227 failed at Run four-role Codex team on 2026-11-07T13:05:08Z",
         "Job log reports: Could not restrict access to /run/dbus/system_bus_socket while using safety-strategy drop-sudo",
@@ -61,10 +61,13 @@
         "Remediation submitted for review in PR #118; no direct merge or production deployment performed.",
         "PR #118 checks completed successfully on the updated branch: HTML Integrity Audit, Ahaneiffel Free SEO Integrity, Internal SEO Link Audit, and SEO Structured Data Integrity (run IDs 42379441610, 42379441588, 42379441587, 42379441572).",
         "PR #118 merged into main as af45fb752350fe907b9ac965811c4ce608a672b7 on 2026-11-07; PR integrity checks passed. End-to-end scheduled Codex execution still awaits its next six-hour run.",
-        "PR #118 merged on 2026-11-07. The only scheduled Codex run checked after the original fix is 42375326227 (failed before prompt execution); no post-merge end-to-end run has yet occurred."
+        "PR #118 merged on 2026-11-07. The only scheduled Codex run checked after the original fix is 42375326227 (failed before prompt execution); no post-merge end-to-end run has yet occurred.",
+        "2026-11-10 latest Codex workflow run 42774730974 failed at Run four-role Codex team with 'Quota exceeded'."
       ],
-      "next_action": "Verify the next six-hour run after the 2026-11-07 16:58 UTC merge. Confirm OPENAI_API_KEY is configured and Codex reaches the four-role prompt; keep in progress until a successful end-to-end run.",
-      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/118"
+      "next_action": "Do not retry Codex. Continue evidence-led, deduplicated changes through ChatGPT-assisted GitHub PRs when requested; keep seo-free-integrity.yml scheduled checks.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/118",
+      "blocked_reason": "Owner requested that Codex/API-based autonomous execution not be used. The latest run 42774730974 failed with 'Quota exceeded'. Continue repository work through ChatGPT's available free assistance and GitHub connector with reviewable pull requests; retain the separate API-free scheduled integrity audit. ChatGPT in this conversation cannot run unattended every six hours.",
+      "completed_evidence": []
     },
     {
       "id": "524dc43bde4f",
@@ -122,6 +125,21 @@
       "fabricated_work_units": 0,
       "blockers": [
         "PR #119 is awaiting review/merge; remaining audit findings require page-by-page triage, not blanket edits."
+      ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۱۹",
+      "result": "Codex workflow removal proposed; API-free SEO integrity workflow retained. Future code changes to be prepared with ChatGPT assistance and reviewable PRs, not Codex.",
+      "checks": [
+        "Inspected latest Codex workflow run 42774730974 and confirmed quota failure before any repository changes",
+        "Confirmed seo-free-integrity.yml remains scheduled every six hours and last run 42773840109 succeeded",
+        "Created branch maintenance/replace-codex-with-chatgpt-20261110 and removed .github/workflows/codex-ahaneiffel-agent.yml",
+        "Updated canonical task 013a2a831fed to blocked with explicit no-Codex policy"
+      ],
+      "completed_units": 4,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "ChatGPT cannot execute unattended background runs; scheduled workflow retained here performs integrity checks only, not AI-authored code changes."
       ]
     }
   ],
