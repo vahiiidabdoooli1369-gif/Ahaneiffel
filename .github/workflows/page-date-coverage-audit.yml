@@ -9,6 +9,8 @@ on:
       - 'scripts/test_audit_page_dates.py'
       - 'scripts/build_page_date_review_queue.py'
       - 'scripts/test_page_date_review_queue.py'
+      - 'scripts/audit_price_display.py'
+      - 'scripts/test_audit_price_display.py'
       - '.github/workflows/page-date-coverage-audit.yml'
   workflow_dispatch:
 permissions:
@@ -30,12 +32,18 @@ jobs:
         run: python3 -m unittest scripts/test_audit_seo_metadata.py -v
       - name: Generate SEO metadata audit report
         run: python3 scripts/audit_seo_metadata.py --output artifacts/seo-metadata-audit.json
+      - name: Test price display audit logic
+        run: python3 scripts/audit_price_display.py --self-test
+      - name: Run price display regression tests
+        run: python3 -m unittest scripts/test_audit_price_display.py -v
+      - name: Generate price display integrity report
+        run: python3 scripts/audit_price_display.py --output artifacts/price-display-audit.json
       - name: Test audit logic
         run: python3 scripts/audit_page_dates.py --self-test
       - name: Run regression tests
         run: python3 -m unittest scripts/test_audit_page_dates.py scripts/test_page_date_review_queue.py -v
       - name: Compile audit scripts
-        run: python3 -m py_compile scripts/audit_page_dates.py scripts/build_page_date_review_queue.py scripts/audit_seo_metadata.py
+        run: python3 -m py_compile scripts/audit_page_dates.py scripts/build_page_date_review_queue.py scripts/audit_seo_metadata.py scripts/audit_price_display.py
       - name: Generate page date coverage report
         run: python3 scripts/audit_page_dates.py --output artifacts/page-date-audit.json
       - name: Build prioritized human-review queue
@@ -48,3 +56,4 @@ jobs:
             artifacts/page-date-audit.json
             artifacts/page-date-review-queue.json
             artifacts/seo-metadata-audit.json
+            artifacts/price-display-audit.json
