@@ -179,9 +179,11 @@
         "The notice is inserted after the page header and styled responsively for mobile.",
         "No prices or market dates were changed by this task.",
         "Added scripts/test_price_status_notice.py with six assertions for route scoping, accessibility, wording, insertion location, mobile styles, idempotency and all price-page script coverage.",
-        "Extended HTML Integrity Audit to run Node syntax validation for assets/site-footer.js and the new Python regression suite."
+        "Extended HTML Integrity Audit to run Node syntax validation for assets/site-footer.js and the new Python regression suite.",
+        "PR #162 checks passed on commit 6769ff69a507e3acbe1e89c144e7cdf38d932247: HTML Integrity Audit, Ahaneiffel Free SEO Integrity, SEO 500 Point Guard, SEO Structured Data Integrity and Internal SEO Link Audit.",
+        "HTML Integrity Audit explicitly passed node --check assets/site-footer.js and scripts/test_price_status_notice.py, alongside the repository HTML integrity and metadata audit."
       ],
-      "next_action": "Verify the PR-triggered HTML Integrity Audit and other available checks; then run a live smoke test for /prices/ and a representative category page.",
+      "next_action": "PR #162 is validated but not merged; after human merge, run Live Site Deployment Smoke Check and verify the strip on /prices/, /prices/rebar/ and /prices/beam/ at desktop and mobile widths.",
       "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/162"
     }
   ],
