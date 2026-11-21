@@ -86,6 +86,19 @@
         "All five PR workflows passed."
       ],
       "completed_at_tehran": "۱۴۰۵/۰۸/۱۶"
+    },
+    {
+      "id": "3769492b244a",
+      "task": "Use the Tehran calendar date when flagging future structured page dates in the read-only date audit",
+      "status": "in_progress",
+      "priority": "medium",
+      "evidence": [
+        "scripts/audit_page_dates.py compared structured dates with date.today(), which uses the GitHub runner's system timezone (UTC), not Asia/Tehran.",
+        "At 21:00 UTC, Tehran has already crossed midnight; a valid Tehran-today date could be incorrectly flagged as future during the 3.5-hour timezone gap.",
+        "Updated the audit to use an explicit Asia/Tehran date helper and added a regression test for 2026-11-20 21:00 UTC."
+      ],
+      "next_action": "Wait for Page date coverage audit CI; confirm the timezone-boundary regression test passes before marking this task completed.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161"
     }
   ],
   "runs": [
@@ -122,6 +135,21 @@
       "fabricated_work_units": 0,
       "blockers": [
         "PR #119 is awaiting review/merge; remaining audit findings require page-by-page triage, not blanket edits."
+      ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Added a Tehran-timezone correctness fix to the existing page-date audit PR; validation pending",
+      "checks": [
+        "Reviewed the open page-date coverage PR and its regression tests.",
+        "Found UTC runner date usage in the future-structured-date check.",
+        "Changed the audit to calculate the current date in Asia/Tehran.",
+        "Added a regression case for the UTC-to-Tehran midnight boundary."
+      ],
+      "completed_units": 0,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "GitHub Actions validation for the new timezone-boundary test is pending."
       ]
     }
   ],
