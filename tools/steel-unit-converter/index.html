@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تبدیل واحد آهن آلات | کیلوگرم، تن و میلی متر | آهن ایفل</title>
+<meta name="description" content="تبدیل سریع واحدهای وزن و طول برای آماده سازی سفارش آهن آلات؛ تبدیل کیلوگرم و تن و میلی متر، سانتی متر و متر.">
+<meta name="robots" content="index,follow">
+<link rel="stylesheet" href="../../style.css?v=20261101-3">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"تبدیل واحد آهن آلات","url":"https://ahaneiffel.top/tools/steel-unit-converter/","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"fa-IR","description":"ابزار تبدیل واحد وزن و طول برای آماده سازی مشخصات سفارش آهن آلات.","publisher":{"@type":"Organization","name":"آهن ایفل","url":"https://ahaneiffel.top/"}}</script>
+<style>.converter{max-width:760px;margin:24px auto}.converter-card{background:#fff;border:1px solid #dbe3ea;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 8px 24px #0b22330d}.field{display:grid;grid-template-columns:1fr 1fr;gap:12px}.converter label{display:block;font-weight:700;margin:12px 0 6px}.converter input,.converter select{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccd6df;border-radius:10px;font:inherit}.result{margin-top:16px;padding:14px;border-radius:10px;background:#eef6fb;font-weight:700;line-height:1.9}.note{color:#536575;line-height:2;font-size:13px}@media(max-width:600px){.field{grid-template-columns:1fr}.converter{margin:12px}}</style>
+<link rel="canonical" href="https://ahaneiffel.top/tools/steel-unit-converter/">
+<script src="/assets/social-float.js" defer></script><script src="/assets/site-footer.js" defer></script>
+</head>
+<body>
+<header class="site-header"><div class="container"><a class="brand" href="../../">آهن <b>ایفل</b></a><a class="call-btn" href="tel:+989125143831">استعلام</a></div></header>
+<main class="container converter">
+<p><a href="../../">خانه</a> ← <a href="../">ابزارها</a> ← تبدیل واحد</p>
+<section class="hero"><h1>تبدیل واحد آهن آلات</h1><p>برای جلوگیری از خطا در ثبت مقدار سفارش، وزن و طول را بین واحدهای رایج تبدیل کنید.</p></section>
+<section class="converter-card" aria-labelledby="weight-title">
+<h2 id="weight-title">تبدیل وزن</h2>
+<div class="field"><div><label for="weightValue">مقدار</label><input id="weightValue" type="number" inputmode="decimal" min="0" step="any" placeholder="مثلاً 1250"></div><div><label for="weightUnit">واحد ورودی</label><select id="weightUnit"><option value="kg">کیلوگرم</option><option value="ton">تن</option><option value="g">گرم</option></select></div></div>
+<div id="weightResult" class="result" role="status" aria-live="polite">مقدار را وارد کنید.</div>
+</section>
+<section class="converter-card" aria-labelledby="length-title">
+<h2 id="length-title">تبدیل طول</h2>
+<div class="field"><div><label for="lengthValue">مقدار</label><input id="lengthValue" type="number" inputmode="decimal" min="0" step="any" placeholder="مثلاً 6000"></div><div><label for="lengthUnit">واحد ورودی</label><select id="lengthUnit"><option value="mm">میلی متر</option><option value="cm">سانتی متر</option><option value="m">متر</option></select></div></div>
+<div id="lengthResult" class="result" role="status" aria-live="polite">مقدار را وارد کنید.</div>
+</section>
+<section class="converter-card"><p class="note">این ابزار فقط تبدیل واحد انجام می‌دهد و وزن واقعی محصول، تعداد شاخه یا قیمت را تخمین نمی‌زند. برای وزن مقاطع از <a href="../steel-weight-calculator/">ماشین حساب وزن</a> استفاده کنید.</p></section>
+</main>
+<script>
+const fa=n=>new Intl.NumberFormat('fa-IR',{maximumFractionDigits:3}).format(n);
+function convertWeight(){const v=Number(weightValue.value),u=weightUnit.value,r=weightResult;if(!weightValue.value||!Number.isFinite(v)||v<0){r.textContent='یک مقدار معتبر و غیرمنفی وارد کنید.';return}const kg=u==='ton'?v*1000:u==='g'?v/1000:v;r.textContent=fa(kg)+' کیلوگرم | '+fa(kg/1000)+' تن';}
+function convertLength(){const v=Number(lengthValue.value),u=lengthUnit.value,r=lengthResult;if(!lengthValue.value||!Number.isFinite(v)||v<0){r.textContent='یک مقدار معتبر و غیرمنفی وارد کنید.';return}const m=u==='mm'?v/1000:u==='cm'?v/100:v;r.textContent=fa(m)+' متر | '+fa(m*100)+' سانتی متر | '+fa(m*1000)+' میلی متر';}
+weightValue.addEventListener('input',convertWeight);weightUnit.addEventListener('change',convertWeight);lengthValue.addEventListener('input',convertLength);lengthUnit.addEventListener('change',convertLength);
+</script>
+</body></html>
