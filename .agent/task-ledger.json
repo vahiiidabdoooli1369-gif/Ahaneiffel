@@ -179,8 +179,8 @@
         "The notice is inserted after the page header and styled responsively for mobile.",
         "No prices or market dates were changed by this task."
       ],
-      "next_action": "Validate the shared notice with the HTML integrity workflow and live smoke test, then close stage 18 after confirming representative price pages render it correctly.",
-      "pull_request": "to be created"
+      "next_action": "Wait for PR #162 checks, inspect mobile/desktop output and live smoke result; merge only after the checks pass.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/162"
     }
   ],
   "runs": [
