@@ -60,6 +60,7 @@ jobs:
       - name: Run four-role Codex team
         id: codex
         if: steps.credentials.outputs.configured == 'true'
+        continue-on-error: true
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
@@ -70,9 +71,22 @@ jobs:
           prompt-file: .agent/ahaneiffel-agent-prompt.md
           output-file: .agent/codex-last-run.txt
 
+      - name: Report AI quota or execution failure
+        if: steps.credentials.outputs.configured == 'true' && steps.codex.outcome == 'failure'
+        shell: bash
+        run: |
+          echo "::warning::Codex implementation was unavailable or failed. No repository changes were committed or opened as a pull request."
+          {
+            echo "### Autonomous SEO agent"
+            echo "- Codex implementation step failed (possible quota/billing or runtime issue)."
+            echo "- No partial changes were committed or opened as a pull request."
+            echo "- The separate free SEO audit workflow remains available."
+            echo "- Check the Codex action logs and account quota before the next implementation run."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Check for changes
         id: changes
-        if: steps.credentials.outputs.configured == 'true'
+        if: steps.credentials.outputs.configured == 'true' && steps.codex.outcome == 'success'
         run: |
           if git status --porcelain --untracked-files=all | grep -v '^?? \.agent/codex-last-run\.txt$' | grep -q .; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -102,7 +116,7 @@ jobs:
             --body-file .agent/codex-last-run.txt
 
       - name: No-op report
-        if: steps.credentials.outputs.configured == 'true' && steps.changes.outputs.changed == 'false'
+        if: steps.credentials.outputs.configured == 'true' && steps.codex.outcome == 'success' && steps.changes.outputs.changed == 'false'
         run: echo "The agent found no safe change worth committing."
 
       - name: AI agent unavailable

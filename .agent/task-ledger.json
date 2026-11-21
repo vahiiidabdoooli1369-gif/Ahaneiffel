@@ -167,6 +167,21 @@
         "SEO Structured Data Integrity, SEO 500 Point Guard, Internal SEO Link Audit, Page Date Coverage Audit and date-sync workflows also passed for the same footer change."
       ],
       "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
+    },
+    {
+      "id": "c0d3xquota21",
+      "task": "Prevent scheduled autonomous SEO runs from failing the entire workflow when Codex quota or runtime errors occur",
+      "status": "in_progress",
+      "priority": "high",
+      "evidence": [
+        "Autonomous SEO workflow run 44879095803 failed in the Codex action after the log returned 'Quota exceeded. Check your plan and billing details.'",
+        "The failure caused the whole scheduled workflow to be marked failed even though the free audit workflow remained operational.",
+        "Added continue-on-error to the Codex action, gated repository change detection/commit/PR creation on successful Codex execution, and added a visible failure summary.",
+        "PR #163 checks all passed: HTML Integrity Audit, Ahaneiffel Free SEO Integrity, Internal SEO Link Audit, SEO Structured Data Integrity and SEO 500 Point Guard.",
+        "PR #163 is mergeable; the Codex quota failure itself remains external and the fallback behavior must be observed on a future scheduled run after human merge."
+      ],
+      "next_action": "After human merge, inspect the next six-hour scheduled run: if Codex quota remains exhausted, verify the job completes with a warning summary and skips all commits/PR creation while the free audit workflow still runs.",
+      "pull_request": "to be created"
     }
   ],
   "runs": [
@@ -263,6 +278,21 @@
       "fabricated_work_units": 0,
       "blockers": [
         "Final CI validation for the shared footer change is pending."
+      ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Added graceful failure handling for the scheduled autonomous Codex workflow",
+      "checks": [
+        "Inspected failed run 44879095803 logs and identified an explicit API quota-exceeded response.",
+        "Confirmed free SEO audit workflow runs independently and had passed.",
+        "Changed the Codex action to continue-on-error and gated change detection on a successful Codex run.",
+        "Added a warning and GitHub step summary for quota/runtime failure; no partial files are committed or opened as a PR."
+      ],
+      "completed_units": 1,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "PR validation pending; the underlying Codex account quota still requires available billing/quota to run implementation."
       ]
     }
   ],
