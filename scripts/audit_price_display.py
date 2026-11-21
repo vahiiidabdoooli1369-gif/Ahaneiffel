@@ -42,35 +42,38 @@ class QuoteParser(HTMLParser):
         if self.active is not None:
             self.active["text"] += data
 
+def inspect_cell(cell: dict) -> list[str]:
+    text = " ".join(cell.get("text", "").split())
+    if not NUMBER_RE.search(text.translate(DIGITS)):
+        return []
+    issues = []
+    price_date = (cell.get("date") or "").strip().translate(DIGITS)
+    if not DATE_RE.fullmatch(price_date):
+        issues.append("numeric-price-missing-valid-date")
+    else:
+        try:
+            year, month, day = map(int, re.split(r"[-/]", price_date))
+            if year < 1300 or not 1 <= month <= 12 or not 1 <= day <= 31:
+                issues.append("numeric-price-invalid-date")
+        except ValueError:
+            issues.append("numeric-price-invalid-date")
+    status = (cell.get("status") or "").strip().lower()
+    if status not in {"historical", "verified"}:
+        issues.append("numeric-price-missing-valid-status")
+    if status == "verified" and (cell.get("verified") or "").strip().lower() != "true":
+        issues.append("verified-price-missing-verification-flag")
+    if status == "verified" and not (cell.get("source") or "").strip():
+        issues.append("verified-price-missing-source")
+    return issues
+
 def inspect_page(path: Path) -> dict:
     parser = QuoteParser()
     parser.feed(path.read_text(encoding="utf-8", errors="replace"))
     findings = []
     for index, cell in enumerate(parser.cells, 1):
-        text = " ".join(cell["text"].split())
-        numeric = bool(NUMBER_RE.search(text.translate(DIGITS)))
-        if not numeric:
-            continue
-        issues = []
-        price_date = (cell.get("date") or "").strip().translate(DIGITS)
-        if not DATE_RE.fullmatch(price_date):
-            issues.append("numeric-price-missing-valid-date")
-        else:
-            try:
-                year, month, day = map(int, re.split(r"[-/]", price_date))
-                if year < 1300 or not 1 <= month <= 12 or not 1 <= day <= 31:
-                    issues.append("numeric-price-invalid-date")
-            except ValueError:
-                issues.append("numeric-price-invalid-date")
-        status = (cell.get("status") or "").strip().lower()
-        if status not in {"historical", "verified"}:
-            issues.append("numeric-price-missing-valid-status")
-        if status == "verified" and (cell.get("verified") or "").strip().lower() != "true":
-            issues.append("verified-price-missing-verification-flag")
-        if status == "verified" and not (cell.get("source") or "").strip():
-            issues.append("verified-price-missing-source")
+        issues = inspect_cell(cell)
         if issues:
-            findings.append({"cell_index": index, "text": text, "date": price_date or None, "status": status or None, "issues": issues})
+            findings.append({"cell_index": index, "text": " ".join(cell["text"].split()), "date": cell.get("date"), "status": cell.get("status"), "issues": issues})
     return {"path": path.relative_to(ROOT).as_posix(), "quote_cells": len(parser.cells), "numeric_quote_cells": sum(bool(NUMBER_RE.search(" ".join(c["text"].split()).translate(DIGITS))) for c in parser.cells), "findings": findings}
 
 def audit(paths):
