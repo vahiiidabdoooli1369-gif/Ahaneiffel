@@ -38,6 +38,13 @@ def gregorian_to_jalali(value: date) -> str:
         j_no -= j_months[jm]; jm += 1
     return f"{jy:04d}/{jm+1:02d}/{j_no+1:02d}"
 
+def tehran_today(now: datetime | None = None) -> date:
+    """Return the calendar date in Tehran, independent of the runner timezone."""
+    current = now if now is not None else datetime.now(ZoneInfo("Asia/Tehran"))
+    if current.tzinfo is None:
+        raise ValueError("tehran_today requires a timezone-aware datetime")
+    return current.astimezone(ZoneInfo("Asia/Tehran")).date()
+
 def last_content_date(path: Path) -> date | None:
     rel = path.relative_to(ROOT).as_posix()
     command = ["git","log","-1","--format=%cI","--no-renames","--invert-grep","--fixed-strings"]
@@ -72,7 +79,7 @@ def scan_page(path: Path) -> dict:
         issues.append("structured-date-differs-from-last-content-change")
     if latest and visible and any(item != expected_jalali for item in visible):
         issues.append("visible-date-differs-from-last-content-change")
-    if latest and any(item > date.today() for item in parsed):
+    if latest and any(item > tehran_today() for item in parsed):
         issues.append("future-structured-date")
     return {"path":path.relative_to(ROOT).as_posix(),"structured_dates":structured,"visible_dates":visible,"last_content_change_tehran":expected_iso,"expected_jalali":expected_jalali,"issues":issues}
 
