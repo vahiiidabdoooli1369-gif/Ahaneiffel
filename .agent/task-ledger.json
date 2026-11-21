@@ -86,6 +86,87 @@
         "All five PR workflows passed."
       ],
       "completed_at_tehran": "۱۴۰۵/۰۸/۱۶"
+    },
+    {
+      "id": "3769492b244a",
+      "task": "Use the Tehran calendar date when flagging future structured page dates in the read-only date audit",
+      "status": "completed",
+      "priority": "medium",
+      "evidence": [
+        "scripts/audit_page_dates.py compared structured dates with date.today(), which uses the GitHub runner's system timezone (UTC), not Asia/Tehran.",
+        "At 21:00 UTC, Tehran has already crossed midnight; a valid Tehran-today date could be incorrectly flagged as future during the 3.5-hour timezone gap.",
+        "Updated the audit to use an explicit Asia/Tehran date helper and added a regression test for 2026-11-20 21:00 UTC."
+      ],
+      "next_action": "Continue stage 16 by reviewing the generated SEO metadata audit artifact and triaging indexable-page findings without bulk edits.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161",
+      "completed_evidence": [
+        "Page date coverage audit run 44881370941 completed successfully after the patch, including the Tehran midnight boundary regression test.",
+        "SEO 500 Point Guard run 44881370936 passed.",
+        "Ahaneiffel Free SEO Integrity run 44881370928 passed.",
+        "HTML Integrity Audit run 44881370945 passed.",
+        "Internal SEO Link Audit run 44881370956 passed.",
+        "SEO Structured Data Integrity run 44881370934 passed.",
+        "Sync page dates workflow run 44881370939 passed."
+      ],
+      "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
+    },
+    {
+      "id": "b777b965b535",
+      "task": "Prevent numeric price quote cells from appearing without an explicit publication date and historical/verified status",
+      "status": "completed",
+      "priority": "high",
+      "evidence": [
+        "Read-only inspection of prices/index.html found 150 quote cells, including 70 numeric quote cells.",
+        "All 70 numeric cells currently carry data-price-date and data-price-status=historical; the price feed itself has verified_today=false and published_date=۱۴۰۵/۰۸/۲۷.",
+        "Added scripts/audit_price_display.py to reject numeric quote cells without a valid Jalali-looking date and explicit historical/verified status.",
+        "Verified status additionally requires data-price-verified=true and a non-empty data-price-source.",
+        "Added four regression tests and integrated the audit report into the page-date coverage workflow."
+      ],
+      "next_action": "Continue with stage 18: inspect shared price messaging across headers, quote cards and footers; preserve the rule that historical rates are never presented as current.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161",
+      "completed_evidence": [
+        "Price display audit workflow run 44881882699 passed and produced price-display-audit.json.",
+        "The artifact audited 71 price-related HTML pages, 499 quote cells and 387 numeric quote cells, with zero findings.",
+        "All 275 numeric quote cells on prices/rebar/index.html now carry data-price-date=1405-08-27 and data-price-status=historical; numeric values were not changed.",
+        "The ambiguous market-date heading was aligned from 26 to 27 Aban based on the page's explicit data date and repeated manufacturer date notes.",
+        "The page's factual content-review date and dateModified metadata were updated to 1405/08/30 and 2026-11-21 after the substantive review.",
+        "All seven PR workflows passed: Page date coverage audit, Ahaneiffel Free SEO Integrity, date sync, Internal SEO Link Audit, HTML Integrity Audit, SEO 500 Point Guard and SEO Structured Data Integrity."
+      ],
+      "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
+    },
+    {
+      "id": "12f3f8d23a77",
+      "task": "Standardize price and inquiry messaging across site headers, quote cards, and footers without implying unverified rates are current",
+      "status": "in_progress",
+      "priority": "high",
+      "evidence": [
+        "Roadmap stage 18 is next after completion of the price-display integrity audit.",
+        "The central price feed is manual-user-provided with verified_today=false; inquiry wording must remain explicit until same-day confirmation.",
+        "Historical price cells are now labelled with their data date and historical status."
+      ],
+      "next_action": "Inspect shared header/footer scripts and representative price templates; identify inconsistent or misleading current-price claims before proposing a minimal patch.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161"
+    },
+    {
+      "id": "c81419169132",
+      "task": "Clarify historical versus confirmed pricing in the shared site footer and price navigation label",
+      "status": "completed",
+      "priority": "medium",
+      "evidence": [
+        "Shared footer previously described the business as a price reference but did not explicitly distinguish historical rates from confirmed current prices.",
+        "Added a concise disclaimer stating displayed rates may be historical or require inquiry and that final price/stock are confirmed by sales.",
+        "Changed footer navigation label from 'لیست قیمت روز آهن‌آلات' to 'مرکز قیمت و استعلام آهن‌آلات' to avoid implying every listed value is current."
+      ],
+      "next_action": "Continue stage 18 by auditing the header and price-card wording on representative product and category pages.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161",
+      "completed_evidence": [
+        "Shared footer disclaimer added in assets/site-footer.js with role=note and responsive styling inherited from the footer's mobile layout.",
+        "Footer price navigation wording changed to 'مرکز قیمت و استعلام آهن‌آلات'.",
+        "HTML Integrity Audit run 44882001031 passed.",
+        "Ahaneiffel Free SEO Integrity run 44882001007 passed.",
+        "SEO Structured Data Integrity, SEO 500 Point Guard, Internal SEO Link Audit, Page Date Coverage Audit and date-sync workflows also passed for the same footer change."
+      ],
+      "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
     }
   ],
   "runs": [
@@ -122,6 +203,66 @@
       "fabricated_work_units": 0,
       "blockers": [
         "PR #119 is awaiting review/merge; remaining audit findings require page-by-page triage, not blanket edits."
+      ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Tehran-timezone correction validated; all seven PR workflows passed",
+      "checks": [
+        "Reviewed the open page-date coverage PR and its regression tests.",
+        "Found UTC runner date usage in the future-structured-date check.",
+        "Changed the audit to calculate the current date in Asia/Tehran.",
+        "Added a regression case for the UTC-to-Tehran midnight boundary.",
+        "Page date coverage audit run 44881370941 passed, including the timezone-boundary regression test.",
+        "SEO 500 Point Guard, Ahaneiffel Free SEO Integrity, HTML Integrity Audit, Internal SEO Link Audit, SEO Structured Data Integrity, and date-sync workflows all passed."
+      ],
+      "completed_units": 1,
+      "fabricated_work_units": 0,
+      "blockers": []
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Completed stage 16 metadata audit; added price-display integrity guard for stage 17",
+      "checks": [
+        "Downloaded and inspected the page-date coverage artifact for 558 HTML pages.",
+        "Confirmed 521 pages were included in indexable metadata audit and 37 noindex/redirect pages were excluded.",
+        "Recorded 175 pages with findings: 149 long titles, 24 short descriptions, and 8 long descriptions; no bulk metadata rewrites were made.",
+        "Inspected prices/index.html: 150 quote cells, 70 numeric cells, and all 70 numeric cells had an explicit historical date and status.",
+        "Added a read-only price-display audit, four regression tests, and CI artifact generation."
+      ],
+      "completed_units": 2,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "Price-display CI validation and artifact review are pending."
+      ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Stage 17 price display integrity completed; zero unlabelled numeric quote cells across 71 price-related pages",
+      "checks": [
+        "Price display audit initially found 275 numeric quote cells without explicit date/status on prices/rebar/index.html.",
+        "Resolved the 26/27 Aban conflict by aligning the stale heading with the repeated 27 Aban market-date evidence.",
+        "Tagged all 275 affected numeric cells as historical with data date 1405-08-27; no numeric prices were changed.",
+        "Updated the reviewed page's last content review date and structured dateModified to 1405-08-30 / 2026-11-21.",
+        "Final price audit artifact: 71 pages, 499 quote cells, 387 numeric quote cells, zero findings.",
+        "All seven PR workflows passed on commit e9e629a6b1c62401f3aa72a9861e3856c3cf6779."
+      ],
+      "completed_units": 2,
+      "fabricated_work_units": 0,
+      "blockers": []
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Started stage 18: shared footer now distinguishes historical reference rates from confirmed current prices",
+      "checks": [
+        "Inspected assets/live-price-feed.js and confirmed numeric prices render only when verified_today=true, timestamp is fresh, and Jalali publication date matches Tehran today.",
+        "Inspected shared site footer and found the price navigation label could imply every value is current.",
+        "Added a visible, accessible price-status disclaimer and changed the navigation label to 'مرکز قیمت و استعلام آهن‌آلات'."
+      ],
+      "completed_units": 1,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "Final CI validation for the shared footer change is pending."
       ]
     }
   ],

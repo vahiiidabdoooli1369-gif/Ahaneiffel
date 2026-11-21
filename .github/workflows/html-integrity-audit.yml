@@ -15,3 +15,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run HTML integrity audit
         run: python3 scripts/static_html_integrity_audit.py
+      - name: Test SEO metadata audit
+        run: |
+          python3 scripts/audit_seo_metadata.py --self-test
+          python3 -m unittest scripts/test_audit_seo_metadata.py -v
+          python3 -m py_compile scripts/audit_seo_metadata.py
+      - name: Generate SEO metadata report
+        run: python3 scripts/audit_seo_metadata.py --output artifacts/seo-metadata-audit.json
+      - name: Upload SEO metadata report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ahaneiffel-seo-metadata-audit
+          path: artifacts/seo-metadata-audit.json
