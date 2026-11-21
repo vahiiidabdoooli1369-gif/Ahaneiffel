@@ -90,15 +90,25 @@
     {
       "id": "3769492b244a",
       "task": "Use the Tehran calendar date when flagging future structured page dates in the read-only date audit",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "medium",
       "evidence": [
         "scripts/audit_page_dates.py compared structured dates with date.today(), which uses the GitHub runner's system timezone (UTC), not Asia/Tehran.",
         "At 21:00 UTC, Tehran has already crossed midnight; a valid Tehran-today date could be incorrectly flagged as future during the 3.5-hour timezone gap.",
         "Updated the audit to use an explicit Asia/Tehran date helper and added a regression test for 2026-11-20 21:00 UTC."
       ],
-      "next_action": "Wait for Page date coverage audit CI; confirm the timezone-boundary regression test passes before marking this task completed.",
-      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161"
+      "next_action": "Continue stage 16 by reviewing the generated SEO metadata audit artifact and triaging indexable-page findings without bulk edits.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161",
+      "completed_evidence": [
+        "Page date coverage audit run 44881370941 completed successfully after the patch, including the Tehran midnight boundary regression test.",
+        "SEO 500 Point Guard run 44881370936 passed.",
+        "Ahaneiffel Free SEO Integrity run 44881370928 passed.",
+        "HTML Integrity Audit run 44881370945 passed.",
+        "Internal SEO Link Audit run 44881370956 passed.",
+        "SEO Structured Data Integrity run 44881370934 passed.",
+        "Sync page dates workflow run 44881370939 passed."
+      ],
+      "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
     }
   ],
   "runs": [
@@ -139,18 +149,18 @@
     },
     {
       "date_tehran": "۱۴۰۵/۰۸/۳۰",
-      "result": "Added a Tehran-timezone correctness fix to the existing page-date audit PR; validation pending",
+      "result": "Tehran-timezone correction validated; all seven PR workflows passed",
       "checks": [
         "Reviewed the open page-date coverage PR and its regression tests.",
         "Found UTC runner date usage in the future-structured-date check.",
         "Changed the audit to calculate the current date in Asia/Tehran.",
-        "Added a regression case for the UTC-to-Tehran midnight boundary."
+        "Added a regression case for the UTC-to-Tehran midnight boundary.",
+        "Page date coverage audit run 44881370941 passed, including the timezone-boundary regression test.",
+        "SEO 500 Point Guard, Ahaneiffel Free SEO Integrity, HTML Integrity Audit, Internal SEO Link Audit, SEO Structured Data Integrity, and date-sync workflows all passed."
       ],
-      "completed_units": 0,
+      "completed_units": 1,
       "fabricated_work_units": 0,
-      "blockers": [
-        "GitHub Actions validation for the new timezone-boundary test is pending."
-      ]
+      "blockers": []
     }
   ],
   "guardrails": {
