@@ -177,9 +177,11 @@
         "Added a shared notice to assets/site-footer.js, scoped only to paths beginning /prices/.",
         "Notice instructs visitors to check the date beside each price table and confirms final price, stock and delivery cost at order time.",
         "The notice is inserted after the page header and styled responsively for mobile.",
-        "No prices or market dates were changed by this task."
+        "No prices or market dates were changed by this task.",
+        "Added scripts/test_price_status_notice.py with six assertions for route scoping, accessibility, wording, insertion location, mobile styles, idempotency and all price-page script coverage.",
+        "Extended HTML Integrity Audit to run Node syntax validation for assets/site-footer.js and the new Python regression suite."
       ],
-      "next_action": "Wait for PR #162 checks, inspect mobile/desktop output and live smoke result; merge only after the checks pass.",
+      "next_action": "Verify the PR-triggered HTML Integrity Audit and other available checks; then run a live smoke test for /prices/ and a representative category page.",
       "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/162"
     }
   ],
