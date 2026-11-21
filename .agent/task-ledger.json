@@ -109,6 +109,21 @@
         "Sync page dates workflow run 44881370939 passed."
       ],
       "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
+    },
+    {
+      "id": "b777b965b535",
+      "task": "Prevent numeric price quote cells from appearing without an explicit publication date and historical/verified status",
+      "status": "in_progress",
+      "priority": "high",
+      "evidence": [
+        "Read-only inspection of prices/index.html found 150 quote cells, including 70 numeric quote cells.",
+        "All 70 numeric cells currently carry data-price-date and data-price-status=historical; the price feed itself has verified_today=false and published_date=۱۴۰۵/۰۸/۲۷.",
+        "Added scripts/audit_price_display.py to reject numeric quote cells without a valid Jalali-looking date and explicit historical/verified status.",
+        "Verified status additionally requires data-price-verified=true and a non-empty data-price-source.",
+        "Added four regression tests and integrated the audit report into the page-date coverage workflow."
+      ],
+      "next_action": "Confirm the new CI run passes and review the generated price-display-audit.json artifact before closing stage 17.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161"
     }
   ],
   "runs": [
@@ -161,6 +176,22 @@
       "completed_units": 1,
       "fabricated_work_units": 0,
       "blockers": []
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Completed stage 16 metadata audit; added price-display integrity guard for stage 17",
+      "checks": [
+        "Downloaded and inspected the page-date coverage artifact for 558 HTML pages.",
+        "Confirmed 521 pages were included in indexable metadata audit and 37 noindex/redirect pages were excluded.",
+        "Recorded 175 pages with findings: 149 long titles, 24 short descriptions, and 8 long descriptions; no bulk metadata rewrites were made.",
+        "Inspected prices/index.html: 150 quote cells, 70 numeric cells, and all 70 numeric cells had an explicit historical date and status.",
+        "Added a read-only price-display audit, four regression tests, and CI artifact generation."
+      ],
+      "completed_units": 2,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "Price-display CI validation and artifact review are pending."
+      ]
     }
   ],
   "guardrails": {
