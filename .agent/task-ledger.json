@@ -150,15 +150,23 @@
     {
       "id": "c81419169132",
       "task": "Clarify historical versus confirmed pricing in the shared site footer and price navigation label",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "medium",
       "evidence": [
         "Shared footer previously described the business as a price reference but did not explicitly distinguish historical rates from confirmed current prices.",
         "Added a concise disclaimer stating displayed rates may be historical or require inquiry and that final price/stock are confirmed by sales.",
         "Changed footer navigation label from 'لیست قیمت روز آهن‌آلات' to 'مرکز قیمت و استعلام آهن‌آلات' to avoid implying every listed value is current."
       ],
-      "next_action": "Validate the shared footer change with HTML/SEO CI and check that it remains readable on mobile; then continue reviewing price messaging in headers and quote cards.",
-      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161"
+      "next_action": "Continue stage 18 by auditing the header and price-card wording on representative product and category pages.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161",
+      "completed_evidence": [
+        "Shared footer disclaimer added in assets/site-footer.js with role=note and responsive styling inherited from the footer's mobile layout.",
+        "Footer price navigation wording changed to 'مرکز قیمت و استعلام آهن‌آلات'.",
+        "HTML Integrity Audit run 44882001031 passed.",
+        "Ahaneiffel Free SEO Integrity run 44882001007 passed.",
+        "SEO Structured Data Integrity, SEO 500 Point Guard, Internal SEO Link Audit, Page Date Coverage Audit and date-sync workflows also passed for the same footer change."
+      ],
+      "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
     }
   ],
   "runs": [
