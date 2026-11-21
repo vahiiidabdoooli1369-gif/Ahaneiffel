@@ -30,10 +30,52 @@
 </div><div class="actions"><button class="primary" type="button" onclick="checkOrder()">🔎 کنترل سفارش</button><button class="secondary" type="button" onclick="resetForm()">پاک کردن</button></div><div id="result" class="result" aria-live="polite">نتیجه کنترل اینجا نمایش داده می شود.</div></section>
 <section class="box"><h2>چه چیزهایی کنترل می شود؟</h2><div class="checks"><div class="check">✓ وجود محصول و مشخصات اصلی</div><div class="check">✓ مقدار و واحد سفارش</div><div class="check">✓ قیمت واحد و هزینه حمل</div><div class="check">✓ محاسبه تقریبی مالیات واردشده</div><div class="check">✓ مقایسه مبلغ محاسباتی با مبلغ نهایی</div><div class="check">✓ هشدار برای اطلاعات ناقص</div></div></section>
 <section class="box"><h2>کنترل نهایی قبل از پرداخت</h2><p>نام کالا، سایز، ضخامت یا قطر، برند/کارخانه در صورت اهمیت، مقدار، واحد، قیمت مبنا، هزینه حمل، مقصد، شرایط تخلیه و مبلغ نهایی را با پیش فاکتور یا فاکتور تطبیق دهید. برای اقلام سازه ای، مشخصات فنی پروژه و نظر مهندس مسئول ملاک است.</p><div class="actions"><a class="primary" href="../steel-quote/">ارسال برای استعلام</a><a class="secondary" href="../../contact/">تماس با آهن ایفل</a></div></section>
+
+<section class="box" aria-labelledby="weight-difference-title">
+<h2 id="weight-difference-title">مقایسه وزن فاکتور با وزن باسکول</h2>
+<p>وزن خالص درج‌شده در فاکتور و وزن خالص ثبت‌شده در قبض باسکولِ همان محموله را با واحد کیلوگرم وارد کنید. هر دو عدد باید مربوط به یک بار و با مبنای یکسان باشند.</p>
+<div class="grid">
+<div class="field"><label for="invoiceWeight">وزن خالص فاکتور (کیلوگرم)</label><input id="invoiceWeight" type="number" min="0" step="any" inputmode="decimal" autocomplete="off" placeholder="مثلاً 10000"></div>
+<div class="field"><label for="scaleWeight">وزن خالص باسکول (کیلوگرم)</label><input id="scaleWeight" type="number" min="0" step="any" inputmode="decimal" autocomplete="off" placeholder="مثلاً 9850"></div>
+<div class="field"><label for="contractTolerance">تلورانس قراردادی (درصد، اختیاری)</label><input id="contractTolerance" type="number" min="0" step="any" inputmode="decimal" autocomplete="off" placeholder="مثلاً 1.5"></div>
+</div>
+<p id="weight-difference-help">اگر تلورانس در قرارداد یا توافق خرید مشخص نشده است، فیلد آن را خالی بگذارید؛ ابزار هیچ حد مجاز استانداردی را از پیش فرض نمی‌کند.</p>
+<div class="actions"><button class="primary" type="button" onclick="checkWeightDifference()">محاسبه اختلاف وزن</button><button class="secondary" type="button" onclick="resetWeightDifference()">پاک کردن مقایسه وزن</button></div>
+<div id="weightDifferenceResult" class="result" role="status" aria-live="polite" aria-atomic="true">نتیجه مقایسه وزن اینجا نمایش داده می‌شود.</div>
+</section>
 </main><footer class="site-footer"><div class="container"><span class="brand">آهن <b>ایفل</b></span><p>بازار آهن شادآباد، بنگاه منشور | 09125143831</p></div></footer>
 <script>
 function n(id){return Number(document.getElementById(id).value)||0}
 function money(x){return Math.round(x).toLocaleString('fa-IR')+' تومان'}
 function checkOrder(){const product=document.getElementById('product').value,spec=document.getElementById('spec').value.trim(),qty=n('qty'),price=n('price'),freight=n('freight'),vat=n('vat'),final=n('final');let issues=[],ok=[];if(!product)issues.push('محصول انتخاب نشده است.');else ok.push('محصول ثبت شده است.');if(!spec)issues.push('سایز یا مشخصات فنی وارد نشده است.');else ok.push('مشخصات اصلی وارد شده است.');if(qty<=0)issues.push('مقدار سفارش باید بیشتر از صفر باشد.');if(price<=0)issues.push('قیمت واحد وارد نشده است.');const subtotal=qty*price,vatAmount=subtotal*vat/100,calc=subtotal+vatAmount+freight;if(qty>0&&price>0)ok.push('مبلغ پایه: '+money(subtotal));if(vat>0)ok.push('مالیات محاسباتی: '+money(vatAmount));ok.push('حمل و هزینه جانبی: '+money(freight));if(final>0){const diff=Math.abs(final-calc);const pct=calc?diff/calc*100:0;if(pct>0.5)issues.push('مبلغ نهایی با محاسبه اولیه حدود '+pct.toFixed(1)+'٪ اختلاف دارد؛ اقلام فاکتور را دوباره بررسی کنید.');else ok.push('مبلغ نهایی با محاسبه اولیه اختلاف قابل توجهی ندارد.');}else issues.push('مبلغ نهایی فاکتور وارد نشده است.');document.getElementById('result').textContent='وضعیت کنترل:\n'+(issues.length?'⚠️ موارد نیازمند بررسی:\n• '+issues.join('\n• '):'✅ مغایرت آشکاری در اطلاعات واردشده پیدا نشد.')+'\n\nموارد تأییدشده:\n• '+ok.join('\n• ')+'\n\nتوجه: این کنترل عددی اولیه است و اصالت فاکتور، موجودی، کیفیت، وزن باسکول یا الزامات مهندسی را تأیید نمی کند.'}
 function resetForm(){document.querySelectorAll('input').forEach(x=>x.value='');document.getElementById('freight').value=0;document.getElementById('vat').value=0;document.getElementById('product').value='';document.getElementById('result').textContent='نتیجه کنترل اینجا نمایش داده می شود.'}
+
+function formatWeightCheckNumber(value){return new Intl.NumberFormat('fa-IR',{maximumFractionDigits:2}).format(value)}
+function calculateWeightDifference(invoiceText,scaleText,toleranceText){
+  if(!invoiceText.trim()||!scaleText.trim())return {error:'وزن خالص فاکتور و وزن خالص باسکول را وارد کنید.'};
+  const invoice=Number(invoiceText),scale=Number(scaleText),tolerance=toleranceText.trim()===''?null:Number(toleranceText);
+  if(!Number.isFinite(invoice)||invoice<=0||!Number.isFinite(scale)||scale<=0)return {error:'هر دو وزن باید عددی معتبر و بزرگ‌تر از صفر باشند.'};
+  if(tolerance!==null&&(!Number.isFinite(tolerance)||tolerance<0))return {error:'تلورانس قراردادی باید عددی معتبر و صفر یا بزرگ‌تر باشد.'};
+  const difference=scale-invoice;
+  const percentage=Math.abs(difference)/invoice*100;
+  return {invoice,scale,difference,percentage,tolerance};
+}
+function checkWeightDifference(){
+  const result=document.getElementById('weightDifferenceResult');
+  const data=calculateWeightDifference(document.getElementById('invoiceWeight').value,document.getElementById('scaleWeight').value,document.getElementById('contractTolerance').value);
+  if(data.error){result.textContent=data.error;return}
+  const direction=data.difference<0?'کسری نسبت به وزن فاکتور':data.difference>0?'اضافه نسبت به وزن فاکتور':'برابر با وزن فاکتور';
+  const signed=(data.difference>0?'+':data.difference<0?'−':'')+formatWeightCheckNumber(Math.abs(data.difference))+' کیلوگرم';
+  const percentage=formatWeightCheckNumber(data.percentage)+'٪';
+  const toleranceStatus=data.tolerance===null
+    ? 'تلورانس قراردادی وارد نشده است؛ فقط اختلاف گزارش می‌شود و قبولی یا رد اعلام نمی‌شود.'
+    : data.percentage<=data.tolerance
+      ? 'اختلاف در محدوده تلورانس واردشده ('+formatWeightCheckNumber(data.tolerance)+'٪) است.'
+      : 'اختلاف از تلورانس واردشده ('+formatWeightCheckNumber(data.tolerance)+'٪) بیشتر است؛ اسناد و شرایط قرارداد را بررسی کنید.';
+  result.textContent='نتیجه مقایسه وزن خالص:\n'+direction+'\nاختلاف وزنی: '+signed+'\nاختلاف نسبی نسبت به وزن فاکتور: '+percentage+'\n'+toleranceStatus+'\n\nاین محاسبه فقط اختلاف دو عدد واردشده را نشان می‌دهد و اعتبار قبض باسکول، خالص‌بودن وزن‌ها یا مسئولیت قراردادی را تأیید نمی‌کند.';
+}
+function resetWeightDifference(){
+  ['invoiceWeight','scaleWeight','contractTolerance'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('weightDifferenceResult').textContent='نتیجه مقایسه وزن اینجا نمایش داده می‌شود.';
+}
 </script></body></html>
