@@ -176,9 +176,11 @@
       "evidence": [
         "Autonomous SEO workflow run 44879095803 failed in the Codex action after the log returned 'Quota exceeded. Check your plan and billing details.'",
         "The failure caused the whole scheduled workflow to be marked failed even though the free audit workflow remained operational.",
-        "Added continue-on-error to the Codex action, gated repository change detection/commit/PR creation on successful Codex execution, and added a visible failure summary."
+        "Added continue-on-error to the Codex action, gated repository change detection/commit/PR creation on successful Codex execution, and added a visible failure summary.",
+        "PR #163 checks all passed: HTML Integrity Audit, Ahaneiffel Free SEO Integrity, Internal SEO Link Audit, SEO Structured Data Integrity and SEO 500 Point Guard.",
+        "PR #163 is mergeable; the Codex quota failure itself remains external and the fallback behavior must be observed on a future scheduled run after human merge."
       ],
-      "next_action": "Validate the YAML and workflow behavior through PR checks; after merge, confirm a Codex quota failure is reported without attempting to commit partial workspace changes.",
+      "next_action": "After human merge, inspect the next six-hour scheduled run: if Codex quota remains exhausted, verify the job completes with a warning summary and skips all commits/PR creation while the free audit workflow still runs.",
       "pull_request": "to be created"
     }
   ],
