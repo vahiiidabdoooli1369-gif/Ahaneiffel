@@ -1579,3 +1579,133 @@ body:not(.home-page) .site-footer a{color:#ffc18f!important}
 @media(prefers-reduced-motion:reduce){
   body:not(.home-page) *,body:not(.home-page) *::before,body:not(.home-page) *::after{transition:none!important}
 }
+
+
+/* AHAN EIFEL — FAST GRAPHIC NAVY / ORANGE / WHITE SYSTEM — 2026-11-21
+   Shared visual layer: applies site-wide without changing page content or SEO markup. */
+:root{
+  --ae-navy:#102B46;
+  --ae-blue:#17466B;
+  --ae-orange:#FF851B;
+  --ae-paper:#FFFFFF;
+  --ae-cloud:#F4F8FB;
+  --ae-stroke:#D9E4EC;
+  --ae-speed:cubic-bezier(.2,.75,.25,1);
+}
+::selection{background:#FF851B;color:#102B46}
+html{scroll-padding-top:92px}
+body{background:#fff}
+a,button,.product,.card,.quick-buy-grid a,.link-grid a,.featured-card{
+  transition:color .18s var(--ae-speed),background-color .18s var(--ae-speed),
+  border-color .18s var(--ae-speed),box-shadow .18s var(--ae-speed),
+  transform .18s var(--ae-speed);
+}
+.topbar,.modern-header .header-top{
+  background:#102B46!important;color:#fff!important;border-color:#24445f!important;
+}
+.topbar span,.modern-header .header-top>span{color:#e6edf3!important}
+.topbar a,.modern-header .phone-pill{
+  color:#102B46!important;background:#FF851B!important;border-radius:8px!important;
+  padding:7px 13px;font-weight:950;
+}
+.modern-header .header-search{background:#fff!important;border:1px solid #dce5ec}
+.modern-header .header-search button{color:#102B46!important;background:#FF851B!important;border-radius:8px}
+.modern-header .logo,.modern-header .logo strong{color:#fff!important}
+.modern-header .logo small{color:#ffbd83!important}
+.modern-header .header-icons{color:#fff!important}
+.modern-header .header-icons a{color:#fff!important}
+.modern-header .nav-line{background:#fff!important;border-bottom:1px solid #dce5ec}
+.modern-header .nav-line nav a{border-radius:8px}
+.modern-header .nav-line nav a.active,
+.modern-header .nav-line nav a:hover{
+  color:#102B46!important;background:#fff3e8!important;border-bottom-color:#FF851B!important;
+}
+.site-header .brand,.site-header .brand b{color:#102B46!important}
+.site-header nav a:hover,.site-header nav a:focus-visible{
+  background:#fff3e8!important;color:#102B46!important;box-shadow:inset 0 -2px #FF851B;
+}
+.call-btn,.button,.btn,.primary,.blue-btn,
+body:not(.home-page) main :is(.button,.btn,.primary,.blue-btn,.call-btn){
+  background:linear-gradient(115deg,#FF851B,#ff9b3d)!important;
+  color:#102B46!important;border:1px solid #f47b12!important;
+  border-radius:10px!important;font-weight:950!important;
+  box-shadow:0 7px 18px rgba(255,133,27,.22)!important;
+}
+.call-btn:hover,.button:hover,.btn:hover,.primary:hover,.blue-btn:hover{
+  background:#f0780d!important;color:#102B46!important;
+  transform:translateY(-2px);box-shadow:0 11px 24px rgba(255,133,27,.3)!important;
+}
+body:not(.home-page) main :is(.price-hero,.visual-hero,.hero,.cta,.dark-panel,.sized-product-hero){
+  background:linear-gradient(118deg,#102B46 0%,#17466B 72%,#102B46 100%)!important;
+  position:relative;isolation:isolate;overflow:hidden;
+}
+body:not(.home-page) main :is(.price-hero,.visual-hero,.hero,.cta,.dark-panel,.sized-product-hero)::after{
+  content:"";position:absolute;z-index:-1;inset:auto -7% -115px auto;width:300px;height:300px;
+  border:34px solid rgba(255,133,27,.16);border-radius:50%;pointer-events:none;
+}
+body:not(.home-page) main :is(.price-hero,.visual-hero,.hero,.cta,.dark-panel,.sized-product-hero)::before{
+  content:"";position:absolute;z-index:-1;inset:-150px auto auto -100px;width:270px;height:270px;
+  background:radial-gradient(circle,rgba(255,133,27,.2),transparent 68%);pointer-events:none;
+}
+body:not(.home-page) main h2,
+.section-title h2,.section-head h2{
+  text-wrap:balance;
+}
+body:not(.home-page) main h2{
+  border-right:4px solid #FF851B!important;
+  padding-right:13px!important;
+}
+.section-title h2{border-bottom-color:#FF851B!important}
+body:not(.home-page) main :is(.card,.quick,.product,.notice,.note,.price-table-card,.faq-grid details,.knowledge-grid article,.spec,.link-grid a,.quick-buy-grid a){
+  border:1px solid #d9e4ec!important;border-top:3px solid #FF851B!important;
+  border-radius:13px!important;background:#fff!important;
+  box-shadow:0 8px 22px rgba(16,43,70,.065)!important;
+}
+body:not(.home-page) main :is(.card,.quick,.product,.faq-grid details,.knowledge-grid article,.link-grid a,.quick-buy-grid a):hover{
+  transform:translateY(-3px);border-color:#ffb36f!important;
+  box-shadow:0 14px 30px rgba(16,43,70,.11)!important;
+}
+body:not(.home-page) main :is(.note,.notice,.price-data-note){
+  border-right:4px solid #FF851B!important;background:#fff8f1!important;
+}
+body:not(.home-page) main :is(table th,.price-table th,.spec th){
+  background:linear-gradient(100deg,#102B46,#17466B)!important;
+  border-bottom:3px solid #FF851B!important;
+}
+body:not(.home-page) main :is(table tr:hover td,.price-table tr:hover td,.spec tr:hover td){
+  background:#fff6ed!important;
+}
+body:not(.home-page) main :is(.breadcrumbs,.breadcrumb) a{color:#d96a0b!important}
+body:not(.home-page) footer,body:not(.home-page) .site-footer{
+  background:linear-gradient(115deg,#102B46,#153b5b)!important;
+  border-top:4px solid #FF851B!important;
+}
+.home-page .visual-hero{
+  background:linear-gradient(110deg,#f8fbff 0%,#fff 52%,#fff4e9 100%)!important;
+}
+.home-page .hero-copy h1 em{color:#d96a0b!important}
+.home-page .hero-kicker{color:#17466B!important}
+.home-page .category-grid>a,.home-page .featured-card{
+  border-color:#d9e4ec!important;border-top:3px solid #FF851B!important;
+  box-shadow:0 8px 22px rgba(16,43,70,.07)!important;
+}
+.home-page .category-grid>a:hover,.home-page .featured-card:hover{
+  transform:translateY(-4px);border-color:#ffb36f!important;
+  box-shadow:0 14px 30px rgba(16,43,70,.12)!important;
+}
+.home-page .category-grid i{background:#fff1e4!important;color:#102B46!important}
+.home-page .section-title h2{border-bottom-color:#FF851B!important}
+.home-page .benefit-row{background:#f3f7fa!important;border-right:4px solid #FF851B}
+.home-page .benefit-row strong{background:#102B46!important;color:#FF851B!important}
+.home-page .price-table th{background:#102B46!important;border-bottom:3px solid #FF851B!important}
+.home-page .cta{background:linear-gradient(110deg,#102B46,#17466B)!important;border-top:4px solid #FF851B!important}
+.home-page .cta a{background:#FF851B!important;color:#102B46!important}
+:focus-visible{outline:3px solid #FF851B!important;outline-offset:3px}
+@media(max-width:760px){
+  .modern-header .header-top .wide{gap:9px}
+  .modern-header .nav-line nav a{white-space:nowrap}
+  body:not(.home-page) main :is(.card,.quick,.product,.price-table-card){border-radius:11px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+}
