@@ -1,4 +1,18 @@
 (()=>{if(window.__AHANEIFFEL_SITE_FOOTER__)return;window.__AHANEIFFEL_SITE_FOOTER__=true;
+const currentPath=window.location.pathname||"/";
+if(currentPath.startsWith("/prices/")){
+ const notice=document.createElement("aside");
+ notice.className="ae-price-status-strip";
+ notice.setAttribute("role","note");
+ notice.setAttribute("aria-label","وضعیت اعتبار قیمت‌ها");
+ notice.textContent="تاریخ اعلام هر نرخ را کنار همان جدول بررسی کنید؛ قیمت قطعی، موجودی و هزینه حمل هنگام سفارش با کارشناس تأیید می‌شود.";
+ const style=document.createElement("style");
+ style.textContent=".ae-price-status-strip{direction:rtl;box-sizing:border-box;max-width:1200px;margin:14px auto;padding:11px 16px;border:1px solid #e7d7a8;border-right:4px solid #c79a45;border-radius:10px;background:#fffaf0;color:#263b4e;font-family:inherit;font-size:13px;font-weight:600;line-height:2}.ae-price-status-strip+main{margin-top:0}@media(max-width:600px){.ae-price-status-strip{margin:10px 12px;padding:9px 12px;font-size:12px}}";
+ document.head.appendChild(style);
+ const siteHeader=document.querySelector("header");
+ if(siteHeader) siteHeader.insertAdjacentElement("afterend",notice);
+ else {const main=document.querySelector("main");if(main)main.insertAdjacentElement("beforebegin",notice);else document.body.prepend(notice);}
+}
 const footer=document.createElement('footer');footer.className='ae-site-footer';footer.setAttribute('aria-label','پاورقی و پیوندهای اصلی آهن ایفل');
 footer.innerHTML=`
 <style>

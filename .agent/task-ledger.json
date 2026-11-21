@@ -167,6 +167,24 @@
         "SEO Structured Data Integrity, SEO 500 Point Guard, Internal SEO Link Audit, Page Date Coverage Audit and date-sync workflows also passed for the same footer change."
       ],
       "completed_at_tehran": "۱۴۰۵/۰۸/۳۰"
+    },
+    {
+      "id": "a18f20261121",
+      "task": "Display a consistent, accessible price-validity notice across all price-category pages",
+      "status": "in_progress",
+      "priority": "high",
+      "evidence": [
+        "Added a shared notice to assets/site-footer.js, scoped only to paths beginning /prices/.",
+        "Notice instructs visitors to check the date beside each price table and confirms final price, stock and delivery cost at order time.",
+        "The notice is inserted after the page header and styled responsively for mobile.",
+        "No prices or market dates were changed by this task.",
+        "Added scripts/test_price_status_notice.py with six assertions for route scoping, accessibility, wording, insertion location, mobile styles, idempotency and all price-page script coverage.",
+        "Extended HTML Integrity Audit to run Node syntax validation for assets/site-footer.js and the new Python regression suite.",
+        "PR #162 checks passed on commit 6769ff69a507e3acbe1e89c144e7cdf38d932247: HTML Integrity Audit, Ahaneiffel Free SEO Integrity, SEO 500 Point Guard, SEO Structured Data Integrity and Internal SEO Link Audit.",
+        "HTML Integrity Audit explicitly passed node --check assets/site-footer.js and scripts/test_price_status_notice.py, alongside the repository HTML integrity and metadata audit."
+      ],
+      "next_action": "PR #162 is validated but not merged; after human merge, run Live Site Deployment Smoke Check and verify the strip on /prices/, /prices/rebar/ and /prices/beam/ at desktop and mobile widths.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/162"
     }
   ],
   "runs": [
@@ -264,6 +282,20 @@
       "blockers": [
         "Final CI validation for the shared footer change is pending."
       ]
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Merged and smoke-tested the previous integrity PR; added a shared price-validity notice to all /prices/ pages",
+      "checks": [
+        "PR #161 merged into main with squash commit 54541325a0baead7655d829e41ca2cb748965038 after all seven required checks passed.",
+        "Post-merge automation on main completed the site-wide footer installation, site-wide live-price feed installation, Persian typography audit, SEO indexability audit, SEO quality audit, SEO structured data audit, SEO intent audit, SEO auto-repair, SEO 20-point guard, SEO 500-point guard, entity graph audit and cache bust successfully.",
+        "Live Site Deployment Smoke Check run 44882139421 passed against the published site, checking homepage, price center, market feed, llms.txt and representative guide URLs.",
+        "Added an accessible shared price-status notice to every URL under /prices/ through assets/site-footer.js; no numeric price or product claim was modified.",
+        "Recorded the next stage 18 task for mobile/route verification and price-card consistency."
+      ],
+      "completed_units": 2,
+      "fabricated_work_units": 0,
+      "blockers": []
     }
   ],
   "guardrails": {

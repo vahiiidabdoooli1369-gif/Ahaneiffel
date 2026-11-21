@@ -15,6 +15,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run HTML integrity audit
         run: python3 scripts/static_html_integrity_audit.py
+      - name: Validate shared site scripts and price status notice
+        run: |
+          node --check assets/site-footer.js
+          python3 -m unittest scripts/test_price_status_notice.py -v
       - name: Test SEO metadata audit
         run: |
           python3 scripts/audit_seo_metadata.py --self-test
