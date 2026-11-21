@@ -146,6 +146,19 @@
       ],
       "next_action": "Inspect shared header/footer scripts and representative price templates; identify inconsistent or misleading current-price claims before proposing a minimal patch.",
       "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161"
+    },
+    {
+      "id": "c81419169132",
+      "task": "Clarify historical versus confirmed pricing in the shared site footer and price navigation label",
+      "status": "in_progress",
+      "priority": "medium",
+      "evidence": [
+        "Shared footer previously described the business as a price reference but did not explicitly distinguish historical rates from confirmed current prices.",
+        "Added a concise disclaimer stating displayed rates may be historical or require inquiry and that final price/stock are confirmed by sales.",
+        "Changed footer navigation label from 'لیست قیمت روز آهن‌آلات' to 'مرکز قیمت و استعلام آهن‌آلات' to avoid implying every listed value is current."
+      ],
+      "next_action": "Validate the shared footer change with HTML/SEO CI and check that it remains readable on mobile; then continue reviewing price messaging in headers and quote cards.",
+      "pull_request": "https://github.com/vahiiidabdoooli1369-gif/Ahaneiffel/pull/161"
     }
   ],
   "runs": [
@@ -229,6 +242,20 @@
       "completed_units": 2,
       "fabricated_work_units": 0,
       "blockers": []
+    },
+    {
+      "date_tehran": "۱۴۰۵/۰۸/۳۰",
+      "result": "Started stage 18: shared footer now distinguishes historical reference rates from confirmed current prices",
+      "checks": [
+        "Inspected assets/live-price-feed.js and confirmed numeric prices render only when verified_today=true, timestamp is fresh, and Jalali publication date matches Tehran today.",
+        "Inspected shared site footer and found the price navigation label could imply every value is current.",
+        "Added a visible, accessible price-status disclaimer and changed the navigation label to 'مرکز قیمت و استعلام آهن‌آلات'."
+      ],
+      "completed_units": 1,
+      "fabricated_work_units": 0,
+      "blockers": [
+        "Final CI validation for the shared footer change is pending."
+      ]
     }
   ],
   "guardrails": {
