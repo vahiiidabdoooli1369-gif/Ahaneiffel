@@ -19,10 +19,9 @@ class PriceDisplayTests(unittest.TestCase):
     def test_unlabelled_numeric_price_is_flagged(self):
         parser = MODULE.QuoteParser()
         parser.feed('<td class="quote">۱۱۶٬۰۰۰ تومان</td>')
-        result = MODULE.inspect_sample(parser.cells[0]) if hasattr(MODULE, "inspect_sample") else None
-        self.assertIsNone(result)
-        self.assertFalse(parser.cells[0]["date"])
-        self.assertFalse(parser.cells[0]["status"])
+        issues = MODULE.inspect_cell(parser.cells[0])
+        self.assertIn("numeric-price-missing-valid-date", issues)
+        self.assertIn("numeric-price-missing-valid-status", issues)
 
     def test_verified_price_requires_verification_and_source(self):
         parser = MODULE.QuoteParser()
