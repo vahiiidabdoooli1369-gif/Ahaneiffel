@@ -99,3 +99,38 @@
 - روبیکا: https://rubika.ir/Ahaneiffel
 - بله: https://ble.ir/%D8%A8%D8%A7%D8%B2%D8%A7%D8%B1%DA%AF%D8%A7%D9%86%DB%8C%20%D9%81%D9%84%D8%B2%D8%A7%D8%AA%20%D8%A7%DB%8C%D9%81%D9%84
 - واتساپ: https://wa.me/989367227775
+
+
+## دسته‌های اصلی محصول و مسیرهای تأییدشده
+
+- [میلگرد](https://ahaneiffel.top/products/rebar/) — راهنمای محصول و سایزها.
+- [تیرآهن](https://ahaneiffel.top/products/beam/) — انواع مقطع و راهنمای خرید.
+- [ورق فولادی](https://ahaneiffel.top/products/sheet/) — ورق سیاه و صفحات مرتبط.
+- [لوله](https://ahaneiffel.top/products/scaffolding-pipe/) — لوله داربستی.
+- [پروفیل و قوطی](https://ahaneiffel.top/products/profile/) — پروفیل‌های مربع و مستطیل.
+- [زاویه و اتصالات فولادی: نبشی](https://ahaneiffel.top/products/angle/).
+- [ناودانی](https://ahaneiffel.top/products/channel/).
+- پیچ و مهره: در نقشه سایت محصولات فعلی، صفحه محصول مستقلی برای این گروه پیدا نشد؛ تا زمان ایجاد و ثبت صفحه واقعی، لینکی درج نمی‌شود.
+
+## صفحات منتخب از نقشه‌های سایت موجود
+
+### خدمات
+- [تأمین فولاد پروژه‌ای](https://ahaneiffel.top/services/project-steel-supply/)
+- [ارسال آهن‌آلات در تهران](https://ahaneiffel.top/services/steel-delivery-tehran/)
+- [ارسال آهن‌آلات در ایران](https://ahaneiffel.top/services/steel-delivery-iran/)
+
+### قیمت‌ها
+- [قیمت میلگرد](https://ahaneiffel.top/prices/rebar/)
+- [قیمت تیرآهن](https://ahaneiffel.top/prices/beam/)
+- [قیمت ورق](https://ahaneiffel.top/prices/sheet/)
+- [قیمت نبشی](https://ahaneiffel.top/prices/angle/)
+- [قیمت ناودانی](https://ahaneiffel.top/prices/channel/)
+- [قیمت پروفیل](https://ahaneiffel.top/prices/profile/)
+
+### محتوای محلی و جغرافیایی
+- [راهنمای خرید آهن در تهران](https://ahaneiffel.top/knowledge/geo/tehran-steel-buying/)
+- [تأمین‌کننده آهن در تهران](https://ahaneiffel.top/knowledge/geo/tehran-steel-supplier/)
+- [بازار آهن شادآباد](https://ahaneiffel.top/knowledge/geo/shadabad-steel-market/)
+- [خرید میلگرد در تهران](https://ahaneiffel.top/knowledge/geo/tehran-rebar-buying/)
+
+تمام URLهای بالا از فایل‌های sitemap-products.xml، sitemap-services.xml، sitemap-prices.xml و sitemap-geo.xml موجود در مخزن انتخاب شده‌اند. وجود URL در نقشه سایت به‌تنهایی تضمین‌کننده وضعیت ایندکس یا پاسخ‌گویی HTTP آن در سایت زنده نیست.
