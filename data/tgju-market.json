@@ -5,7 +5,7 @@
     "local_markets": "https://www.tgju.org/local-markets",
     "metals": "https://www.tgju.org/basemetal"
   },
-  "updated_at_utc": "2026-11-24T18:18:51.966879+00:00",
+  "updated_at_utc": "2026-11-25T02:40:37.960321+00:00",
   "disclaimer": "قیمت‌ها از جداول عمومی TGJU گردآوری شده‌اند و ممکن است با تأخیر باشند. نرخ‌های داخلی ریالی به تومان تبدیل شده‌اند؛ برخی دارایی‌های جهانی با واحد دلار نمایش داده می‌شوند. این داده‌ها قیمت قطعی فروش آهن‌آلات نیستند.",
   "items": [
     {
@@ -119,109 +119,109 @@
     {
       "id": "silver_gram",
       "name": "گرم نقره ۹۹۹",
-      "value": 402860,
+      "value": 408000,
       "unit": "تومان / گرم"
     },
     {
       "id": "tether",
       "name": "تتر",
-      "value": 289971,
+      "value": 289491,
       "unit": "تومان"
     },
     {
       "id": "gold_ounce",
       "name": "انس طلا",
-      "value": 3566.57,
+      "value": 3573.95,
       "unit": "دلار / اونس"
     },
     {
       "id": "silver_ounce",
       "name": "انس نقره",
-      "value": 41.01,
+      "value": 41.42,
       "unit": "دلار / اونس"
     },
     {
       "id": "platinum",
       "name": "انس پلاتین",
-      "value": 1258.2,
+      "value": 1270.2,
       "unit": "دلار / اونس"
     },
     {
       "id": "palladium",
       "name": "انس پالادیوم",
-      "value": 858.5,
+      "value": 866.0,
       "unit": "دلار / اونس"
     },
     {
       "id": "bitcoin",
       "name": "بیت کوین",
-      "value": 6021.689,
+      "value": 5916.161,
       "unit": "تومان"
     },
     {
       "id": "ethereum",
       "name": "اتریوم",
-      "value": 487876350.0,
+      "value": 480698130.0,
       "unit": "تومان"
     },
     {
       "id": "ripple",
       "name": "ریپل",
-      "value": 267760.0,
+      "value": 265140.0,
       "unit": "تومان"
     },
     {
       "id": "bnb",
       "name": "بایننس کوین",
-      "value": 159594870.0,
+      "value": 156947230.0,
       "unit": "تومان"
     },
     {
       "id": "tron",
       "name": "ترون",
-      "value": 89290.0,
+      "value": 89150.0,
       "unit": "تومان"
     },
     {
       "id": "stellar",
       "name": "استلار",
-      "value": 36140.0,
+      "value": 35480.0,
       "unit": "تومان"
     },
     {
       "id": "bitcoin_cash",
       "name": "بیت کوین کش",
-      "value": 57091300.0,
+      "value": 56766540.0,
       "unit": "تومان"
     },
     {
       "id": "aluminum",
       "name": "آلومینیوم",
-      "value": 2771.7,
+      "value": 2775.2,
       "unit": "دلار / تن"
     },
     {
       "id": "copper",
       "name": "مس",
-      "value": 11877.4,
+      "value": 12001.5,
       "unit": "دلار / تن"
     },
     {
       "id": "zinc",
       "name": "روی",
-      "value": 3441.05,
+      "value": 3461.4,
       "unit": "دلار / تن"
     },
     {
       "id": "lead",
       "name": "سرب",
-      "value": 1836.0,
+      "value": 1841.7,
       "unit": "دلار / تن"
     },
     {
       "id": "nickel",
       "name": "نیکل",
-      "value": 15168.0,
+      "value": 15266.25,
       "unit": "دلار / تن"
     },
     {
